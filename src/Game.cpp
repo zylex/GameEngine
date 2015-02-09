@@ -2,7 +2,7 @@
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
-#include <glm/ext.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "Game.h"
 #include "OpenGLShader.h"
@@ -110,15 +110,8 @@ const int Game::run() {
     static float scale = 0.0f;
 
     scale += 0.01f;
-
-    mat4x4 worldMatrix;
-    // worldMatrix
-    glm::scale(worldMatrix, { sinf(scale), sinf(scale), sinf(scale) });
-    // glm::gtc::matrix_trasnform::scale(
-    // worldMatrix, { cosf(scale), sinf(scale), atanf(scale) });
-    // scale(worldMatrix, { cosf(scale), sinf(scale), atanf(scale) });
-
-    // glUniform1f(m_worldMatrixLocation, sinf(scale));
+    mat4 worldMatrix =
+        glm::scale(mat4(), vec3(sinf(scale), cosf(scale), atanf(scale)));
     glUniformMatrix4fv(m_worldMatrixLocation, 1, GL_TRUE, &worldMatrix[0][0]);
 
     glEnableVertexAttribArray(0);
