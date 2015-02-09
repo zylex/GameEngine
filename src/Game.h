@@ -20,10 +20,13 @@ public:
   // move assignment operator (C++11)
   Game& operator=(Game&& other) noexcept;
 
-  const int run() const;
+  const int run();
 
   static void error_callback(int, const char*);
   static void key_callback(GLFWwindow*, int, int, int, int);
+
+private:
+  unsigned int m_worldMatrixLocation;
 };
 
 } // namespace zge

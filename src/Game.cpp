@@ -2,11 +2,15 @@
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 #include "Game.h"
 #include "OpenGLShader.h"
-#include "SimpleVS.h"
-#include "RedPS.h"
+// #include "SimpleVS.h"
+// #include "UniformScaleVS.h"
+// #include "RedPS.h"
+#include "InterpolatedVS.h"
+#include "InterpolatedPS.h"
 
 namespace zge {
 
@@ -42,7 +46,7 @@ Game& Game::operator=(Game&& other) noexcept {
   return *(new Game(other));
 }
 
-const int Game::run() const {
+const int Game::run() {
   glfwSetErrorCallback(Game::error_callback);
 
   if (!glfwInit()) {
@@ -85,7 +89,10 @@ const int Game::run() const {
   glGenVertexArrays(1, &VertexArrayID);
   glBindVertexArray(VertexArrayID);
 
-  uint programID = compileShaders(SimpleVS, RedPS);
+  const uint programID = compileShaders(InterpolatedVS, InterpolatedPS);
+  glUseProgram(programID);
+  m_worldMatrixLocation = glGetUniformLocation(programID, "worldMatrix");
+  assert(m_worldMatrixLocation != 0xFFFFFFFF);
 
   vec3 vertices[3];
   vertices[0] = vec3(-1.0f, -1.0f, 0.0f);
@@ -100,7 +107,20 @@ const int Game::run() const {
   while (!glfwWindowShouldClose(window)) {
 
     glClear(GL_COLOR_BUFFER_BIT);
-    glUseProgram(programID);
+    static float scale = 0.0f;
+
+    scale += 0.01f;
+
+    mat4x4 worldMatrix;
+    // worldMatrix
+    glm::scale(worldMatrix, { sinf(scale), sinf(scale), sinf(scale) });
+    // glm::gtc::matrix_trasnform::scale(
+    // worldMatrix, { cosf(scale), sinf(scale), atanf(scale) });
+    // scale(worldMatrix, { cosf(scale), sinf(scale), atanf(scale) });
+
+    // glUniform1f(m_worldMatrixLocation, sinf(scale));
+    glUniformMatrix4fv(m_worldMatrixLocation, 1, GL_TRUE, &worldMatrix[0][0]);
+
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
