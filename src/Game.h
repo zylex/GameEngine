@@ -7,6 +7,9 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+// #include <math.h>
+
 namespace zge {
 
 class Game {
@@ -24,7 +27,7 @@ public:
   // move assignment operator (C++11)
   Game& operator=(Game&& other) noexcept;
 
-  int run();
+  const int run() const;
 
   static void error_callback(int, const char*);
   static void key_callback(GLFWwindow*, int, int, int, int);

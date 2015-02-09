@@ -2,6 +2,8 @@
 
 namespace zge {
 
+using namespace glm;
+
 Game::Game() {
   // constructor
 }
@@ -32,16 +34,17 @@ Game& Game::operator=(Game&& other) noexcept {
   return *(new Game(other));
 }
 
-int Game::run() {
+const int Game::run() const {
   glfwSetErrorCallback(Game::error_callback);
 
   if (!glfwInit()) {
     std::cerr << "GLFW failed to initialise." << std::endl;
   }
 
-  glfwWindowHint(GLFW_SAMPLES, 4);
+  glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   GLFWwindow* window = glfwCreateWindow(800, 600, "Test GLFW", NULL, NULL);
@@ -53,20 +56,60 @@ int Game::run() {
   }
 
   glfwMakeContextCurrent(window);
-
+  glewExperimental = true;
   if (glewInit() != GLEW_OK) {
     std::cerr << "GLEW failed to initialise." << std::endl;
     glfwTerminate();
     return EXIT_FAILURE;
   }
 
-  glfwSwapInterval(1);
+  // glfwSwapInterval(1);
   glfwSetKeyCallback(window, Game::key_callback);
 
+  // glEnable(GL_MULTISAMPLE);
+  // glEnable(GL_DEPTH_TEST);
+  // glEnable(GL_BLEND);
+  // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  // glMatrixMode(GL_PROJECTION);
+
+  // double fH = tan(45 / 360 * M_PI) * 0.1;
+  // double fW = fH * 800 / 600;
+  // glFrustum(-fW, fW, -fH, fH, 0.1, 1000);
+
+  uint VertexArrayID;
+  glGenVertexArrays(1, &VertexArrayID);
+  glBindVertexArray(VertexArrayID);
+
+  vec3 vertices[3];
+  vertices[0] = vec3(-1.0f, -1.0f, 0.0f);
+  vertices[1] = vec3(1.0f, -1.0f, 0.0f);
+  vertices[2] = vec3(0.0f, 1.0f, 0.0f);
+
+  uint vbo;
+  glGenBuffers(1, &vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
   while (!glfwWindowShouldClose(window)) {
+
+    glClear(GL_COLOR_BUFFER_BIT);
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    // glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawBuffer(GL_TRIANGLES);
+
+    glDisableVertexAttribArray(0);
+
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
+
+  glDeleteBuffers(1, &vbo);
+  glDeleteVertexArrays(1, &VertexArrayID);
 
   glfwDestroyWindow(window);
   glfwTerminate();

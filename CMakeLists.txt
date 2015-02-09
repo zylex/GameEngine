@@ -33,15 +33,55 @@ if(NOT OPENGL_FOUND)
 endif(NOT OPENGL_FOUND)
 include_directories(${OPENGL_INCLUDE_DIR})
 
-file(GLOB_RECURSE ${PROJECT_NAME}_SOURCES "*.cpp")
-file(GLOB_RECURSE ${PROJECT_NAME}_HEADERS "*.h")
+file(GLOB_RECURSE ${PROJECT_NAME}_SOURCES "src/*.cpp")
+file(GLOB_RECURSE ${PROJECT_NAME}_HEADERS "src/*.h")
 
 set (${PROJECT_NAME}_INCLUDE_DIRS "")
 foreach (headerFile ${${PROJECT_NAME}_HEADERS})
     get_filename_component(dir ${headerFile} PATH)
-    list (APPEND ${PROJECT_NAME}_INCLUDE_DIRS ${dir})
+    list(APPEND ${PROJECT_NAME}_INCLUDE_DIRS ${dir})
 endforeach()
 list(REMOVE_DUPLICATES ${PROJECT_NAME}_INCLUDE_DIRS)
+
+IF(CMAKE_BUILD_TYPE MATCHES Debug)
+    message("Debug build.")
+    message("Configuring headers.")
+    file(GLOB_RECURSE shader_list src/*.glsl)
+    FOREACH(file_path ${shader_list})
+        get_filename_component(file_name ${file_path} NAME_WE)
+        configure_file (
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ShaderHeader.h.in"
+        "${CMAKE_CURRENT_SOURCE_DIR}/debug_includes/${file_name}.h"
+    )
+    ENDFOREACH()
+    list(APPEND ${PROJECT_NAME}_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/debug_includes/FileHelper.cpp)
+    #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/debug_includes)
+    list(APPEND ${PROJECT_NAME}_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/debug_includes)
+ELSEIF(CMAKE_BUILD_TYPE MATCHES Release)
+    message("Release build.")
+    message("Creating GLSL shader headers.")
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/shaders)
+    SET(tmp ${CMAKE_BINARY_DIR})
+    SET(CMAKE_BINARY_DIR ${CMAKE_BINARY_DIR}/shaders)
+    add_executable(embedfile ${CMAKE_CURRENT_SOURCE_DIR}/cmake/embedfile.cpp)
+    file(GLOB_RECURSE shader_list src/*.glsl)
+    FOREACH(file_path ${shader_list})
+        get_filename_component(file_name ${file_path} NAME_WE)
+        list(APPEND ${PROJECT_NAME}_SOURCES ${CMAKE_BINARY_DIR}/${file_name}.h)
+        add_custom_command(
+            OUTPUT ${CMAKE_BINARY_DIR}/${file_name}.h
+            COMMAND embedfile ${file_name} ${file_path} ${CMAKE_BINARY_DIR}/${file_name}.h
+            DEPENDS ${file_path}
+            IMPLICIT_DEPENDS embedfile
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        )
+    ENDFOREACH()
+    SET(CMAKE_BINARY_DIR ${tmp})
+    #include_directories(${CMAKE_BINARY_DIR}/shaders)
+    list(APPEND ${PROJECT_NAME}_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/shaders)
+#ELSE()
+#    message("Some other build type.")
+ENDIF()
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
 
