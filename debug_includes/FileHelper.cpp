@@ -8,10 +8,10 @@ namespace zge {
 
 const char* loadFile(const std::string filepath) {
   std::string contents = "";
-  std::ifstream filestream(filepath, std::ios::in);
+  std::ifstream filestream(filepath);
   if (filestream.is_open()) {
     std::string line = "";
-    while (getline(filestream, line)) {
+    while (std::getline(filestream, line)) {
       contents += "\n" + line;
     }
   } else {

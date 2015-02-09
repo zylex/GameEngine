@@ -1,4 +1,12 @@
+#include <iostream>
+
+#include <GL/glew.h>
+#include <glm/glm.hpp>
+
 #include "Game.h"
+#include "OpenGLShader.h"
+#include "SimpleVS.h"
+#include "RedPS.h"
 
 namespace zge {
 
@@ -63,7 +71,7 @@ const int Game::run() const {
     return EXIT_FAILURE;
   }
 
-  // glfwSwapInterval(1);
+  glfwSwapInterval(1);
   glfwSetKeyCallback(window, Game::key_callback);
 
   // glEnable(GL_MULTISAMPLE);
@@ -72,15 +80,12 @@ const int Game::run() const {
   // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-  // glMatrixMode(GL_PROJECTION);
-
-  // double fH = tan(45 / 360 * M_PI) * 0.1;
-  // double fW = fH * 800 / 600;
-  // glFrustum(-fW, fW, -fH, fH, 0.1, 1000);
 
   uint VertexArrayID;
   glGenVertexArrays(1, &VertexArrayID);
   glBindVertexArray(VertexArrayID);
+
+  uint programID = compileShaders(SimpleVS, RedPS);
 
   vec3 vertices[3];
   vertices[0] = vec3(-1.0f, -1.0f, 0.0f);
@@ -95,12 +100,12 @@ const int Game::run() const {
   while (!glfwWindowShouldClose(window)) {
 
     glClear(GL_COLOR_BUFFER_BIT);
+    glUseProgram(programID);
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-    // glDrawArrays(GL_TRIANGLES, 0, 3);
-    glDrawBuffer(GL_TRIANGLES);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 
     glDisableVertexAttribArray(0);
 
@@ -110,6 +115,7 @@ const int Game::run() const {
 
   glDeleteBuffers(1, &vbo);
   glDeleteVertexArrays(1, &VertexArrayID);
+  glDeleteProgram(programID);
 
   glfwDestroyWindow(window);
   glfwTerminate();

@@ -44,22 +44,23 @@ endforeach()
 list(REMOVE_DUPLICATES ${PROJECT_NAME}_INCLUDE_DIRS)
 
 IF(CMAKE_BUILD_TYPE MATCHES Debug)
-    message("Debug build.")
-    message("Configuring headers.")
+    message(STATUS "Debug build detected.")
+    message(STATUS "Configuring shader headers.")
     file(GLOB_RECURSE shader_list src/*.glsl)
     FOREACH(file_path ${shader_list})
         get_filename_component(file_name ${file_path} NAME_WE)
+        message(STATUS "-- Configuring header for ${file_name}.glsl.")
         configure_file (
-        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ShaderHeader.h.in"
-        "${CMAKE_CURRENT_SOURCE_DIR}/debug_includes/${file_name}.h"
-    )
+            "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ShaderHeader.h.in"
+            "${CMAKE_CURRENT_SOURCE_DIR}/debug_includes/${file_name}.h"
+        )
     ENDFOREACH()
     list(APPEND ${PROJECT_NAME}_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/debug_includes/FileHelper.cpp)
     #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/debug_includes)
     list(APPEND ${PROJECT_NAME}_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/debug_includes)
 ELSEIF(CMAKE_BUILD_TYPE MATCHES Release)
-    message("Release build.")
-    message("Creating GLSL shader headers.")
+    message(STATUS "Release build detected.")
+    message(STATUS "Creating GLSL shader header targets.")
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/shaders)
     SET(tmp ${CMAKE_BINARY_DIR})
     SET(CMAKE_BINARY_DIR ${CMAKE_BINARY_DIR}/shaders)
@@ -90,3 +91,5 @@ add_library(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES})
 target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${GLFW_LIBRARIES} ${GLM_LIBRARIES})
 
 target_include_directories (${PROJECT_NAME} PUBLIC ${${PROJECT_NAME}_INCLUDE_DIRS})
+
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/DetectDistro.cmake")
