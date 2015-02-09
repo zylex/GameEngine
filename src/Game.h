@@ -2,10 +2,14 @@
 #define GAME_H
 
 #include <GLFW/glfw3.h>
+#include <vector>
+#include <glm/glm.hpp>
 
-namespace zge {
+namespace zge
+{
 
-class Game {
+class Game
+{
 public:
   // constructor
   Game();
@@ -27,6 +31,10 @@ public:
 
 private:
   unsigned int m_worldMatrixLocation;
+  unsigned int m_shaderAttributeLocation;
+  const unsigned int createVertexBuffer(const std::vector<glm::vec3>) const;
+  const unsigned int createIndexBuffer(const std::vector<unsigned int>) const;
+  const unsigned int createInstanceBuffer(const std::vector<glm::mat4>) const;
 };
 
 } // namespace zge
