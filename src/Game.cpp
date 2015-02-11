@@ -92,19 +92,19 @@ const int Game::run()
 
   // glEnable(GL_MULTISAMPLE);
   // glEnable(GL_DEPTH_TEST);
+  // glDepthFunc(GL_GREATER);
   // glEnable(GL_BLEND);
   // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  // glEnable(GL_CULL_FACE);
+  // glFrontFace(GL_CW);
+  // glCullFace(GL_BACK);
 
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-  uint VertexArrayID;
-  glGenVertexArrays(1, &VertexArrayID);
-  glBindVertexArray(VertexArrayID);
-
-  const uint programID = compileShaders(InterpolatedVS, InterpolatedPS);
-  glUseProgram(programID);
-  m_worldMatrixLocation = glGetUniformLocation(programID, "worldMatrix");
-  assert(m_worldMatrixLocation != 0xFFFFFFFF);
+  // uint vertexArrayID;
+  // glGenVertexArrays(1, &vertexArrayID);
+  // glBindVertexArray(vertexArrayID);
+  // glBindVertexArray(0);
 
   vector<vec3> vertices;
   vertices.push_back(vec3(-1.0f, -1.0f, 0.0f));
@@ -112,27 +112,38 @@ const int Game::run()
   vertices.push_back(vec3(1.0f, 1.0f, 0.0f));
   vertices.push_back(vec3(1.0f, -1.0f, 0.0f));
 
-  uint vertexBuffer = createVertexBuffer(vertices);
+  // uint vertexBuffer = createVertexBuffer(vertices);
 
-  uint indexBuffer = createIndexBuffer(vector<uint>{ 0, 1, 2, 2, 3, 0 });
+  // uint indexBuffer = createIndexBuffer(vector<uint>{ 0, 1, 2, 2, 3, 0 });
+
+  uint objectBuffer =
+      createVertexArray(vertices, vector<uint>{ 0, 1, 2, 2, 3, 0 });
+
+  const uint programID = compileShaders(InterpolatedVS, InterpolatedPS);
+  glUseProgram(programID);
+  m_worldMatrixLocation = glGetUniformLocation(programID, "worldMatrix");
+  assert(m_worldMatrixLocation != 0xFFFFFFFF);
 
   while (!glfwWindowShouldClose(window))
   {
     glClear(GL_COLOR_BUFFER_BIT);
-    static float scale = 0.0f;
+    static float scale = 0.2f;
 
-    scale += 0.01f;
-    mat4 worldMatrix =
-        glm::scale(mat4(), vec3(sinf(scale), cosf(scale), atanf(scale)));
+    // scale += 0.01f;
+    // mat4 worldMatrix =
+    //     glm::scale(mat4(), vec3(sinf(scale), cosf(scale), atanf(scale)));
+    mat4 worldMatrix = glm::scale(mat4(), vec3(scale, scale, scale));
     glUniformMatrix4fv(m_worldMatrixLocation, 1, GL_TRUE, &worldMatrix[0][0]);
 
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+    // glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    // glEnableVertexAttribArray(0);
+    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+    glBindVertexArray(objectBuffer);
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     // glDrawArrays(GL_TRIANGLES, 0, 3);
+    glBindVertexArray(0);
 
     glDisableVertexAttribArray(0);
 
@@ -140,9 +151,9 @@ const int Game::run()
     glfwPollEvents();
   }
 
-  glDeleteBuffers(1, &vertexBuffer);
-  glDeleteBuffers(1, &indexBuffer);
-  // glDeleteVertexArrays(1, &VertexArrayID);
+  // glDeleteBuffers(1, &vertexBuffer);
+  // glDeleteBuffers(1, &indexBuffer);
+  glDeleteVertexArrays(1, &objectBuffer);
   glDeleteProgram(programID);
 
   glfwDestroyWindow(window);
@@ -165,27 +176,33 @@ void Game::key_callback(GLFWwindow* window, int key, int scancode, int action,
   }
 }
 
-const uint Game::createVertexBuffer(const vector<vec3> vertices) const
+const unsigned int Game::createVertexArray(
+    const std::vector<glm::vec3> vertices,
+    const std::vector<unsigned int> indices) const
 {
-
-  uint result;
-  glGenBuffers(1, &result);
-  glBindBuffer(GL_ARRAY_BUFFER, result);
+  uint IDs[3];
+  // vertexBuffer
+  glGenBuffers(2, IDs);
+  glBindBuffer(GL_ARRAY_BUFFER, IDs[0]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * vertices.size(), vertices.data(),
                GL_STATIC_DRAW);
-  return result;
-}
-
-const uint Game::createIndexBuffer(const vector<uint> indices) const
-{
-
-  uint result;
-  glGenBuffers(1, &result);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, result);
+  // indexBuffer
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IDs[1]);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indices.size(),
                indices.data(), GL_STATIC_DRAW);
 
-  return result;
+  glGenVertexArrays(1, &IDs[2]);
+  glBindVertexArray(IDs[2]);
+
+  glEnableVertexAttribArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, IDs[0]);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IDs[1]);
+
+  glBindVertexArray(0);
+  glDeleteBuffers(2, IDs);
+
+  return IDs[2];
 }
 
 const uint Game::createInstanceBuffer(const vector<mat4> instances) const
@@ -194,8 +211,8 @@ const uint Game::createInstanceBuffer(const vector<mat4> instances) const
   uint result;
   glGenBuffers(1, &result);
   // TODO
-  // glBindBuffer(GL_INSTANCE, result);
-  // glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+  // glBindBuffer(GL_ARRAY_BUFFER, result);
+  // glBufferData(GL_ARRAY_BUFFER,
   // sizeof(instances.data()),&instances[0], GL_STATIC_DRAW);
 
   return result;
