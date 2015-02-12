@@ -32,9 +32,13 @@ public:
 private:
   unsigned int m_worldMatrixLocation;
   unsigned int m_shaderAttributeLocation;
+
+  const unsigned int createVertexBuffer(const std::vector<glm::vec3>) const;
+  const unsigned int createIndexBuffer(const std::vector<unsigned int>) const;
+
   const unsigned int createVertexArray(const std::vector<glm::vec3>,
-                                       const std::vector<unsigned int>) const;
-  // TODO: implement
+                                       const std::vector<unsigned int>,
+                                       const unsigned int) const;
   const unsigned int createInstanceBuffer(const std::vector<glm::mat4>) const;
 };
 

@@ -2,6 +2,7 @@
 
 #include <GL/glew.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
 
 #include "Game.h"
 #include "OpenGLShader.h"
@@ -116,9 +117,6 @@ const int Game::run()
 
   // uint indexBuffer = createIndexBuffer(vector<uint>{ 0, 1, 2, 2, 3, 0 });
 
-  uint objectBuffer =
-      createVertexArray(vertices, vector<uint>{ 0, 1, 2, 2, 3, 0 });
-
   const uint programID = compileShaders(InterpolatedVS, InterpolatedPS);
   glUseProgram(programID);
   m_worldMatrixLocation = glGetUniformLocation(programID, "worldMatrix");
@@ -127,30 +125,35 @@ const int Game::run()
   // create instance data
   uint instanceBuffer = createInstanceBuffer(vector<mat4>(4));
   std::vector<vec3> instancePositions({
-    vec3(-5.0f, -5.0f, -10.0f), vec3(5.0f, -5.0f, 10.0f),
-    vec3(5.0f, 5.0f, -10.0f), vec3(-5.0f, 5.0f, 10.0f),
+    vec3(-0.5f, -0.5f, 1.0f), vec3(0.5f, -0.5f, 0.0f), vec3(0.5f, 0.5f, 0.0f),
+    vec3(-0.5f, 0.5f, 0.0f),
   });
+
+  uint objectBuffer = createVertexArray(
+      vertices, vector<uint>{ 0, 1, 2, 2, 3, 0 }, instanceBuffer);
 
   while (!glfwWindowShouldClose(window))
   {
     glClear(GL_COLOR_BUFFER_BIT);
     std::vector<mat4> instanceData(4);
 
-    static float scale = 0.5f;
+    static float scale = 0.2f;
 
     // scale += 0.01f;
-    // mat4 worldMatrix =
-    // glm::scale(mat4(), vec3(sinf(scale), cosf(scale), atanf(scale)));
-    mat4 worldMatrix = glm::scale(mat4(), vec3(scale, scale, scale));
+    mat4 worldMatrix; // =
+    // glm::scale(worldMatrix, vec3(sinf(scale), cosf(scale), atanf(scale)));
+    worldMatrix = glm::scale(worldMatrix, vec3(scale, scale, scale));
     glUniformMatrix4fv(m_worldMatrixLocation, 1, GL_TRUE, &worldMatrix[0][0]);
 
-    // static float translation = 0.0f;
-    // translation += 0.01f;
+    static float translation = 0.0f;
+    translation += 0.01f;
     for (int i = 0; i < 4; ++i)
     {
-      instanceData[i] = glm::translate(mat4(), instancePositions[i]);
-      // instanceData[i] = glm::translate(
-      //     instanceData[i], vec3(sinf(translation), sinf(translation), 0.0f));
+      mat4 instDat;
+      instDat = glm::translate(instDat, instancePositions[i]) *
+                glm::translate(instDat, vec3(sinf(translation) * 0.2f * 1.4f,
+                                             cosf(translation) * 0.2f, 0.0f));
+      instanceData[i] = glm::transpose(instDat);
     }
 
     // bind instance buffer
@@ -158,20 +161,9 @@ const int Game::run()
     // update instance buffer
     glBufferData(GL_ARRAY_BUFFER, sizeof(mat4) * instanceData.size(),
                  instanceData.data(), GL_DYNAMIC_DRAW);
-    for (unsigned int i = 0; i < 4; ++i)
-    {
-      glEnableVertexAttribArray(1 + i);
-      glVertexAttribPointer(1 + i, 4, GL_FLOAT, GL_FALSE, sizeof(mat4),
-                            (const GLvoid*)(sizeof(float) * i * 4));
-      glVertexAttribDivisor(1 + i, 1);
-    }
 
     glBindVertexArray(objectBuffer);
-
-    // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    // glDrawArrays(GL_TRIANGLES, 0, 3);
     glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 4);
-
     glBindVertexArray(0);
 
     glDisableVertexAttribArray(0);
@@ -184,8 +176,7 @@ const int Game::run()
     glfwPollEvents();
   }
 
-  // glDeleteBuffers(1, &vertexBuffer);
-  // glDeleteBuffers(1, &indexBuffer);
+  glDeleteBuffers(1, &instanceBuffer);
   glDeleteVertexArrays(1, &objectBuffer);
   glDeleteProgram(programID);
 
@@ -211,7 +202,7 @@ void Game::key_callback(GLFWwindow* window, int key, int scancode, int action,
 
 const unsigned int Game::createVertexArray(
     const std::vector<glm::vec3> vertices,
-    const std::vector<unsigned int> indices) const
+    const std::vector<unsigned int> indices, const uint instanceBuffer) const
 {
   uint IDs[3];
   glGenVertexArrays(1, &IDs[2]);
@@ -223,10 +214,20 @@ const unsigned int Game::createVertexArray(
                GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glVertexAttribDivisor(0, 0);
   // indexBuffer
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IDs[1]);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indices.size(),
                indices.data(), GL_STATIC_DRAW);
+
+  glBindBuffer(GL_ARRAY_BUFFER, instanceBuffer);
+  for (uint i = 0; i < 4; ++i)
+  {
+    glEnableVertexAttribArray(1 + i);
+    glVertexAttribPointer(1 + i, 4, GL_FLOAT, GL_FALSE, sizeof(mat4),
+                          (const GLvoid*)(sizeof(float) * i * 4));
+    glVertexAttribDivisor(1 + i, 1);
+  }
 
   glBindVertexArray(0);
   glDeleteBuffers(2, IDs);
@@ -236,14 +237,31 @@ const unsigned int Game::createVertexArray(
 
 const uint Game::createInstanceBuffer(const vector<mat4> instances) const
 {
-
   uint result;
   glGenBuffers(1, &result);
-  // TODO
   glBindBuffer(GL_ARRAY_BUFFER, result);
   glBufferData(GL_ARRAY_BUFFER, instances.size() * sizeof(mat4),
                instances.data(), GL_DYNAMIC_DRAW);
 
+  return result;
+}
+
+const uint Game::createVertexBuffer(const vector<vec3> vertices) const
+{
+  uint result;
+  glGenBuffers(1, &result);
+  glBindBuffer(GL_ARRAY_BUFFER, result);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * vertices.size(), vertices.data(),
+               GL_STATIC_DRAW);
+  return result;
+}
+const uint Game::createIndexBuffer(const vector<uint> indices) const
+{
+  uint result;
+  glGenBuffers(1, &result);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, result);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indices.size(),
+               indices.data(), GL_STATIC_DRAW);
   return result;
 }
 
