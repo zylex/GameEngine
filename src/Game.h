@@ -1,45 +1,35 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <GLFW/glfw3.h>
-#include <vector>
-#include <glm/glm.hpp>
+#include <string>
+
+#ifdef DIRECT_X
+
+#include "DirectXGame.h"
+namespace zge
+{
+typedef dx::DirectXGame BaseGame;
+}
+
+// #elif OPEN_GL
+#else
+#include "OpenGLGame.h"
+namespace zge
+{
+typedef gl::OpenGLGame BaseGame;
+}
+
+#endif
 
 namespace zge
 {
-
-class Game
+class Game : public BaseGame
 {
 public:
-  // constructor
-  Game();
-  // destructor
+  Game(std::string);
   virtual ~Game() noexcept;
-  // copy constructor
-  Game(const Game& other);
-  // assignment operator
-  Game& operator=(const Game& other);
-  // move constructor (C++11)
-  Game(Game&& other) noexcept;
-  // move assignment operator (C++11)
-  Game& operator=(Game&& other) noexcept;
-
-  const int run();
-
-  static void error_callback(int, const char*);
-  static void key_callback(GLFWwindow*, int, int, int, int);
 
 private:
-  unsigned int m_worldMatrixLocation;
-  unsigned int m_shaderAttributeLocation;
-
-  const unsigned int createVertexBuffer(const std::vector<glm::vec3>) const;
-  const unsigned int createIndexBuffer(const std::vector<unsigned int>) const;
-
-  const unsigned int createVertexArray(const std::vector<glm::vec3>,
-                                       const std::vector<unsigned int>,
-                                       const unsigned int) const;
-  const unsigned int createInstanceBuffer(const std::vector<glm::mat4>) const;
 };
 
 } // namespace zge

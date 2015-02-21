@@ -1,11 +1,13 @@
-#include "OpenGLGame.h"
 #include <vector>
 #include <iostream>
 #include <GL/glew.h>
+#include "OpenGLGame.h"
 
-namespace zge {
+namespace zge
+{
 unsigned int compileShaders(const char* vertexShaderCode,
-                            const char* pixelShaderCode) {
+                            const char* pixelShaderCode)
+{
   GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
   GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
@@ -18,9 +20,11 @@ unsigned int compileShaders(const char* vertexShaderCode,
 
   // Check Vertex Shader
   glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
-  if (!Result) {
+  if (!Result)
+  {
     glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-    if (InfoLogLength > 0) {
+    if (InfoLogLength > 0)
+    {
       std::vector<char> VertexShaderErrorMessage(InfoLogLength + 1);
       glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL,
                          &VertexShaderErrorMessage[0]);
@@ -33,9 +37,11 @@ unsigned int compileShaders(const char* vertexShaderCode,
 
   // Check Fragment Shader
   glGetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &Result);
-  if (!Result) {
+  if (!Result)
+  {
     glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-    if (InfoLogLength > 0) {
+    if (InfoLogLength > 0)
+    {
       std::vector<char> FragmentShaderErrorMessage(InfoLogLength + 1);
       glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL,
                          &FragmentShaderErrorMessage[0]);
@@ -52,9 +58,11 @@ unsigned int compileShaders(const char* vertexShaderCode,
 
   // Check the program
   glGetProgramiv(ProgramID, GL_LINK_STATUS, &Result);
-  if (!Result) {
+  if (!Result)
+  {
     glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-    if (InfoLogLength > 0) {
+    if (InfoLogLength > 0)
+    {
       std::vector<char> ProgramErrorMessage(InfoLogLength + 1);
       glGetProgramInfoLog(ProgramID, InfoLogLength, NULL,
                           &ProgramErrorMessage[0]);

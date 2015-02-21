@@ -18,21 +18,26 @@
 
 #=============================================================================
 # Copyright 2012 Carsten Neumann
-#
+# 
 # Distributed under the OSI-approved BSD License (the "License");
 # see accompanying file Copyright.txt for details.
-#
+# 
 # This software is distributed WITHOUT ANY WARRANTY; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the License for more information.
 #=============================================================================
 # (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
+# 
+# edited by Zylex <zylex.stk@gmail.com> 2015
 
 # default search dirs
 SET(_glm_HEADER_SEARCH_DIRS
     "/usr/include"
-    "/usr/local/include")
+    "/usr/include/GL"
+    "/usr/local/include"
+    "$ENV{PROGRAMFILES}/glm/include"
+    "${OPENGL_INCLUDE_DIR}")
 
 # check environment variable
 SET(_glm_ENV_ROOT_DIR "$ENV{GLM_ROOT_DIR}")
