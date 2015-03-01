@@ -7,7 +7,8 @@
 #include "OpenGLGame.h"
 #include "OpenGLShader.h"
 #include "InterpolatedVS.h"
-#include "InterpolatedPS.h"
+#include "InterpolatedDepthPS.h"
+// #include "InterpolatedPS.h"
 
 namespace zge
 {
@@ -16,18 +17,23 @@ namespace gl
 using namespace glm;
 using namespace std;
 
+bool OpenGLGame::showDepth = false;
+
 OpenGLGame::OpenGLGame(std::string)
 {
+
   // constructor
 }
 
 OpenGLGame::~OpenGLGame() noexcept
 {
+
   // destructor
 }
 
 OpenGLGame::OpenGLGame(const OpenGLGame& other)
 {
+
   // copy constructor
 }
 
@@ -44,6 +50,7 @@ OpenGLGame& OpenGLGame::operator=(const OpenGLGame& rhs)
 
 OpenGLGame::OpenGLGame(OpenGLGame&& other) noexcept
 {
+
   // move constructor (C++11)
 }
 
@@ -90,8 +97,8 @@ const int OpenGLGame::run()
   glfwSetKeyCallback(window, OpenGLGame::key_callback);
 
   // glEnable(GL_MULTISAMPLE);
-  // glEnable(GL_DEPTH_TEST);
-  // glDepthFunc(GL_GREATER);
+  glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LESS);
   // glEnable(GL_BLEND);
   // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   // glEnable(GL_CULL_FACE);
@@ -106,15 +113,28 @@ const int OpenGLGame::run()
   vertices.push_back(vec3(1.0f, 1.0f, 0.0f));
   vertices.push_back(vec3(1.0f, -1.0f, 0.0f));
 
-  const uint programID = compileShaders(InterpolatedVS, InterpolatedPS);
+  const uint shadowShader = compileShader(InterpolatedVS);
+  glUseProgram(shadowShader);
+  m_worldMatrixShadowLocation =
+      glGetUniformLocation(shadowShader, "worldMatrix");
+  assert(m_worldMatrixShadowLocation != 0xFFFFFFFF);
+
+  const uint programID = compileShaders(InterpolatedVS, InterpolatedDepthPS);
   glUseProgram(programID);
   m_worldMatrixLocation = glGetUniformLocation(programID, "worldMatrix");
   assert(m_worldMatrixLocation != 0xFFFFFFFF);
+  m_showDepthPosition = glGetUniformLocation(programID, "showDepth");
+  assert(m_showDepthPosition != 0xFFFFFFFF);
+  m_depthMapPosition = glGetUniformLocation(programID, "depthMap");
+  assert(m_depthMapPosition != 0xFFFFFFFF);
+
+  glGenTextures(1, &m_depthMapTexture);
+  m_depthFramebuffer = createDepthBuffer(m_depthMapTexture);
 
   // create instance data
   uint instanceBuffer = createInstanceBuffer(vector<mat4>(4));
   std::vector<vec3> instancePositions({
-    vec3(-0.5f, -0.5f, 1.0f), vec3(0.5f, -0.5f, 0.0f), vec3(0.5f, 0.5f, 0.0f),
+    vec3(-0.5f, -0.5f, 0.0f), vec3(0.5f, -0.5f, 0.0f), vec3(0.5f, 0.5f, 0.0f),
     vec3(-0.5f, 0.5f, 0.0f),
   });
 
@@ -123,7 +143,7 @@ const int OpenGLGame::run()
 
   while (!glfwWindowShouldClose(window))
   {
-    glClear(GL_COLOR_BUFFER_BIT);
+    // prepare
     std::vector<mat4> instanceData(4);
 
     static float scale = 0.2f;
@@ -132,7 +152,6 @@ const int OpenGLGame::run()
     mat4 worldMatrix; // =
     // glm::scale(worldMatrix, vec3(sinf(scale), cosf(scale), atanf(scale)));
     worldMatrix = glm::scale(worldMatrix, vec3(scale, scale, scale));
-    glUniformMatrix4fv(m_worldMatrixLocation, 1, GL_TRUE, &worldMatrix[0][0]);
 
     static float translation = 0.0f;
     translation += 0.01f;
@@ -150,6 +169,36 @@ const int OpenGLGame::run()
     // update instance buffer
     glBufferData(GL_ARRAY_BUFFER, sizeof(mat4) * instanceData.size(),
                  instanceData.data(), GL_DYNAMIC_DRAW);
+
+    // depth pass
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_depthFramebuffer);
+    glUseProgram(shadowShader);
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    glUniformMatrix4fv(m_worldMatrixShadowLocation, 1, GL_TRUE,
+                       &worldMatrix[0][0]);
+
+    glBindVertexArray(objectBuffer);
+    glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 4);
+    glBindVertexArray(0);
+
+    // draw pass
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glUseProgram(programID);
+    // glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glUniformMatrix4fv(m_worldMatrixLocation, 1, GL_TRUE, &worldMatrix[0][0]);
+    if (OpenGLGame::showDepth)
+    {
+      glUniform1i(m_showDepthPosition, 1);
+    }
+    else
+    {
+      glUniform1i(m_showDepthPosition, 0);
+    }
+
+    glActiveTexture(m_depthMapPosition);
+    glBindTexture(GL_TEXTURE_2D, m_depthMapPosition);
 
     glBindVertexArray(objectBuffer);
     glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 4);
@@ -177,6 +226,7 @@ const int OpenGLGame::run()
 
 void OpenGLGame::error_callback(int error, const char* description)
 {
+
   cerr << description << endl;
 }
 
@@ -186,6 +236,17 @@ void OpenGLGame::key_callback(GLFWwindow* window, int key, int scancode,
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
   {
     glfwSetWindowShouldClose(window, GL_TRUE);
+  }
+  else if (key == GLFW_KEY_S && action == GLFW_RELEASE)
+  {
+    if (OpenGLGame::showDepth)
+    {
+      OpenGLGame::showDepth = false;
+    }
+    else
+    {
+      OpenGLGame::showDepth = true;
+    }
   }
 }
 

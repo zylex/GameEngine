@@ -34,7 +34,13 @@ public:
   static void key_callback(GLFWwindow*, int, int, int, int);
 
 private:
+  static bool showDepth;
   unsigned int m_worldMatrixLocation;
+  unsigned int m_worldMatrixShadowLocation;
+  unsigned int m_showDepthPosition;
+  unsigned int m_depthMapPosition;
+  unsigned int m_depthMapTexture;
+  unsigned int m_depthFramebuffer;
 
   const unsigned int createVertexArray(const std::vector<glm::vec3>,
                                        const std::vector<unsigned int>,

@@ -3,7 +3,7 @@
 
 #include <string>
 
-#ifdef DIRECT_X
+#ifdef MSVC
 
 #include "DirectXGame.h"
 namespace zge
@@ -11,8 +11,8 @@ namespace zge
 typedef dx::DirectXGame BaseGame;
 }
 
-// #elif OPEN_GL
-#else
+#elif __linux__ || __APPLE__
+// #else
 #include "OpenGLGame.h"
 namespace zge
 {

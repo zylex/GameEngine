@@ -5,6 +5,7 @@ namespace zge
 {
 
 unsigned int compileShaders(const char*, const char*);
+unsigned int compileShader(const char*);
 
 } // namespace zge
 
