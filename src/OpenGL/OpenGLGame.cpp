@@ -134,8 +134,8 @@ const int OpenGLGame::run()
   // create instance data
   uint instanceBuffer = createInstanceBuffer(vector<mat4>(4));
   std::vector<vec3> instancePositions({
-    vec3(-0.5f, -0.5f, 0.0f), vec3(0.5f, -0.5f, 0.0f), vec3(0.5f, 0.5f, 0.0f),
-    vec3(-0.5f, 0.5f, 0.0f),
+    vec3(-0.5f, -0.5f, 0.5f), vec3(0.5f, -0.5f, -0.5f), vec3(0.5f, 0.5f, 0.25f),
+    vec3(-0.5f, 0.5f, 0.75f),
   });
 
   uint objectBuffer = createVertexArray(
