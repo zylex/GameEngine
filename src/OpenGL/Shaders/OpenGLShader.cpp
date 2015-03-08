@@ -1,3 +1,5 @@
+#ifdef OPEN_GL
+
 #include <vector>
 #include <iostream>
 #include <GL/glew.h>
@@ -5,6 +7,10 @@
 
 namespace zge
 {
+
+namespace gl
+{
+
 unsigned int compileShaders(const char* vertexShaderCode,
                             const char* pixelShaderCode)
 {
@@ -126,4 +132,8 @@ unsigned int compileShader(const char* vertexShaderCode)
 
   return ProgramID;
 }
-}
+
+} // namespace gl
+} // namespace zge
+
+#endif

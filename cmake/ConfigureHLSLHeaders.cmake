@@ -3,7 +3,10 @@ IF(DIRECT_X)
         message(STATUS "Release build detected.")
         message(STATUS "Don't know how to configure shader headers for this platform: ${CMAKE_SYSTEM_NAME}.")
         # TODO: Implement using the microsoft compiler
+        # find fxc.exe and use the docs to set correct env vars
     ELSE()
+        # debug has nothing to do but define DEBUG for compiler
+        # create files taht compile the files to byte code
         message(STATUS "Configuring shader headers.")
         message(STATUS "Don't know how to configure shader headers for this platform: ${CMAKE_SYSTEM_NAME}.")
         # TODO: Implement

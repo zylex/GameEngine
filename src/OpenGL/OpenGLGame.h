@@ -34,6 +34,7 @@ public:
   static void key_callback(GLFWwindow*, int, int, int, int);
 
 private:
+  std::string m_applicationName;
   static bool showDepth;
   unsigned int m_worldMatrixLocation;
   unsigned int m_worldMatrixShadowLocation;

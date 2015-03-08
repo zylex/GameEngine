@@ -1,3 +1,4 @@
+#ifdef OPEN_GL
 #include <iostream>
 
 #include <GL/glew.h>
@@ -5,6 +6,7 @@
 #include <glm/gtx/transform.hpp>
 
 #include "OpenGLGame.h"
+#include "IGame.h"
 #include "OpenGLShader.h"
 #include "InterpolatedVS.h"
 #include "InterpolatedDepthPS.h"
@@ -19,9 +21,9 @@ using namespace std;
 
 bool OpenGLGame::showDepth = false;
 
-OpenGLGame::OpenGLGame(std::string)
+OpenGLGame::OpenGLGame(std::string applicationName)
 {
-
+  m_applicationName = applicationName;
   // constructor
 }
 
@@ -75,7 +77,14 @@ const int OpenGLGame::run()
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  GLFWwindow* window = glfwCreateWindow(800, 600, "Test GLFW", NULL, NULL);
+  if (!FULL_SCREEN)
+  {
+    SCREEN_WIDTH(WINDOWED_WIDTH);
+    SCREEN_HEIGHT(WINDOWED_HEIGHT);
+  }
+
+  GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH(), SCREEN_HEIGHT(),
+                                        m_applicationName.c_str(), NULL, NULL);
 
   if (!window)
   {
@@ -134,8 +143,8 @@ const int OpenGLGame::run()
   // create instance data
   uint instanceBuffer = createInstanceBuffer(vector<mat4>(4));
   std::vector<vec3> instancePositions({
-    vec3(-0.5f, -0.5f, 0.0f), vec3(0.5f, -0.5f, 0.0f), vec3(0.5f, 0.5f, 0.0f),
-    vec3(-0.5f, 0.5f, 0.0f),
+    vec3(-0.5f, -0.5f, 0.5f), vec3(0.5f, -0.5f, -0.5f), vec3(0.5f, 0.5f, 0.25f),
+    vec3(-0.5f, 0.5f, 0.75f),
   });
 
   uint objectBuffer = createVertexArray(
@@ -334,3 +343,5 @@ const uint OpenGLGame::createDepthBuffer(const uint textureId) const
 } // namespace gl
 
 } // namespace zge
+
+#endif
