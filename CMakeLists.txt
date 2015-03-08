@@ -1,10 +1,15 @@
-cmake_minimum_required (VERSION 3.1.2)
+#cmake_minimum_required (VERSION 3.1.2)
+cmake_minimum_required (VERSION 2.8.8)
 project (gameengine)
 
 #message(STATUS "Building: ${PROJECT_NAME}")
 
 # Use c++ 11
-SET(CMAKE_CXX_FLAGS "-std=c++11")
+SET(CMAKE_CXX_FLAGS "-std=c++11" CACHE INTERNAL "Set C++11 on" FORCE)
+SET(OPEN_GL FALSE CACHE BOOL "Use OpenGL")
+SET(DIRECT_X FALSE CACHE BOOL "Use DirectX")
+SET(USE_ANT FALSE CACHE BOOL "Use AntTweakBar")
+SET(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type (Debug, Release)")
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" )
 
