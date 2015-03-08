@@ -25,8 +25,6 @@ FOREACH(headerFile ${GAME_ENGINE_HEADERS})
 ENDFOREACH()
 list(REMOVE_DUPLICATES GAME_ENGINE_INCLUDE_DIRS)
 
-find_package(PkgConfig REQUIRED)
-
 find_package(GLM REQUIRED)
 IF(NOT GLM_FOUND)
     message(ERROR "GLM not found")
