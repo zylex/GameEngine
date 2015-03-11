@@ -6,7 +6,7 @@
 
 namespace zge {
 
-const char* loadFile(const std::string filepath) {
+const char* LoadFile(const std::string filepath) {
   std::string contents = "";
   std::ifstream filestream(filepath);
   if (filestream.is_open()) {

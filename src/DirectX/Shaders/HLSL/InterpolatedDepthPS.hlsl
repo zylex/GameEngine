@@ -8,12 +8,14 @@ cbuffer ShowDepth
 
 struct PixelInput
 {
+  float4 position : SV_POSITION;
   float4 pos : POS;
   float2 tex : TEXCOORD0;
 };
 
 float4 main(PixelInput input) : SV_Target
 {
+  float4 color;
   if (showDepth)
   {
     color = 1.0f - depthMap.Sample(pointClampSampler, input.tex.xy);
@@ -22,4 +24,5 @@ float4 main(PixelInput input) : SV_Target
   {
     color = input.pos;
   }
+  return color;
 }

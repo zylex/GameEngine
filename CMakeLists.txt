@@ -2,23 +2,22 @@
 cmake_minimum_required (VERSION 2.8.8)
 project (gameengine)
 
-#message(STATUS "Building: ${PROJECT_NAME}")
-
-# Use c++ 11
-SET(CMAKE_CXX_FLAGS "-std=c++11" CACHE INTERNAL "Set C++11 on" FORCE)
-SET(OPEN_GL FALSE CACHE BOOL "Use OpenGL")
-SET(DIRECT_X FALSE CACHE BOOL "Use DirectX")
-SET(USE_ANT FALSE CACHE BOOL "Use AntTweakBar")
-SET(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type (Debug, Release)")
+SET(CMAKE_CXX_FLAGS "")
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" )
+
+SET(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type (Debug, Release)")
+SET(TEST_DISABLED TRUE CACHE BOOL "Include Tests")
+
+SET(GAME_ENGINE_DEPENDENCIES "")
+
+include(DetectSystem)
 
 file(GLOB_RECURSE SRCS_ALL "src/*.cpp")
 file(GLOB_RECURSE GAME_ENGINE_HEADERS "src/*.h")
 
 list(APPEND SRCS_ALL ${GAME_ENGINE_HEADERS})
 
-#SET(GAME_ENGINE_INCLUDE_DIRS "")
 FOREACH(headerFile ${GAME_ENGINE_HEADERS})
     get_filename_component(dir ${headerFile} PATH)
     list(APPEND GAME_ENGINE_INCLUDE_DIRS ${dir})
@@ -27,23 +26,26 @@ list(REMOVE_DUPLICATES GAME_ENGINE_INCLUDE_DIRS)
 
 find_package(GLM REQUIRED)
 IF(NOT GLM_FOUND)
-    message(ERROR "GLM not found")
+    message(FATAL_ERROR "GLM not found")
 ENDIF()
 list(APPEND GAME_ENGINE_INCLUDE_DIRS ${GLM_INCLUDE_DIRS})
 list(APPEND GAME_ENGINE_LIBRARY_PATHS ${GLM_LIBRARIES})
 
 IF(CMAKE_BUILD_TYPE MATCHES Debug OR USE_ANT)
+    SET(USE_ANT TRUE CACHE BOOL "Use AntTweakBar")
     message(STATUS "Using AntTweakBar")
     add_definitions(-DUSE_ANT)
     # TODO: find ant
+ELSE()
+    SET(USE_ANT FALSE CACHE BOOL "Use AntTweakBar")
 ENDIF()
-
-include(DetectSystem)
 
 IF(DIRECT_X)
     include(ConfigureDirectXLibraries)
     include(ConfigureHLSLHeaders)
 ELSEIF(OPEN_GL)
+    # Use c++ 11
+    SET(CMAKE_CXX_FLAGS "-std=c++11" CACHE INTERNAL "Set C++11 on" FORCE)
     include(ConfigureOpenGLLibraries)
     include(ConfigureGLSLHeaders)
 ENDIF()
@@ -58,10 +60,22 @@ target_link_libraries(${PROJECT_NAME} ${GAME_ENGINE_LIBRARY_PATHS})
 
 target_include_directories (${PROJECT_NAME} PUBLIC ${GAME_ENGINE_INCLUDE_DIRS})
 
+IF(GAME_ENGINE_DEPENDENCIES)
+    IF(CMAKE_DEBUG_OUTPUT)
+        message(STATUS "deps: ${GAME_ENGINE_DEPENDENCIES}")
+    ENDIF()
+    add_dependencies(${PROJECT_NAME} ${GAME_ENGINE_DEPENDENCIES})
+ENDIF()
+
 #include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/DetectDistro.cmake")
 
 IF (NOT TEST_DISABLED AND NOT CMAKE_BUILD_TYPE MATCHES Release)
     add_subdirectory(test)
 ENDIF()
 
-#message(STATUS "Finished building: ${PROJECT_NAME}")
+SET(CMAKE_DEBUG_OUTPUT FALSE CACHE BOOL "Whether or not to show debug output for CMake.")
+
+IF(CMAKE_DEBUG_OUTPUT)
+    get_directory_property(DirDefs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} COMPILE_DEFINITIONS)
+    message(STATUS "Compile Defs: ${DirDefs}")
+ENDIF()

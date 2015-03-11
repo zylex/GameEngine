@@ -3,8 +3,9 @@
 
 #include <string>
 
-#ifdef MSVC
+#include "Preprocessors.h"
 
+#ifdef _MSC_VER
 #include "DirectXGame.h"
 namespace zge
 {

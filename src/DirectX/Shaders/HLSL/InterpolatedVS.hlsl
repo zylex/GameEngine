@@ -11,6 +11,7 @@ struct VertexInput
 
 struct PixelInput
 {
+  float4 position : SV_POSITION;
   float4 pos : POS;
   float2 tex : TEXCOORD0;
 };
@@ -20,7 +21,7 @@ PixelInput main(VertexInput input)
 {
   PixelInput output;
   output.pos = float4(clamp(input.position, 0.0, 1.0), 1.0);
-  SV_POSITION = float4(input.position, 1.0) * worldMatrix * input.instanceMatrix;
-  output.tex = SV_POSITION.xy;
+  output.position = mul(mul(float4(input.position, 1.0), worldMatrix), input.instanceMatrix);
+  output.tex = output.position.xy;
   return output;
 }
