@@ -28,7 +28,7 @@ class Game : public BaseGame
 {
 public:
   Game(std::string);
-  virtual ~Game() noexcept;
+  virtual ~Game() NOEXCEPT;
 
 private:
 };

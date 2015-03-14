@@ -2,7 +2,9 @@
 #define PREPROCESSORS_H
 
 #ifdef _MSC_VER
-#define noexcept
+#define NOEXCEPT
+#else
+#define NOEXCEPT noexcept
 #endif
 
 #ifndef __GNUC__
@@ -19,18 +21,18 @@
 #define xor_eq ^=
 #endif
 
-#define is ==
-#define is_not !=
+#define IS ==
+#define IS_NOT !=
 
 #define SAFE_DELETE(x)  \
-  if (x is_not nullptr) \
+  if (x IS_NOT nullptr) \
   {                     \
     delete x;           \
     x = nullptr;        \
   }
 
 #define SAFE_RELEASE(x)  \
-  if (x is_not nullptr) \
+  if (x IS_NOT nullptr) \
   {                     \
     x->Release();           \
     x = nullptr;        \

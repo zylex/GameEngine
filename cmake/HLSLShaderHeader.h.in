@@ -1,11 +1,10 @@
 #ifndef @file_name@_H
 #define @file_name@_H
 
-const SIZE_T @file_name@_size = 0;
+SIZE_T @file_name@_size = 0;
 
-const BYTE @file_name@[] = zge::CompileShader(
-    "@CMAKE_CURRENT_SOURCE_DIR@" +
-    "/src/DirectX/Shaders/HLSL/@file_name@.hlsl",
-    &@file_name@_size);
+const void* @file_name@ = zge::dx::CompileShader(
+    "@CMAKE_CURRENT_SOURCE_DIR@/src/DirectX/Shaders/HLSL/@file_name@.hlsl",
+    @file_name@_size);
 
 #endif

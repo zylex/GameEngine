@@ -1,26 +1,30 @@
 #ifdef DIRECT_X
 
+#include <glm/gtx/transform.hpp>
+
 #include "DirectXGame.h"
 #include "IGame.h"
+#include "DirectXShader.h"
+#include "InterpolatedVS.h"
+#include "DiscardPS.h"
+#include "InterpolatedDepthPS.h"
 
 namespace zge
 {
 namespace dx
 {
 
-using namespace std;
+bool DirectXGame::showDepth = false;
 
-DirectXGame::DirectXGame(string applicationName)
+DirectXGame::DirectXGame(std::string applicationName)
 {
   // constructor
 	m_applicationName = applicationName;
 }
 
-DirectXGame::~DirectXGame() noexcept
+DirectXGame::~DirectXGame() NOEXCEPT
 {
   // destructor
-  shutdownWindow();
-
   SAFE_RELEASE(m_instanceBuffer);
   SAFE_RELEASE(m_indexBuffer);
   SAFE_RELEASE(m_vertexBuffer);
@@ -33,6 +37,8 @@ DirectXGame::~DirectXGame() noexcept
   SAFE_RELEASE(m_deviceContext);
   SAFE_RELEASE(m_device);
   SAFE_RELEASE(m_swapChain);
+
+  shutdownWindow();
 }
 
 DirectXGame::DirectXGame(const DirectXGame& other)
@@ -43,7 +49,7 @@ DirectXGame::DirectXGame(const DirectXGame& other)
 DirectXGame& DirectXGame::operator=(const DirectXGame& rhs)
 {
   // assignement operator
-  if (this is &rhs)
+  if (this IS &rhs)
   {
     return *this;
   }
@@ -51,12 +57,12 @@ DirectXGame& DirectXGame::operator=(const DirectXGame& rhs)
   return *this;
 }
 
-DirectXGame::DirectXGame(DirectXGame&& other) noexcept
+DirectXGame::DirectXGame(DirectXGame&& other) NOEXCEPT
 {
   // move constructor (C++11)
 }
 
-DirectXGame& DirectXGame::operator=(DirectXGame&& other) noexcept
+DirectXGame& DirectXGame::operator=(DirectXGame&& other) NOEXCEPT
 {
   // move assignment operator (C++11)
   return *(new DirectXGame(other));
@@ -186,9 +192,9 @@ const bool DirectXGame::initialiseDirectX()
   unsigned int numerator, denominator;
   for (unsigned int i = 0; i < numModes; i++)
   {
-    if (displayModeList[i].Width is (unsigned int)SCREEN_WIDTH())
+    if (displayModeList[i].Width IS (unsigned int)SCREEN_WIDTH())
     {
-      if (displayModeList[i].Height is (unsigned int)SCREEN_HEIGHT())
+      if (displayModeList[i].Height IS (unsigned int)SCREEN_HEIGHT())
       {
         numerator = displayModeList[i].RefreshRate.Numerator;
         denominator = displayModeList[i].RefreshRate.Denominator;
@@ -471,22 +477,217 @@ const int DirectXGame::run()
   initialiseWindow();
   initialiseDirectX();
 
-  // create input layout
   // create shaders
-  // set shaders
-  // create buffers
+  ID3D11VertexShader* interpolatedVertexShader;
+  if (FAILED(m_device->CreateVertexShader(InterpolatedVS, InterpolatedVS_size, NULL, &interpolatedVertexShader)))
+  {
+    return EXIT_FAILURE;
+  }
 
-  vector<glm::vec3> vertices;
+  ID3D11PixelShader* discardPixelShader;
+  if (FAILED(m_device->CreatePixelShader(DiscardPS, DiscardPS_size, NULL, &discardPixelShader)))
+  {
+    return EXIT_FAILURE;
+  }
+
+  ID3D11PixelShader* interpolatedPixelShader;
+  if (FAILED(m_device->CreatePixelShader(InterpolatedDepthPS, InterpolatedDepthPS_size, NULL, &interpolatedPixelShader)))
+  {
+    return EXIT_FAILURE;
+  }
+
+  // create input layout
+  D3D11_INPUT_ELEMENT_DESC layoutDescription[] = {
+    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { "WORLD_MATRIX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+    { "WORLD_MATRIX", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+    { "WORLD_MATRIX", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+    { "WORLD_MATRIX", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 } };
+
+  ID3D11InputLayout* inputLayout;
+  if (FAILED(m_device->CreateInputLayout(layoutDescription, 5,
+    InterpolatedVS, InterpolatedVS_size, &inputLayout)))
+  {
+    return EXIT_FAILURE;
+  }
+
+#if defined(_DEBUG)
+  const char str_inputLayout[] = "InterpolatedVS inputLayout";
+  inputLayout->SetPrivateData(WKPDID_D3DDebugObjectName,
+    sizeof(str_inputLayout) - 1, str_inputLayout);
+#endif
+
+  // create buffers
+  D3D11_BUFFER_DESC constantBufferDescription;
+
+  constantBufferDescription.Usage = D3D11_USAGE_DYNAMIC;
+  constantBufferDescription.ByteWidth = sizeof(glm::mat4);
+  constantBufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+  constantBufferDescription.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+  constantBufferDescription.MiscFlags = 0;
+  constantBufferDescription.StructureByteStride = 0;
+
+  if (FAILED(m_device->CreateBuffer(&constantBufferDescription, NULL, &m_matrixBuffer)))
+  {
+    return EXIT_FAILURE;
+  }
+
+#if defined(_DEBUG)
+  const char str[] = "MatrixBuffer";
+  m_matrixBuffer->SetPrivateData(WKPDID_D3DDebugObjectName,
+    sizeof(str) - 1, str);
+#endif
+
+  constantBufferDescription.ByteWidth = 16;
+
+  if (FAILED(m_device->CreateBuffer(&constantBufferDescription, NULL, &m_showDepthBuffer)))
+  {
+    return EXIT_FAILURE;
+  }
+
+#if defined(_DEBUG)
+  const char ShowDepthBufferstr[] = "ShowDepthBuffer";
+  m_showDepthBuffer->SetPrivateData(WKPDID_D3DDebugObjectName,
+    sizeof(ShowDepthBufferstr) - 1, str);
+#endif
+
+  std::vector<glm::vec3> vertices;
   vertices.push_back(glm::vec3(-1.0f, -1.0f, 0.0f));
   vertices.push_back(glm::vec3(-1.0f, 1.0f, 0.0f));
   vertices.push_back(glm::vec3(1.0f, 1.0f, 0.0f));
   vertices.push_back(glm::vec3(1.0f, -1.0f, 0.0f));
 
-  //std::vector<unsigned int> indices;
+  m_vertexBuffer = createVertexBuffer(vertices);
+  if (not m_vertexBuffer)
+  {
+    return EXIT_FAILURE;
+  }
+  m_indexBuffer = createIndexBuffer({ 0, 1, 2, 2, 3, 0 });
+  m_instanceBuffer = createInstanceBuffer(4);
+
+  std::vector<glm::vec3> instancePositions({
+    glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec3(0.5f, -0.5f, 0.5f), glm::vec3(0.5f, 0.5f, 0.5f),
+    glm::vec3(-0.5f, 0.5f, 0.5f),
+  });
+
+  // needed to set the vertex and instance buffers
+  unsigned int stride[2];
+  stride[0] = sizeof(glm::vec3);
+  stride[1] = sizeof(glm::mat4);
+  unsigned int offset[2];
+  offset[0] = 0;
+  offset[1] = 0;
+  ID3D11Buffer* buf[2];
+  buf[0] = m_vertexBuffer;
+  buf[1] = m_instanceBuffer;
+
+  m_deviceContext->VSSetShader(interpolatedVertexShader, nullptr, 0);
+  m_deviceContext->PSSetShaderResources(0, 1, &m_depthMapTexture);
+
+  // loop
+  bool running = true;
+  while (running)
+  {
+    MSG msg;
+    if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+    {
+      TranslateMessage(&msg);
+      DispatchMessage(&msg);
+    }
+
+    if (msg.message == WM_QUIT)
+    {
+      running = false;
+    }
+    else
+    {
+      std::vector<glm::mat4> instanceData(4);
+
+      static float scale = 0.2f;
+      glm::mat4 worldMatrix;
+      worldMatrix = glm::scale(worldMatrix, glm::vec3(scale, scale, scale));
+
+      static float translation = 0.0f;
+      translation += 0.01f;
+      for (int i = 0; i < 4; ++i)
+      {
+        glm::mat4 instDat;
+        instDat = glm::translate(instDat, instancePositions[i]) *
+          glm::translate(instDat, glm::vec3(sinf(translation) * 0.2f * 1.4f,
+          cosf(translation) * 0.2f, 0.0f));
+        instanceData[i] = glm::transpose(instDat);
+      }
+
+      // set render target
+      m_deviceContext->PSSetShaderResources(0, 0, nullptr);
+      m_deviceContext->OMSetRenderTargets(0, nullptr, m_depthTarget);
+
+      // clear
+      m_deviceContext->ClearDepthStencilView(m_depthTarget, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+      // set shaders
+      //m_deviceContext->VSSetShader(interpolatedVertexShader, nullptr, 0);
+      m_deviceContext->PSSetShader(discardPixelShader, nullptr, 0);
+
+      // update buffers
+      D3D11_MAPPED_SUBRESOURCE mappedResource;
+      m_deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+      memcpy(mappedResource.pData, &worldMatrix, sizeof(glm::mat4));
+      m_deviceContext->Unmap(m_matrixBuffer, 0);
+      m_deviceContext->Map(m_showDepthBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+      memcpy(mappedResource.pData, &showDepth, sizeof(bool));
+      m_deviceContext->Unmap(m_showDepthBuffer, 0);
+
+      // set buffers
+      m_deviceContext->IASetInputLayout(inputLayout);
+      m_deviceContext->VSSetConstantBuffers(0, 1, &m_matrixBuffer);
+
+      m_deviceContext->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+      m_deviceContext->IASetVertexBuffers(0, 2, buf, stride, offset);
+
+      // draw
+      m_deviceContext->DrawIndexedInstanced(6, 4, 0, 0, 0);
 
 
+      // second pass
+      // set render target
+      m_deviceContext->OMSetRenderTargets(1, &m_backBuffer, nullptr);
 
-	return 0;
+      float clear[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+      // clear
+      m_deviceContext->ClearRenderTargetView(m_backBuffer, clear);
+
+      // set shaders
+      //m_deviceContext->VSSetShader(interpolatedVertexShader, nullptr, 0);
+      m_deviceContext->PSSetShader(interpolatedPixelShader, nullptr, 0);
+
+      // update buffers
+      m_deviceContext->Map(m_instanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+      memcpy(mappedResource.pData, instanceData.data(), sizeof(glm::mat4) * 4);
+      m_deviceContext->Unmap(m_instanceBuffer, 0);
+
+      // set buffers
+      m_deviceContext->IASetInputLayout(inputLayout);
+      m_deviceContext->VSSetConstantBuffers(0, 1, &m_matrixBuffer);
+
+      m_deviceContext->PSSetShaderResources(0, 1, &m_depthMapTexture);
+      m_deviceContext->PSSetConstantBuffers(0, 1, &m_showDepthBuffer);
+
+      m_deviceContext->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+      m_deviceContext->IASetVertexBuffers(0, 2, buf, stride, offset);
+
+      // draw
+      m_deviceContext->DrawIndexedInstanced(6, 4, 0, 0, 0);
+
+      m_swapChain->Present(1, 0);
+    }
+
+    // shut down?
+  }
+
+  return EXIT_SUCCESS;
 }
 
 LRESULT CALLBACK DirectXGame::MessageHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -511,7 +712,7 @@ LRESULT CALLBACK DirectXGame::MessageHandler(HWND hWnd, UINT message, WPARAM wPa
   case WM_KEYUP:
   {
     // for now, so that we can exit
-    if (wParam is VK_ESCAPE)
+    if (wParam IS VK_ESCAPE)
     {
       PostQuitMessage(0);
       return 0;

@@ -2,14 +2,14 @@
 #ifndef DIRECT_X_GAME_H
 #define DIRECT_X_GAME_H
 
-#pragma comment(lib, "dxgi.lib")
-#pragma comment(lib, "d3d11.lib")
-
 #include <string>
 #include <vector>
 
 #include <windows.h>
 #include <d3d11.h>
+
+#pragma comment(lib, "dxgi.lib")
+#pragma comment(lib, "d3d11.lib")
 
 #include <glm/glm.hpp>
 
@@ -25,15 +25,15 @@ public:
   // constructor
   DirectXGame(std::string);
   // destructor
-  virtual ~DirectXGame() noexcept;
+  virtual ~DirectXGame() NOEXCEPT;
   // copy constructor
   DirectXGame(const DirectXGame& other);
   // assignment operator
   DirectXGame& operator=(const DirectXGame& other);
   // move constructor (C++11)
-  DirectXGame(DirectXGame&& other) noexcept;
+  DirectXGame(DirectXGame&& other) NOEXCEPT;
   // move assignment operator (C++11)
-  DirectXGame& operator=(DirectXGame&& other) noexcept;
+  DirectXGame& operator=(DirectXGame&& other) NOEXCEPT;
 
   const int run();
 
@@ -59,6 +59,8 @@ private:
   ID3D11Buffer* m_vertexBuffer;
   ID3D11Buffer* m_indexBuffer;
   ID3D11Buffer* m_instanceBuffer;
+  ID3D11Buffer* m_matrixBuffer;
+  ID3D11Buffer* m_showDepthBuffer;
 
   static bool showDepth;
 

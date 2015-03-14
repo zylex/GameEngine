@@ -21,8 +21,6 @@ IF(DIRECT_X)
         ENDIF()
         message(STATUS "Creating HLSL shader header targets.")
         file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/shaders)
-        #SET(tmp ${CMAKE_BINARY_DIR})
-        #SET(CMAKE_BINARY_DIR ${CMAKE_BINARY_DIR}/shaders)
         file(GLOB_RECURSE shader_list src/*.hlsl)
         FOREACH(file_path ${shader_list})
             get_filename_component(file_name ${file_path} NAME_WE)
@@ -66,13 +64,11 @@ IF(DIRECT_X)
         add_custom_target(
             PreCompileShaders
             DEPENDS ${SHADER_HEADERS}
-            #SOURCES ${SHADER_HEADERS}
             COMMENT "Pre-compiling Shader files."
         )
 
         list(APPEND GAME_ENGINE_DEPENDENCIES PreCompileShaders)
 
-        #SET(CMAKE_BINARY_DIR ${tmp})
         list(APPEND GAME_ENGINE_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/shaders)
     ELSE()
         message(STATUS "Configuring shader headers.")
