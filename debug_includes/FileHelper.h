@@ -2,8 +2,9 @@
 #define FILE_HELPER_H
 
 #include <string>
-namespace zge {
-const char* loadFile(const std::string);
+namespace zge
+{
+const char* LoadFile(const std::string);
 }
 
 #endif

@@ -1,8 +1,8 @@
 IF(OPEN_GL)
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/shaders)
     IF(CMAKE_BUILD_TYPE MATCHES Release)
         message(STATUS "Release build detected.")
         message(STATUS "Creating GLSL shader header targets.")
-        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/shaders)
         SET(tmp ${CMAKE_BINARY_DIR})
         SET(CMAKE_BINARY_DIR ${CMAKE_BINARY_DIR}/shaders)
         add_executable(embedfile ${CMAKE_CURRENT_SOURCE_DIR}/cmake/embedfile.cpp)
@@ -27,8 +27,6 @@ IF(OPEN_GL)
         )
 
         list(APPEND GAME_ENGINE_DEPENDENCIES PreCompileShaders)
-
-        list(APPEND GAME_ENGINE_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/shaders)
     ELSE()
         message(STATUS "Configuring shader headers.")
         file(GLOB_RECURSE shader_list src/*.glsl)
@@ -37,11 +35,11 @@ IF(OPEN_GL)
             message(STATUS "-- Configuring header for ${file_name}.glsl.")
             configure_file (
                 "${CMAKE_CURRENT_SOURCE_DIR}/cmake/GLSLShaderHeader.h.in"
-                "${CMAKE_CURRENT_SOURCE_DIR}/debug_includes/${file_name}.h"
+                "${CMAKE_BINARY_DIR}/shaders/${file_name}.h"
             )
         ENDFOREACH()
         list(APPEND SRCS_ALL ${CMAKE_CURRENT_SOURCE_DIR}/debug_includes/FileHelper.cpp)
         list(APPEND SRCS_ALL ${CMAKE_CURRENT_SOURCE_DIR}/debug_includes/FileHelper.h)
-        list(APPEND GAME_ENGINE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/debug_includes)
     ENDIF()
+    list(APPEND GAME_ENGINE_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/shaders)
 ENDIF()

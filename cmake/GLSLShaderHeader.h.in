@@ -4,7 +4,7 @@
 #include "FileHelper.h"
 
 const char* @file_name@ = zge::LoadFile(
-    "@CMAKE_CURRENT_SOURCE_DIR@" +
+    "@CMAKE_CURRENT_SOURCE_DIR@"
     "/src/OpenGL/Shaders/GLSL/@file_name@.glsl");
 
 #endif

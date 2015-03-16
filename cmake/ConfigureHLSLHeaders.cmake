@@ -1,4 +1,5 @@
 IF(DIRECT_X)
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/shaders)
     IF(CMAKE_BUILD_TYPE MATCHES Release)
         message(STATUS "Release build detected.")
         message(STATUS "Searching for fxc.exe...")
@@ -20,7 +21,6 @@ IF(DIRECT_X)
             message(STATUS "Found fxc.exe with path: ${FXC}")
         ENDIF()
         message(STATUS "Creating HLSL shader header targets.")
-        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/shaders)
         file(GLOB_RECURSE shader_list src/*.hlsl)
         FOREACH(file_path ${shader_list})
             get_filename_component(file_name ${file_path} NAME_WE)
@@ -68,8 +68,6 @@ IF(DIRECT_X)
         )
 
         list(APPEND GAME_ENGINE_DEPENDENCIES PreCompileShaders)
-
-        list(APPEND GAME_ENGINE_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/shaders)
     ELSE()
         message(STATUS "Configuring shader headers.")
         file(GLOB_RECURSE shader_list src/*.hlsl)
@@ -78,9 +76,9 @@ IF(DIRECT_X)
             message(STATUS "-- Configuring header for ${file_name}.hlsl.")
             configure_file (
                 "${CMAKE_CURRENT_SOURCE_DIR}/cmake/HLSLShaderHeader.h.in"
-                "${CMAKE_CURRENT_SOURCE_DIR}/debug_includes/${file_name}.h"
+                "${CMAKE_BINARY_DIR}/shaders/${file_name}.h"
             )
         ENDFOREACH()
-        list(APPEND GAME_ENGINE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/debug_includes)
     ENDIF()
+    list(APPEND GAME_ENGINE_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/shaders)
 ENDIF()
