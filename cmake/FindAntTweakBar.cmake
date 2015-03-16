@@ -11,7 +11,7 @@ FIND_PATH( TW_INCLUDE_DIR
         "The directory where AntTweakBar.h resides"
 )
 
-FIND_LIBRARY( TW_LIBRARY
+FIND_LIBRARY( TW_LIBRARIES
     NAMES 
         AntTweakBar
         AntTweakBar64
