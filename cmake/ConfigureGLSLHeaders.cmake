@@ -13,7 +13,7 @@ IF(OPEN_GL)
             list(APPEND SHADER_HEADERS ${CMAKE_BINARY_DIR}/shaders/${file_name}.h)
             add_custom_command(
                 OUTPUT ${CMAKE_BINARY_DIR}/shaders/${file_name}.h
-                COMMAND embedfile ${file_name} ${file_path} ${CMAKE_BINARY_DIR}/${file_name}.h
+                COMMAND embedfile ${file_name} ${file_path} ${CMAKE_BINARY_DIR}/shaders/${file_name}.h
                 DEPENDS ${file_path}
                 IMPLICIT_DEPENDS embedfile
             )
@@ -40,6 +40,7 @@ IF(OPEN_GL)
         ENDFOREACH()
         list(APPEND SRCS_ALL ${CMAKE_CURRENT_SOURCE_DIR}/debug_includes/FileHelper.cpp)
         list(APPEND SRCS_ALL ${CMAKE_CURRENT_SOURCE_DIR}/debug_includes/FileHelper.h)
+        list(APPEND GAME_ENGINE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/debug_includes)
     ENDIF()
     list(APPEND GAME_ENGINE_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/shaders)
 ENDIF()
