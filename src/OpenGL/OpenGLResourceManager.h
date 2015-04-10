@@ -18,8 +18,6 @@ private:
   unsigned instanceBufferId;
 
   unsigned samplers[TOTAL_SAMPLERS];
-  // unordered_map<std::string, unsigned> texturesWithSamplers;
-  //                 programId list of bufferIds
   std::unordered_map<unsigned, std::vector<unsigned> > uniformBuffers;
 
 public:
@@ -56,9 +54,6 @@ public:
                                     const std::vector<unsigned>);
   const unsigned* getSamplers() const;
 
-  // const unsigned getTextureWithSampler(const unsigned textureId,
-  //                                      const unsigned samplerId);
-
   const bool createSamplers();
 
   const std::vector<unsigned> getUniformBuffers(const unsigned programId);
@@ -71,9 +66,6 @@ public:
 private:
   // constructor
   OpenGLResourceManager();
-
-  // const std::string getTextureWithSamplerKey(const unsigned textureId,
-  // const unsigned samplerId);
 };
 
 } // namespace gl

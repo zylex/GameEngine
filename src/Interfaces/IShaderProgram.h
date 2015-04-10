@@ -5,7 +5,7 @@
 
 namespace zge
 {
-
+// forward declarations
 class IGameObject;
 
 class IShaderProgram

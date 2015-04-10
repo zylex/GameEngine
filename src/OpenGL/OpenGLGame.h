@@ -7,24 +7,17 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-#include "AbstractGame.h"
+#include "Game.h"
 
 namespace zge
 {
 namespace gl
 {
 
-class OpenGLGame : public AbstractGame
+class OpenGLGame : public Game
 {
 private:
   GLFWwindow* window;
-
-  unsigned _worldMatrixLocation;
-  unsigned _worldMatrixShadowLocation;
-  unsigned _showDepthPosition;
-  unsigned _depthMapPosition;
-  unsigned _depthMapTexture;
-  unsigned _depthFramebuffer;
 
 public:
   static OpenGLGame* getInstance();
@@ -41,10 +34,7 @@ public:
 
   const bool initialise();
 
-  // const int run();
   void frame();
-
-  const int run2();
 
   GLFWwindow* getWindow() const;
 
@@ -52,12 +42,9 @@ public:
 
   static bool showDepth;
 
-  static void key_callback(GLFWwindow*, int, int, int, int);
-
 private:
   // constructor
   OpenGLGame();
-  bool init();
   const bool initialiseOpenGLWindow();
 };
 

@@ -53,6 +53,7 @@ public:
 
   virtual void setOutput(const unsigned outputId) = 0;
 
+  // TODO: implement state changing methods (depth/culling etc)
   virtual void enableDepth() = 0;
   // virtual void enableReadDepth() = 0;
   // virtual void enableWriteDepth() = 0;

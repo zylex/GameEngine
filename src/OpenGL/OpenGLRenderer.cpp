@@ -3,10 +3,6 @@
 #include <iostream>
 #include <GL/glew.h>
 
-// #if defined(_DEBUG) || defined(DEBUG) || defined(NDEBUG)
-// #include <glm/gtx/string_cast.hpp>
-// #endif
-
 #include "IGame.h"
 #include "DepthState.h"
 
@@ -127,17 +123,6 @@ void OpenGLRenderer::executeInstancedShader(
     const unsigned long instanceDataUnitByteSize,
     const unsigned numberOfInstances)
 {
-  // #if defined(_DEBUG) || defined(DEBUG) || defined(NDEBUG)
-  //   glm::mat4* data = (glm::mat4*)instanceDataArray;
-  //   std::cout << std::endl;
-  //   std::cout << "Frame instance data from OpenGLRenderer:" << std::endl;
-  //   for (int i = 0; i < numberOfInstances; ++i)
-  //   {
-  //     std::cout << glm::to_string(*(data + i)) << std::endl;
-  //   }
-  //   std::cout << std::endl;
-  //   std::cout << std::endl;
-  // #endif
   IResourceManager* resourceManager = IResourceManager::getInstance();
   std::pair<unsigned, unsigned> meshIndexCount =
       resourceManager->getIndexCount(meshId);

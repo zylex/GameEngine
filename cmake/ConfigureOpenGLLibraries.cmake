@@ -9,6 +9,7 @@ IF(OPEN_GL)
     list(APPEND GAME_ENGINE_LIBRARY_PATHS ${OPENGL_LIBRARIES})
 
     # TODO: change to epoxy instead of glew (resolve issues)
+    # epoxy works better on other platforms
     find_package(GLEW REQUIRED)
     if(NOT GLEW_FOUND)
         message(FATAL_ERROR "GLEW not found")

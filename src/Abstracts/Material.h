@@ -15,10 +15,10 @@ private:
 public:
   virtual ~Material() NOEXCEPT = default;
 
-  void setTextureId(unsigned);
-  unsigned getTextureId();
-  void setShininess(unsigned);
-  unsigned getShininess();
+  void setTextureId(const unsigned);
+  const unsigned getTextureId() const;
+  void setShininess(const unsigned);
+  const unsigned getShininess() const;
 };
 
 } // namespace zge

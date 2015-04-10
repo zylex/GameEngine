@@ -57,7 +57,6 @@ unsigned int compileShaders(const char* vertexShaderCode,
   }
 
   // Link the program
-  // printf("Linking program\n");
   GLuint ProgramID = glCreateProgram();
   glAttachShader(ProgramID, VertexShaderID);
   glAttachShader(ProgramID, FragmentShaderID);
@@ -133,6 +132,7 @@ unsigned int compileShader(const char* vertexShaderCode)
 }
 
 } // namespace gl
+
 } // namespace zge
 
 #endif

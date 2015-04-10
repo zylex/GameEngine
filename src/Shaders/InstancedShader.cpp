@@ -111,11 +111,4 @@ void InstancedShader<I, D, F, S>::updateData(
   }
 }
 
-// template <typename I, typename D, typename F, typename S>
-// InstancedShader<I, D, F, S>::InstanceFinder::InstanceFinder(
-//     MeshObject* gameObject)
-//     : instance(gameObject)
-// {
-// }
-
 } // namespace zge

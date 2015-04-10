@@ -40,7 +40,7 @@ void ShaderProgram::prepare()
 
 void ShaderProgram::finish()
 {
-  // TODO: implement finish
+  // TODO: implement finish or remove it
 }
 
 void ShaderProgram::setOutputId(const unsigned outputId)

@@ -5,7 +5,7 @@
 
 namespace zge
 {
-
+// forward declarations
 class IMaterial
 {
 public:

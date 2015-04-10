@@ -5,7 +5,7 @@
 
 namespace zge
 {
-
+// forward declarations
 class IInputManager
 {
 public:
@@ -14,9 +14,8 @@ public:
   static IInputManager* getInstance();
   virtual const bool clear() = 0;
   virtual const bool enableKeyboard() = 0;
-  // virtual const bool disableKeyboard() = 0;
   virtual const bool enableMouse() = 0;
-  // virtual const bool disableMouse() = 0;
+  // TODO: implement other inputs
   // virtual const bool enableTouch() = 0;
   // virtual const bool enableGamepad() = 0;
 };

@@ -9,19 +9,8 @@ const bool InputManager::enableKeyboard()
   return this->keyboardEnabled = true;
 }
 
-// bool InputManager::disableKeyboard()
-// {
-//   this->keyboardEnabled = false;
-//   return true;
-// }
-
 const bool InputManager::enableMouse() { return this->mouseEnabled = true; }
 
-// bool InputManager::disableMouse()
-// {
-//   this->mouseEnabled = false;
-//   return true;
-// }
 void InputManager::setKeyboardEnabled(const bool keyboardEnabled)
 {
   this->keyboardEnabled = keyboardEnabled;

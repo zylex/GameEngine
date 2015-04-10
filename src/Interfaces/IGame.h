@@ -22,8 +22,8 @@ const glm::vec4 CLEAR_COLOR = { 0.0f, 0.0f, 0.0f, 1.0f };
 const int SCREEN_WIDTH(const int = 0);
 const int SCREEN_HEIGHT(const int = 0);
 
+// forward declarations
 class IGameState;
-// class IRenderer;
 
 class IGame
 {
@@ -41,7 +41,6 @@ public:
   virtual void addGameState(const int gameStateId, IGameState* gameState) = 0;
   virtual void setNextState(const int gameStateId) = 0;
   virtual IGameState* getCurrentGameState() const = 0;
-  // virtual IRenderer* getRenderer() = 0;
 };
 
 } // namespace zge

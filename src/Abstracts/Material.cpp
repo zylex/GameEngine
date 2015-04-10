@@ -3,12 +3,18 @@
 namespace zge
 {
 
-void Material::setTextureId(unsigned textureId) { _textureId = textureId; }
+void Material::setTextureId(const unsigned textureId)
+{
+  _textureId = textureId;
+}
 
-unsigned Material::getTextureId() { return _textureId; }
+const unsigned Material::getTextureId() const { return _textureId; }
 
-void Material::setShininess(unsigned shininess) { _shininess = shininess; }
+void Material::setShininess(const unsigned shininess)
+{
+  _shininess = shininess;
+}
 
-unsigned Material::getShininess() { return _shininess; }
+const unsigned Material::getShininess() const { return _shininess; }
 
 } // namespace zge

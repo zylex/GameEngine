@@ -20,9 +20,7 @@ public:
   virtual ~InputManager() NOEXCEPT = default;
 
   const bool enableKeyboard();
-  // bool disableKeyboard();
   const bool enableMouse();
-  // bool disableMouse();
   void setKeyboardEnabled(const bool);
   const bool keyboardIsEnabled();
   void setMouseEnabled(const bool);

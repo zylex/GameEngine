@@ -5,15 +5,13 @@
 
 #include "Preprocessors.h"
 
-// #include "Dirty.h"
-
 namespace zge
 {
-
+// forward declarations
 class IMesh;
 class IMaterial;
 
-class IGameObject // : public Dirty
+class IGameObject
 {
 public:
   virtual ~IGameObject() NOEXCEPT = default;

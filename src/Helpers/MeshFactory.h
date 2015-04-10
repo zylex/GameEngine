@@ -11,9 +11,9 @@ namespace zge
 class MeshFactory
 {
 private:
-  std::vector<glm::vec3> m_vertices;
-  std::vector<glm::vec3> m_normals;
-  std::vector<glm::uvec3> m_indices;
+  std::vector<glm::vec3> vertices;
+  std::vector<glm::vec3> normals;
+  std::vector<glm::uvec3> indices;
   // MAYBE: Tangents/Bi-tangents?
 
 public:

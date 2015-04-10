@@ -5,7 +5,7 @@
 
 namespace zge
 {
-
+// forward declarations
 struct Event;
 class IGameObject;
 class Camera;
@@ -18,7 +18,6 @@ public:
 
   virtual bool initialise() = 0;
   virtual void update() = 0;
-  // virtual void draw() = 0;
 
   virtual void setCurrentCamera(Camera* camera) = 0;
   virtual Camera* getCurrentCamera() const = 0;
