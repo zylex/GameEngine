@@ -3,7 +3,7 @@
 namespace zge
 {
 
-Game::Game(std::string applicationName) : BaseGame(applicationName) {}
+// Game::Game(std::string applicationName) : BaseGame(applicationName) {}
 
 Game::~Game() NOEXCEPT {}
 

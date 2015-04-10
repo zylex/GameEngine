@@ -1,7 +1,7 @@
-Texture2D depthMap : t0;
-SamplerState pointClampSampler : s0;
+Texture2D depthMap : register(t2);
+SamplerState pointClampSampler : register(s0);
 
-cbuffer ShowDepth
+cbuffer ShowDepth : register(b1)
 {
   bool showDepth;
 };

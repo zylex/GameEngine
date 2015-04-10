@@ -7,16 +7,27 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
+#include "AbstractGame.h"
+
 namespace zge
 {
 namespace gl
 {
 
-class OpenGLGame
+class OpenGLGame : public AbstractGame
 {
+private:
+  GLFWwindow* window;
+
+  unsigned _worldMatrixLocation;
+  unsigned _worldMatrixShadowLocation;
+  unsigned _showDepthPosition;
+  unsigned _depthMapPosition;
+  unsigned _depthMapTexture;
+  unsigned _depthFramebuffer;
+
 public:
-  // constructor
-  OpenGLGame(std::string);
+  static OpenGLGame* getInstance();
   // destructor
   virtual ~OpenGLGame() noexcept;
   // copy constructor
@@ -28,30 +39,30 @@ public:
   // move assignment operator (C++11)
   OpenGLGame& operator=(OpenGLGame&& other) noexcept;
 
-  const int run();
+  const bool initialise();
+
+  // const int run();
+  void frame();
+
+  const int run2();
+
+  GLFWwindow* getWindow() const;
 
   static void error_callback(int, const char*);
+
+  static bool showDepth;
+
   static void key_callback(GLFWwindow*, int, int, int, int);
 
 private:
-  std::string m_applicationName;
-  static bool showDepth;
-  unsigned int m_worldMatrixLocation;
-  unsigned int m_worldMatrixShadowLocation;
-  unsigned int m_showDepthPosition;
-  unsigned int m_depthMapPosition;
-  unsigned int m_depthMapTexture;
-  unsigned int m_depthFramebuffer;
-
-  const unsigned int createVertexArray(const std::vector<glm::vec3>,
-                                       const std::vector<unsigned int>,
-                                       const unsigned int) const;
-  const unsigned int createInstanceBuffer(const std::vector<glm::mat4>) const;
-
-  const unsigned int createDepthBuffer(const unsigned int) const;
+  // constructor
+  OpenGLGame();
+  bool init();
+  const bool initialiseOpenGLWindow();
 };
 
 } // namespace gl
+
 } // namespace zge
 
 #endif

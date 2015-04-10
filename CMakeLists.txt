@@ -8,11 +8,17 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" )
 
 SET(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type (Debug, Release)")
 SET(TEST_DISABLED TRUE CACHE BOOL "Include Tests")
+SET(REMOVE_SRCS FALSE CACHE BOOL "Remove unsued source files (Direct X or OpenGL)")
+SET(USE_ANT FALSE CACHE BOOL "Use AntTweakBar")
 
 SET(GAME_ENGINE_DEPENDENCIES "")
 
 include(DetectSystem)
 
+set(SRCS_ALL "")
+list(APPEND SRCS_ALL "")
+set(GAME_ENGINE_HEADERS "")
+list(APPEND GAME_ENGINE_HEADERS "")
 file(GLOB_RECURSE SRCS_ALL "src/*.cpp")
 file(GLOB_RECURSE GAME_ENGINE_HEADERS "src/*.h")
 
@@ -31,16 +37,22 @@ ENDIF()
 list(APPEND GAME_ENGINE_INCLUDE_DIRS ${GLM_INCLUDE_DIRS})
 list(APPEND GAME_ENGINE_LIBRARY_PATHS ${GLM_LIBRARIES})
 
-IF(CMAKE_BUILD_TYPE MATCHES Debug OR USE_ANT)
+IF(CMAKE_BUILD_TYPE MATCHES Debug)
+    add_definitions(-DDEBUG)
     SET(USE_ANT TRUE CACHE BOOL "Use AntTweakBar")
+ELSE()
+    SET(USE_ANT FALSE CACHE BOOL "Use AntTweakBar")
+ENDIF()
+
+IF(USE_ANT)
     message(STATUS "Using AntTweakBar")
     add_definitions(-DUSE_ANT)
     find_package(AntTweakBar REQUIRED)
     IF(NOT TW_FOUND)
         message(FATAL_ERROR "AntTweakBar not found")
     ENDIF()
-ELSE()
-    SET(USE_ANT FALSE CACHE BOOL "Use AntTweakBar")
+    list(APPEND GAME_ENGINE_INCLUDE_DIRS ${TW_INCLUDE_DIRS})
+    list(APPEND GAME_ENGINE_LIBRARY_PATHS ${TW_LIBRARIES})
 ENDIF()
 
 IF(DIRECT_X)
@@ -70,7 +82,8 @@ IF(GAME_ENGINE_DEPENDENCIES)
     add_dependencies(${PROJECT_NAME} ${GAME_ENGINE_DEPENDENCIES})
 ENDIF()
 
-IF (NOT TEST_DISABLED AND NOT CMAKE_BUILD_TYPE MATCHES Release)
+IF(NOT TEST_DISABLED AND NOT CMAKE_BUILD_TYPE MATCHES Release)
+    message(STATUS "Adding tests subdirectory.")
     add_subdirectory(test)
 ENDIF()
 

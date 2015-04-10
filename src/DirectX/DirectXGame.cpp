@@ -19,24 +19,24 @@ bool DirectXGame::showDepth = false;
 DirectXGame::DirectXGame(std::string applicationName)
 {
   // constructor
-	m_applicationName = applicationName;
+  _applicationName = applicationName;
 }
 
 DirectXGame::~DirectXGame() NOEXCEPT
 {
   // destructor
-  SAFE_RELEASE(m_instanceBuffer);
-  SAFE_RELEASE(m_indexBuffer);
-  SAFE_RELEASE(m_vertexBuffer);
-  SAFE_RELEASE(m_sampler);
-  SAFE_RELEASE(m_backBuffer);
-  SAFE_RELEASE(m_depthTarget);
-  SAFE_RELEASE(m_depthMapTexture);
-  //SAFE_RELEASE(m_depthOff);
-  SAFE_RELEASE(m_depthDefault);
-  SAFE_RELEASE(m_deviceContext);
-  SAFE_RELEASE(m_device);
-  SAFE_RELEASE(m_swapChain);
+  SAFE_RELEASE(_instanceBuffer);
+  SAFE_RELEASE(_indexBuffer);
+  SAFE_RELEASE(_vertexBuffer);
+  SAFE_RELEASE(_sampler);
+  SAFE_RELEASE(_backBuffer);
+  SAFE_RELEASE(_depthTarget);
+  SAFE_RELEASE(_depthMapTexture);
+  // SAFE_RELEASE(_depthOff);
+  SAFE_RELEASE(_depthDefault);
+  SAFE_RELEASE(_deviceContext);
+  SAFE_RELEASE(_device);
+  SAFE_RELEASE(_swapChain);
 
   shutdownWindow();
 }
@@ -49,7 +49,7 @@ DirectXGame::DirectXGame(const DirectXGame& other)
 DirectXGame& DirectXGame::operator=(const DirectXGame& rhs)
 {
   // assignement operator
-  if (this IS &rhs)
+  if (this IS & rhs)
   {
     return *this;
   }
@@ -70,37 +70,38 @@ DirectXGame& DirectXGame::operator=(DirectXGame&& other) NOEXCEPT
 
 const bool DirectXGame::initialiseWindow()
 {
-  // TODO: Error handling and return false.
+  // FIXME: Error handling and return false.
   // adapted from rastertek.com
   int width, height;
   WNDCLASSEX windowClass;
   DEVMODE screenSettings;
   int posX, posY;
 
-  m_hinstance = GetModuleHandle(NULL);
+  _hinstance = GetModuleHandle(NULL);
 
-  std::wstring stemp = std::wstring(m_applicationName.begin(), m_applicationName.end());
+  std::wstring stemp =
+      std::wstring(_applicationName.begin(), _applicationName.end());
 
   // Setup the windows class with default settings.
   windowClass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
   windowClass.lpfnWndProc = DirectXGame::MessageHandler;
   windowClass.cbClsExtra = 0;
   windowClass.cbWndExtra = 0;
-  windowClass.hInstance = m_hinstance;
+  windowClass.hInstance = _hinstance;
   windowClass.hIcon = LoadIcon(NULL, IDI_WINLOGO);
   windowClass.hIconSm = windowClass.hIcon;
   windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
   windowClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
   windowClass.lpszMenuName = NULL;
-  windowClass.lpszClassName = m_applicationName.c_str();
+  windowClass.lpszClassName = _applicationName.c_str();
   windowClass.cbSize = sizeof(WNDCLASSEX);
 
   // Register the window class.
   RegisterClassEx(&windowClass);
 
-  // Determine the resolution of the clients desktop screen.
-  width = GetSystemMetrics(SM_CXSCREEN);
-  height = GetSystemMetrics(SM_CYSCREEN);
+  // Determine the resolution of the client's desktop screen.
+  width = GetSystemMetrics(S_CXSCREEN);
+  height = GetSystemMetrics(S_CYSCREEN);
 
   // Setup the screen settings depending on whether it is running in full screen
   // or in windowed mode.
@@ -113,7 +114,7 @@ const bool DirectXGame::initialiseWindow()
     screenSettings.dmPelsWidth = (unsigned long)width;
     screenSettings.dmPelsHeight = (unsigned long)height;
     screenSettings.dmBitsPerPel = 32;
-    screenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+    screenSettings.dmFields = D_BITSPERPEL | D_PELSWIDTH | D_PELSHEIGHT;
 
     // Change the display settings to full screen.
     ChangeDisplaySettings(&screenSettings, CDS_FULLSCREEN);
@@ -128,22 +129,23 @@ const bool DirectXGame::initialiseWindow()
     height = WINDOWED_HEIGHT;
 
     // Place the window in the middle of the screen.
-    posX = (GetSystemMetrics(SM_CXSCREEN) - width) / 2;
-    posY = (GetSystemMetrics(SM_CYSCREEN) - height) / 2;
+    posX = (GetSystemMetrics(S_CXSCREEN) - width) / 2;
+    posY = (GetSystemMetrics(S_CYSCREEN) - height) / 2;
   }
 
   SCREEN_WIDTH(width);
   SCREEN_HEIGHT(height);
 
   // Create the window with the screen settings and get the handle to it.
-  m_hwnd = CreateWindowEx(WS_EX_APPWINDOW, m_applicationName.c_str(), m_applicationName.c_str(),
-                          WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP, posX,
-                          posY, width, height, NULL, NULL, m_hinstance, NULL);
+  _hwnd = CreateWindowEx(WS_EX_APPWINDOW, _applicationName.c_str(),
+                         _applicationName.c_str(),
+                         WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP, posX,
+                         posY, width, height, NULL, NULL, _hinstance, NULL);
 
   // Bring the window up on the screen and set it as main focus.
-  ShowWindow(m_hwnd, SW_SHOW);
-  SetForegroundWindow(m_hwnd);
-  SetFocus(m_hwnd);
+  ShowWindow(_hwnd, SW_SHOW);
+  SetForegroundWindow(_hwnd);
+  SetFocus(_hwnd);
 
   // Hide the mouse cursor.
   // ShowCursor(false);
@@ -175,7 +177,7 @@ const bool DirectXGame::initialiseDirectX()
 
   unsigned int numModes;
   if (FAILED(adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM,
-                                               DXGI_ENUM_MODES_INTERLACED,
+                                               DXGI_ENU_MODES_INTERLACED,
                                                &numModes, NULL)))
   {
     return false;
@@ -183,7 +185,7 @@ const bool DirectXGame::initialiseDirectX()
 
   DXGI_MODE_DESC* displayModeList = new DXGI_MODE_DESC[numModes];
   if (FAILED(adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM,
-                                               DXGI_ENUM_MODES_INTERLACED,
+                                               DXGI_ENU_MODES_INTERLACED,
                                                &numModes, displayModeList)))
   {
     return false;
@@ -192,9 +194,9 @@ const bool DirectXGame::initialiseDirectX()
   unsigned int numerator, denominator;
   for (unsigned int i = 0; i < numModes; i++)
   {
-    if (displayModeList[i].Width IS (unsigned int)SCREEN_WIDTH())
+    if (displayModeList[i].Width IS(unsigned int)SCREEN_WIDTH())
     {
-      if (displayModeList[i].Height IS (unsigned int)SCREEN_HEIGHT())
+      if (displayModeList[i].Height IS(unsigned int)SCREEN_HEIGHT())
       {
         numerator = displayModeList[i].RefreshRate.Numerator;
         denominator = displayModeList[i].RefreshRate.Denominator;
@@ -238,7 +240,7 @@ const bool DirectXGame::initialiseDirectX()
 
   swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
-  swapChainDesc.OutputWindow = m_hwnd;
+  swapChainDesc.OutputWindow = _hwnd;
 
   swapChainDesc.SampleDesc.Count = 1;
   swapChainDesc.SampleDesc.Quality = 0;
@@ -264,31 +266,31 @@ const bool DirectXGame::initialiseDirectX()
 
   if (FAILED(D3D11CreateDeviceAndSwapChain(
           NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, &featureLevel, 1,
-          D3D11_SDK_VERSION, &swapChainDesc, &m_swapChain, &m_device, NULL,
-          &m_deviceContext)))
+          D3D11_SDK_VERSION, &swapChainDesc, &_swapChain, &_device, NULL,
+          &_deviceContext)))
   {
     return false;
   }
 
 #if defined(_DEBUG)
   const char str_Swap[] = "Swap Chain";
-  m_swapChain->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof(str_Swap) - 1,
-                              str_Swap);
+  _swapChain->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof(str_Swap) - 1,
+                             str_Swap);
 
-  const char strm_device[] = "Device";
-  m_device->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof(strm_device) - 1,
-                           strm_device);
+  const char str_device[] = "Device";
+  _device->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof(str_device) - 1,
+                          str_device);
 
-  const char strm_deviceContext[] = "DeviceContext";
-  m_deviceContext->SetPrivateData(WKPDID_D3DDebugObjectName,
-                                  sizeof(strm_deviceContext) - 1,
-                                  strm_deviceContext);
+  const char str_deviceContext[] = "DeviceContext";
+  _deviceContext->SetPrivateData(WKPDID_D3DDebugObjectName,
+                                 sizeof(str_deviceContext) - 1,
+                                 str_deviceContext);
 #endif
 
   ID3D11Texture2D* texture2d[2];
 
-  if (FAILED(m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
-                                    (LPVOID*)&texture2d[0])))
+  if (FAILED(_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
+                                   (LPVOID*)&texture2d[0])))
   {
     return false;
   }
@@ -299,14 +301,14 @@ const bool DirectXGame::initialiseDirectX()
                                sizeof(str_texture0) - 1, str_texture0);
 #endif
 
-  if (FAILED(m_device->CreateRenderTargetView(texture2d[0], NULL, &m_backBuffer)))
+  if (FAILED(_device->CreateRenderTargetView(texture2d[0], NULL, &_backBuffer)))
   {
     return false;
   }
 
 #if defined(_DEBUG)
   const char str_backBuffer[] = "BackBuffer";
-  m_backBuffer->SetPrivateData(WKPDID_D3DDebugObjectName,
+  _backBuffer->SetPrivateData(WKPDID_D3DDebugObjectName,
                               sizeof(str_backBuffer) - 1, str_backBuffer);
 #endif
 
@@ -326,7 +328,7 @@ const bool DirectXGame::initialiseDirectX()
   textureDescription.MiscFlags = 0;
 
   if (FAILED(
-          m_device->CreateTexture2D(&textureDescription, NULL, &texture2d[1])))
+          _device->CreateTexture2D(&textureDescription, NULL, &texture2d[1])))
   {
     return false;
   }
@@ -355,34 +357,34 @@ const bool DirectXGame::initialiseDirectX()
 
   desc.BackFace = desc.FrontFace;
 
-  if (FAILED(m_device->CreateDepthStencilState(&desc, &m_depthDefault)))
+  if (FAILED(_device->CreateDepthStencilState(&desc, &_depthDefault)))
   {
     return false;
   }
 
-  //desc.DepthEnable = false;
-  //desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-  //if (FAILED(m_device->CreateDepthStencilState(&desc, &m_depthOff)))
-  //{
-  //  return false;
-  //}
+// desc.DepthEnable = false;
+// desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+// if (FAILED(_device->CreateDepthStencilState(&desc, &_depthOff)))
+//{
+//  return false;
+//}
 
 #if defined(_DEBUG)
   const char str_Default[] = "DepthState Default";
-  m_depthDefault->SetPrivateData(WKPDID_D3DDebugObjectName,
-                                 sizeof(str_Default) - 1, str_Default);
+  _depthDefault->SetPrivateData(WKPDID_D3DDebugObjectName,
+                                sizeof(str_Default) - 1, str_Default);
 
-  //const char strOffr[] = "DepthState Off";
-  //m_depthOff->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof(strOffr) - 1,
-  //                           strOffr);
+// const char strOffr[] = "DepthState Off";
+//_depthOff->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof(strOffr) - 1,
+//                           strOffr);
 #endif
 
-  m_deviceContext->OMSetDepthStencilState(m_depthDefault, 1);
+  _deviceContext->OMSetDepthStencilState(_depthDefault, 1);
 
   D3D11_VIEWPORT viewport = CD3D11_VIEWPORT(0.0f, 0.0f, (float)SCREEN_WIDTH(),
                                             (float)SCREEN_HEIGHT());
 
-  m_deviceContext->RSSetViewports(1, &viewport);
+  _deviceContext->RSSetViewports(1, &viewport);
 
   D3D11_SAMPLER_DESC samplerDescription;
 
@@ -399,21 +401,20 @@ const bool DirectXGame::initialiseDirectX()
   samplerDescription.BorderColor[3] = 0;
   samplerDescription.MinLOD = 0;
   samplerDescription.MaxLOD = D3D11_FLOAT32_MAX;
-  if (FAILED(m_device->CreateSamplerState(&samplerDescription, &m_sampler)))
+  if (FAILED(_device->CreateSamplerState(&samplerDescription, &_sampler)))
   {
     return false;
   }
 
 #ifdef _DEBUG
   const char str_samplers1[] = "PointClamp";
-  m_sampler->SetPrivateData(WKPDID_D3DDebugObjectName,
-                            sizeof(str_samplers1) - 1, str_samplers1);
+  _sampler->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof(str_samplers1) - 1,
+                           str_samplers1);
 #endif
 
-  m_deviceContext->PSSetSamplers(0, 1, &m_sampler);
+  _deviceContext->PSSetSamplers(0, 1, &_sampler);
 
-  m_deviceContext->IASetPrimitiveTopology(
-      D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+  _deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
   D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
   depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
@@ -421,8 +422,8 @@ const bool DirectXGame::initialiseDirectX()
   depthStencilViewDesc.Flags = 0;
   depthStencilViewDesc.Texture2D.MipSlice = 0;
 
-  if (FAILED(m_device->CreateDepthStencilView(
-          texture2d[1], &depthStencilViewDesc, &m_depthTarget)))
+  if (FAILED(_device->CreateDepthStencilView(
+          texture2d[1], &depthStencilViewDesc, &_depthTarget)))
   {
     return false;
   }
@@ -433,23 +434,22 @@ const bool DirectXGame::initialiseDirectX()
   depthTargetDesc.Texture2D.MostDetailedMip = 0;
   depthTargetDesc.Texture2D.MipLevels = 1;
 
-  if (FAILED(m_device->CreateShaderResourceView(texture2d[1], &depthTargetDesc,
-                                              &m_depthMapTexture)))
+  if (FAILED(_device->CreateShaderResourceView(texture2d[1], &depthTargetDesc,
+                                               &_depthMapTexture)))
   {
     return false;
   }
 
 #ifdef _DEBUG
-  const char str_depthTarget[] = "m_depthTarget";
-  m_depthTarget->SetPrivateData(WKPDID_D3DDebugObjectName,
-    sizeof(str_depthTarget) - 1, str_depthTarget);
+  const char str_depthTarget[] = "_depthTarget";
+  _depthTarget->SetPrivateData(WKPDID_D3DDebugObjectName,
+                               sizeof(str_depthTarget) - 1, str_depthTarget);
 
-  const char str_depthMapTexture[] = "m_depthMapTexture";
-  m_depthMapTexture->SetPrivateData(WKPDID_D3DDebugObjectName,
-    sizeof(str_depthMapTexture) - 1, str_depthMapTexture);
+  const char str_depthMapTexture[] = "_depthMapTexture";
+  _depthMapTexture->SetPrivateData(WKPDID_D3DDebugObjectName,
+                                   sizeof(str_depthMapTexture) - 1,
+                                   str_depthMapTexture);
 #endif
-
-  
 
   //_buffers[Buffers::MATRIX_BUFFER] =
   //    DirectXResourceManager::getInstance()->getMatrixBuffer();
@@ -479,34 +479,44 @@ const int DirectXGame::run()
 
   // create shaders
   ID3D11VertexShader* interpolatedVertexShader;
-  if (FAILED(m_device->CreateVertexShader(InterpolatedVS, InterpolatedVS_size, NULL, &interpolatedVertexShader)))
+  if (FAILED(_device->CreateVertexShader(InterpolatedVS, InterpolatedVS_size,
+                                         NULL, &interpolatedVertexShader)))
   {
     return EXIT_FAILURE;
   }
 
   ID3D11PixelShader* discardPixelShader;
-  if (FAILED(m_device->CreatePixelShader(DiscardPS, DiscardPS_size, NULL, &discardPixelShader)))
+  if (FAILED(_device->CreatePixelShader(DiscardPS, DiscardPS_size, NULL,
+                                        &discardPixelShader)))
   {
     return EXIT_FAILURE;
   }
 
   ID3D11PixelShader* interpolatedPixelShader;
-  if (FAILED(m_device->CreatePixelShader(InterpolatedDepthPS, InterpolatedDepthPS_size, NULL, &interpolatedPixelShader)))
+  if (FAILED(_device->CreatePixelShader(InterpolatedDepthPS,
+                                        InterpolatedDepthPS_size, NULL,
+                                        &interpolatedPixelShader)))
   {
     return EXIT_FAILURE;
   }
 
   // create input layout
   D3D11_INPUT_ELEMENT_DESC layoutDescription[] = {
-    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-    { "WORLD_MATRIX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-    { "WORLD_MATRIX", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-    { "WORLD_MATRIX", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-    { "WORLD_MATRIX", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 } };
+    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
+      D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { "WORLD_MATRIX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0,
+      D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+    { "WORLD_MATRIX", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16,
+      D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+    { "WORLD_MATRIX", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32,
+      D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+    { "WORLD_MATRIX", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48,
+      D3D11_INPUT_PER_INSTANCE_DATA, 1 }
+  };
 
   ID3D11InputLayout* inputLayout;
-  if (FAILED(m_device->CreateInputLayout(layoutDescription, 5,
-    InterpolatedVS, InterpolatedVS_size, &inputLayout)))
+  if (FAILED(_device->CreateInputLayout(layoutDescription, 5, InterpolatedVS,
+                                        InterpolatedVS_size, &inputLayout)))
   {
     return EXIT_FAILURE;
   }
@@ -514,7 +524,7 @@ const int DirectXGame::run()
 #if defined(_DEBUG)
   const char str_inputLayout[] = "InterpolatedVS inputLayout";
   inputLayout->SetPrivateData(WKPDID_D3DDebugObjectName,
-    sizeof(str_inputLayout) - 1, str_inputLayout);
+                              sizeof(str_inputLayout) - 1, str_inputLayout);
 #endif
 
   // create buffers
@@ -527,28 +537,30 @@ const int DirectXGame::run()
   constantBufferDescription.MiscFlags = 0;
   constantBufferDescription.StructureByteStride = 0;
 
-  if (FAILED(m_device->CreateBuffer(&constantBufferDescription, NULL, &m_matrixBuffer)))
+  if (FAILED(_device->CreateBuffer(&constantBufferDescription, NULL,
+                                   &_matrixBuffer)))
   {
     return EXIT_FAILURE;
   }
 
 #if defined(_DEBUG)
   const char str[] = "MatrixBuffer";
-  m_matrixBuffer->SetPrivateData(WKPDID_D3DDebugObjectName,
-    sizeof(str) - 1, str);
+  _matrixBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof(str) - 1,
+                                str);
 #endif
 
   constantBufferDescription.ByteWidth = 16;
 
-  if (FAILED(m_device->CreateBuffer(&constantBufferDescription, NULL, &m_showDepthBuffer)))
+  if (FAILED(_device->CreateBuffer(&constantBufferDescription, NULL,
+                                   &_showDepthBuffer)))
   {
     return EXIT_FAILURE;
   }
 
 #if defined(_DEBUG)
   const char ShowDepthBufferstr[] = "ShowDepthBuffer";
-  m_showDepthBuffer->SetPrivateData(WKPDID_D3DDebugObjectName,
-    sizeof(ShowDepthBufferstr) - 1, str);
+  _showDepthBuffer->SetPrivateData(WKPDID_D3DDebugObjectName,
+                                   sizeof(ShowDepthBufferstr) - 1, str);
 #endif
 
   std::vector<glm::vec3> vertices;
@@ -557,17 +569,17 @@ const int DirectXGame::run()
   vertices.push_back(glm::vec3(1.0f, 1.0f, 0.0f));
   vertices.push_back(glm::vec3(1.0f, -1.0f, 0.0f));
 
-  m_vertexBuffer = createVertexBuffer(vertices);
-  if (not m_vertexBuffer)
+  _vertexBuffer = createVertexBuffer(vertices);
+  if (not _vertexBuffer)
   {
     return EXIT_FAILURE;
   }
-  m_indexBuffer = createIndexBuffer({ 0, 1, 2, 2, 3, 0 });
-  m_instanceBuffer = createInstanceBuffer(4);
+  _indexBuffer = createIndexBuffer({ 0, 1, 2, 2, 3, 0 });
+  _instanceBuffer = createInstanceBuffer(4);
 
   std::vector<glm::vec3> instancePositions({
-    glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec3(0.5f, -0.5f, 0.5f), glm::vec3(0.5f, 0.5f, 0.5f),
-    glm::vec3(-0.5f, 0.5f, 0.5f),
+      glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec3(0.5f, -0.5f, 0.5f),
+      glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(-0.5f, 0.5f, 0.5f),
   });
 
   // needed to set the vertex and instance buffers
@@ -578,24 +590,24 @@ const int DirectXGame::run()
   offset[0] = 0;
   offset[1] = 0;
   ID3D11Buffer* buf[2];
-  buf[0] = m_vertexBuffer;
-  buf[1] = m_instanceBuffer;
+  buf[0] = _vertexBuffer;
+  buf[1] = _instanceBuffer;
 
-  m_deviceContext->VSSetShader(interpolatedVertexShader, nullptr, 0);
-  m_deviceContext->PSSetShaderResources(0, 1, &m_depthMapTexture);
+  _deviceContext->VSSetShader(interpolatedVertexShader, nullptr, 0);
+  _deviceContext->PSSetShaderResources(0, 1, &_depthMapTexture);
 
   // loop
   bool running = true;
   while (running)
   {
     MSG msg;
-    if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+    if (PeekMessage(&msg, NULL, 0, 0, P_REMOVE))
     {
       TranslateMessage(&msg);
       DispatchMessage(&msg);
     }
 
-    if (msg.message == WM_QUIT)
+    if (msg.message == W_QUIT)
     {
       running = false;
     }
@@ -612,76 +624,80 @@ const int DirectXGame::run()
       for (int i = 0; i < 4; ++i)
       {
         glm::mat4 instDat;
-        instDat = glm::translate(instDat, instancePositions[i]) *
-          glm::translate(instDat, glm::vec3(sinf(translation) * 0.2f * 1.4f,
-          cosf(translation) * 0.2f, 0.0f));
+        instDat =
+            glm::translate(instDat, instancePositions[i]) *
+            glm::translate(instDat, glm::vec3(sinf(translation) * 0.2f * 1.4f,
+                                              cosf(translation) * 0.2f, 0.0f));
         instanceData[i] = glm::transpose(instDat);
       }
 
       // set render target
-      m_deviceContext->PSSetShaderResources(0, 0, nullptr);
-      m_deviceContext->OMSetRenderTargets(0, nullptr, m_depthTarget);
+      _deviceContext->PSSetShaderResources(0, 0, nullptr);
+      _deviceContext->OMSetRenderTargets(0, nullptr, _depthTarget);
 
       // clear
-      m_deviceContext->ClearDepthStencilView(m_depthTarget, D3D11_CLEAR_DEPTH, 1.0f, 0);
+      _deviceContext->ClearDepthStencilView(_depthTarget, D3D11_CLEAR_DEPTH,
+                                            1.0f, 0);
 
       // set shaders
-      //m_deviceContext->VSSetShader(interpolatedVertexShader, nullptr, 0);
-      m_deviceContext->PSSetShader(discardPixelShader, nullptr, 0);
+      //_deviceContext->VSSetShader(interpolatedVertexShader, nullptr, 0);
+      _deviceContext->PSSetShader(discardPixelShader, nullptr, 0);
 
       // update buffers
       D3D11_MAPPED_SUBRESOURCE mappedResource;
-      m_deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+      _deviceContext->Map(_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0,
+                          &mappedResource);
       memcpy(mappedResource.pData, &worldMatrix, sizeof(glm::mat4));
-      m_deviceContext->Unmap(m_matrixBuffer, 0);
-      m_deviceContext->Map(m_showDepthBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+      _deviceContext->Unmap(_matrixBuffer, 0);
+      _deviceContext->Map(_showDepthBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0,
+                          &mappedResource);
       memcpy(mappedResource.pData, &showDepth, sizeof(bool));
-      m_deviceContext->Unmap(m_showDepthBuffer, 0);
+      _deviceContext->Unmap(_showDepthBuffer, 0);
 
       // set buffers
-      m_deviceContext->IASetInputLayout(inputLayout);
-      m_deviceContext->VSSetConstantBuffers(0, 1, &m_matrixBuffer);
+      _deviceContext->IASetInputLayout(inputLayout);
+      _deviceContext->VSSetConstantBuffers(0, 1, &_matrixBuffer);
 
-      m_deviceContext->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+      _deviceContext->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
-      m_deviceContext->IASetVertexBuffers(0, 2, buf, stride, offset);
+      _deviceContext->IASetVertexBuffers(0, 2, buf, stride, offset);
 
       // draw
-      m_deviceContext->DrawIndexedInstanced(6, 4, 0, 0, 0);
-
+      _deviceContext->DrawIndexedInstanced(6, 4, 0, 0, 0);
 
       // second pass
       // set render target
-      m_deviceContext->OMSetRenderTargets(1, &m_backBuffer, nullptr);
+      _deviceContext->OMSetRenderTargets(1, &_backBuffer, nullptr);
 
       float clear[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
       // clear
-      m_deviceContext->ClearRenderTargetView(m_backBuffer, clear);
+      _deviceContext->ClearRenderTargetView(_backBuffer, clear);
 
       // set shaders
-      //m_deviceContext->VSSetShader(interpolatedVertexShader, nullptr, 0);
-      m_deviceContext->PSSetShader(interpolatedPixelShader, nullptr, 0);
+      //_deviceContext->VSSetShader(interpolatedVertexShader, nullptr, 0);
+      _deviceContext->PSSetShader(interpolatedPixelShader, nullptr, 0);
 
       // update buffers
-      m_deviceContext->Map(m_instanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+      _deviceContext->Map(_instanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0,
+                          &mappedResource);
       memcpy(mappedResource.pData, instanceData.data(), sizeof(glm::mat4) * 4);
-      m_deviceContext->Unmap(m_instanceBuffer, 0);
+      _deviceContext->Unmap(_instanceBuffer, 0);
 
       // set buffers
-      m_deviceContext->IASetInputLayout(inputLayout);
-      m_deviceContext->VSSetConstantBuffers(0, 1, &m_matrixBuffer);
+      _deviceContext->IASetInputLayout(inputLayout);
+      _deviceContext->VSSetConstantBuffers(0, 1, &_matrixBuffer);
 
-      m_deviceContext->PSSetShaderResources(0, 1, &m_depthMapTexture);
-      m_deviceContext->PSSetConstantBuffers(0, 1, &m_showDepthBuffer);
+      _deviceContext->PSSetShaderResources(0, 1, &_depthMapTexture);
+      _deviceContext->PSSetConstantBuffers(0, 1, &_showDepthBuffer);
 
-      m_deviceContext->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+      _deviceContext->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
-      m_deviceContext->IASetVertexBuffers(0, 2, buf, stride, offset);
+      _deviceContext->IASetVertexBuffers(0, 2, buf, stride, offset);
 
       // draw
-      m_deviceContext->DrawIndexedInstanced(6, 4, 0, 0, 0);
+      _deviceContext->DrawIndexedInstanced(6, 4, 0, 0, 0);
 
-      m_swapChain->Present(1, 0);
+      _swapChain->Present(1, 0);
     }
 
     // shut down?
@@ -690,44 +706,45 @@ const int DirectXGame::run()
   return EXIT_SUCCESS;
 }
 
-LRESULT CALLBACK DirectXGame::MessageHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK DirectXGame::MessageHandler(HWND hWnd, UINT message,
+                                             WPARAM wParam, LPARAM lParam)
 {
-	switch (message)
-	{
-  case WM_DESTROY:
+  switch (message)
   {
-    PostQuitMessage(0);
-    return 0;
-  }
-  // Check if the window is being closed.
-  case WM_CLOSE:
-  {
-    PostQuitMessage(0);
-    return 0;
-  }
-  case WM_KEYDOWN:
-  {
-    return DefWindowProc(hWnd, message, wParam, lParam);
-  }
-  case WM_KEYUP:
-  {
-    // for now, so that we can exit
-    if (wParam IS VK_ESCAPE)
+    case W_DESTROY:
     {
       PostQuitMessage(0);
       return 0;
     }
-    else
+    // Check if the window is being closed.
+    case W_CLOSE:
+    {
+      PostQuitMessage(0);
+      return 0;
+    }
+    case W_KEYDOWN:
     {
       return DefWindowProc(hWnd, message, wParam, lParam);
     }
+    case W_KEYUP:
+    {
+      // for now, so that we can exit
+      if (wParam IS VK_ESCAPE)
+      {
+        PostQuitMessage(0);
+        return 0;
+      }
+      else
+      {
+        return DefWindowProc(hWnd, message, wParam, lParam);
+      }
+    }
+    default:
+    {
+      // forward the message to handler
+      return DefWindowProc(hWnd, message, wParam, lParam);
+    }
   }
-  default:
-  {
-    // forward the message to handler
-    return DefWindowProc(hWnd, message, wParam, lParam);
-  }
-	}
 }
 
 void DirectXGame::shutdownWindow()
@@ -742,15 +759,16 @@ void DirectXGame::shutdownWindow()
   }
 
   // Remove the window.
-  DestroyWindow(m_hwnd);
-  m_hwnd = NULL;
+  DestroyWindow(_hwnd);
+  _hwnd = NULL;
 
   // Remove the application instance.
-  UnregisterClass(m_applicationName.c_str(), m_hinstance);
-  m_hinstance = NULL;
+  UnregisterClass(_applicationName.c_str(), _hinstance);
+  _hinstance = NULL;
 }
 
-ID3D11Buffer* DirectXGame::createVertexBuffer(const std::vector<glm::vec3> vertices) const
+ID3D11Buffer* DirectXGame::createVertexBuffer(
+    const std::vector<glm::vec3> vertices) const
 {
   D3D11_BUFFER_DESC vertexBufferDesc;
 
@@ -767,21 +785,22 @@ ID3D11Buffer* DirectXGame::createVertexBuffer(const std::vector<glm::vec3> verti
   vertexData.SysMemSlicePitch = 0;
 
   ID3D11Buffer* vertexBuffer;
-  if (FAILED(m_device->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer)))
+  if (FAILED(
+          _device->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer)))
   {
     return nullptr;
   }
 
 #if defined(_DEBUG)
   const char str[] = "vertexBuffer";
-  vertexBuffer->SetPrivateData(WKPDID_D3DDebugObjectName,
-    sizeof(str) - 1, str);
+  vertexBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof(str) - 1, str);
 #endif
 
   return vertexBuffer;
 }
 
-ID3D11Buffer* DirectXGame::createIndexBuffer(const std::vector<unsigned long> indices) const
+ID3D11Buffer* DirectXGame::createIndexBuffer(
+    const std::vector<unsigned long> indices) const
 {
   D3D11_BUFFER_DESC indexBufferDesc;
 
@@ -798,15 +817,14 @@ ID3D11Buffer* DirectXGame::createIndexBuffer(const std::vector<unsigned long> in
   indexData.SysMemSlicePitch = 0;
 
   ID3D11Buffer* indexBuffer;
-  if (FAILED(m_device->CreateBuffer(&indexBufferDesc, &indexData, &indexBuffer)))
+  if (FAILED(_device->CreateBuffer(&indexBufferDesc, &indexData, &indexBuffer)))
   {
     return nullptr;
   }
 
 #if defined(_DEBUG)
   const char str[] = "indexBuffer";
-  indexBuffer->SetPrivateData(WKPDID_D3DDebugObjectName,
-    sizeof(str) - 1, str);
+  indexBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof(str) - 1, str);
 #endif
 
   return indexBuffer;
@@ -830,15 +848,16 @@ ID3D11Buffer* DirectXGame::createInstanceBuffer(const unsigned int size) const
   instanceData.SysMemSlicePitch = 0;
 
   ID3D11Buffer* instanceBuffer;
-  if (FAILED(m_device->CreateBuffer(&instanceBufferDescription, &instanceData, &instanceBuffer)))
+  if (FAILED(_device->CreateBuffer(&instanceBufferDescription, &instanceData,
+                                   &instanceBuffer)))
   {
     return nullptr;
   }
 
 #if defined(_DEBUG)
   const char str[] = "InstanceBuffer";
-  instanceBuffer->SetPrivateData(WKPDID_D3DDebugObjectName,
-    sizeof(str) - 1, str);
+  instanceBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof(str) - 1,
+                                 str);
 #endif
 
   return instanceBuffer;

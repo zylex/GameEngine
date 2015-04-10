@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <GL/glew.h>
+
 #include "OpenGLGame.h"
 
 namespace zge
@@ -85,7 +86,6 @@ unsigned int compileShaders(const char* vertexShaderCode,
 unsigned int compileShader(const char* vertexShaderCode)
 {
   GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-  GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
   GLint Result = GL_FALSE;
   int InfoLogLength;
@@ -128,7 +128,6 @@ unsigned int compileShader(const char* vertexShaderCode)
   }
 
   glDeleteShader(VertexShaderID);
-  glDeleteShader(FragmentShaderID);
 
   return ProgramID;
 }

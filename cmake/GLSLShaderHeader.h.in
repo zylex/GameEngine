@@ -1,11 +1,21 @@
 #ifndef @file_name@_H
 #define @file_name@_H
 
+#include <cstddef>
+#include <cstring>
+
 #include "FileHelper.h"
 
-const char* @file_name@ = zge::LoadFile(
-    "@CMAKE_CURRENT_SOURCE_DIR@"
-    "/src/OpenGL/Shaders/GLSL/@file_name@.glsl");
+namespace zge
+{
+
+    static const char* @file_name@ = zge::LoadFile(
+        "@CMAKE_CURRENT_SOURCE_DIR@"
+        "/src/OpenGL/Shaders/GLSL/@file_name@.glsl");
+
+    static size_t @file_name@_size = strlen(@file_name@);
+
+} // namespace zge
 
 #endif
 

@@ -27,7 +27,7 @@ namespace zge
 class Game : public BaseGame
 {
 public:
-  Game(std::string);
+  // Game(std::string);
   virtual ~Game() NOEXCEPT;
 
 private:

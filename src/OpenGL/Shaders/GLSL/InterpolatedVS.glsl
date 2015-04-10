@@ -1,9 +1,15 @@
-#version 330
+#version 430
 
 layout (location = 0) in vec3 position;
-layout (location = 1) in mat4 instanceMatrix;
+layout (location = 1) in vec3 normal;
+layout (location = 2) in mat4 instanceMatrix;
 
-uniform mat4 worldMatrix;
+layout(binding = 0) uniform MatrixBuffer
+{
+  mat4 worldMatrix;
+};
+
+// layout(location = 0) uniform mat4 worldMatrix;
 
 out vec4 pos;
 out vec2 tex;

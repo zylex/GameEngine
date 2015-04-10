@@ -1,0 +1,27 @@
+#ifndef SHADER_H
+#define SHADER_H
+
+namespace zge
+{
+
+enum Shader
+{
+  SHADER_NULL,
+  SHADER_DEPTH,
+  SHADER_PSYCHEDAELIC,
+  // PARTICLE_COMPUTE,
+  // IMPLICIT_OBJECTS,
+  // SHADOW,
+  // IMPLICIT_OBJECTS_SHADOW,
+  // COLORED,
+  // TEXTURED,
+  // DEFERRED,
+  // DEFERRED_LIGHTS,
+  // TRANSPARENT,
+  // BUMP_MAP,
+  SHADER_TOTAL
+};
+
+} // namespace zge
+
+#endif

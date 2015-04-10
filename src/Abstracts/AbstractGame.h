@@ -1,19 +1,43 @@
 #ifndef ABSTRACT_GAME_H
 #define ABSTRACT_GAME_H
+#include <unordered_map>
+#include <string>
 
 #include "IGame.h"
 
 namespace zge
 {
+class IGameState;
 
-class AbstractGame
+class AbstractGame : public IGame
 {
-public:
-  virtual bool initialise() = 0;
-  virtual void run() = 0;
-  virtual void quit() = 0;
+private:
+  bool running;
+  int nextState;
+  std::unordered_map<int, IGameState*> states;
+  IGameState* currentState;
+  std::string windowTitle;
 
-  virtual void setNextState(int) = 0;
+public:
+  AbstractGame();
+  virtual ~AbstractGame() NOEXCEPT;
+
+  virtual const bool initialise();
+  virtual const int run();
+  virtual void frame();
+
+  void setWindowTitle(const std::string);
+  const std::string getWindowTitle() const;
+
+  void quit();
+  void addGameState(const int, IGameState*);
+  void setNextState(const int);
+  IGameState* getCurrentGameState() const;
+
+  void changeState();
+  const bool isRunning() const;
+
+  const std::unordered_map<int, IGameState*> getStates();
 };
 
 } // namespace zge

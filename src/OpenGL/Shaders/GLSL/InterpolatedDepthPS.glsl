@@ -1,9 +1,14 @@
-#version 330
+#version 430
 
 in vec4 pos;
 in vec2 tex;
-uniform bool showDepth;
-uniform sampler2D depthMap;
+// worldMatrix is location 0
+layout(binding = 1) uniform ShowDepthBuffer
+{
+ bool showDepth;
+};
+
+layout(binding = 0) uniform sampler2D depthMap;
 
 out vec4 color;
 

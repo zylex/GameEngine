@@ -1,11 +1,20 @@
 #ifndef @file_name@_H
 #define @file_name@_H
 
-SIZE_T @file_name@_size = 0;
+#include <cstddef>
 
-const void* @file_name@ = 
-    zge::dx::CompileShader("@CMAKE_CURRENT_SOURCE_DIR@"
-                           "/src/DirectX/Shaders/HLSL/@file_name@.hlsl",
-                           @file_name@_size);
+#include "DirectXShader.h"
+
+namespace zge
+{
+
+    static size_t @file_name@_size = 0;
+
+    static const void* @file_name@ = 
+        zge::dx::CompileShader("@CMAKE_CURRENT_SOURCE_DIR@"
+                               "/src/DirectX/Shaders/HLSL/@file_name@.hlsl",
+                               @file_name@_size);
+                               
+} // namespace zge
 
 #endif

@@ -1,4 +1,4 @@
-cbuffer MatrixBuffer
+cbuffer MatrixBuffer : register(b0)
 {
   matrix worldMatrix;
 };
@@ -16,7 +16,6 @@ struct PixelInput
   float2 tex : TEXCOORD0;
 };
 
-//PixelInput InterpolatedVS(VertexInput input)
 PixelInput main(VertexInput input)
 {
   PixelInput output;
