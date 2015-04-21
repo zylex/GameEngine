@@ -7,10 +7,14 @@
 
 namespace zge
 {
+
 namespace dx
 {
+
 const void* CompileShader(const std::string, size_t&);
-}
-}
+
+} // namespace dx
+
+} // namespace zge
 
 #endif

@@ -86,6 +86,7 @@ if (WIN32)
                 "${PROJECT_SOURCE_DIR}/extern/glfw/bin"
                 "${PROJECT_SOURCE_DIR}/extern/glfw/lib"
                 "$ENV{PROGRAMFILES}/GLFW/lib"
+                "$ENV{PROGRAMFILES}/GLFW/lib-vc2012"
                 "${OPENGL_LIBRARY_DIR}"
             DOC 
                 "The GLFW library"

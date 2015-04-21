@@ -56,6 +56,7 @@ IF(USE_ANT)
 ENDIF()
 
 IF(DIRECT_X)
+    add_definitions(-DUNICODE -D_UNICODE)
     include(ConfigureDirectXLibraries)
     include(ConfigureHLSLHeaders)
 ELSEIF(OPEN_GL)

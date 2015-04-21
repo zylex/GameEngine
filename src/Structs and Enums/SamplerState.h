@@ -1,10 +1,10 @@
-#ifndef SAMPLERTYPE_H
-#define SAMPLERTYPE_H
+#ifndef SAMPLERSTATE_H
+#define SAMPLERSTATE_H
 
 namespace zge
 {
 
-enum SamplerType
+enum SamplerState
 {
   POINT_WRAP,
   POINT_CLAMP,

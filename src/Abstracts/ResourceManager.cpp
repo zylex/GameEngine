@@ -1,4 +1,5 @@
 #include <sstream>
+#include <iostream>
 
 #include "Preprocessors.h"
 
@@ -40,12 +41,22 @@ const unsigned ResourceManager::shaderExists(const void* shaderCode,
                                              const std::size_t shaderCodeSize,
                                              const unsigned shaderType)
 {
-  std::ostringstream keyStream;
-  keyStream << reinterpret_cast<std::size_t>(shaderCode)
-            << "::" << shaderCodeSize << "::" << shaderType;
-  std::string key = keyStream.str();
+  if (shaderCode IS_NOT nullptr)
+  {
+    std::string key = getShaderKey(shaderCode, shaderCodeSize, shaderType);
 
-  return this->existingShaders[key];
+    std::unordered_map<std::string, unsigned>::iterator i =
+        this->existingShaders.find(key);
+    if (i IS_NOT this->existingShaders.end())
+    {
+      return i->second;
+    }
+  }
+  else
+  {
+    std::cerr << "Error Shader code is nullptr." << std::endl;
+  }
+  return 0;
 }
 
 void ResourceManager::addShader(const void* shaderCode,
@@ -53,33 +64,38 @@ void ResourceManager::addShader(const void* shaderCode,
                                 const unsigned shaderType,
                                 const unsigned shaderId)
 {
-  std::string key = getShaderKey(shaderCode, shaderCodeSize, shaderType);
+  if (shaderCode IS_NOT nullptr)
+  {
+    std::string key = getShaderKey(shaderCode, shaderCodeSize, shaderType);
 
-  this->existingShaders.insert({ key, shaderId });
+    this->existingShaders[key] = shaderId;
+  }
 }
 
 const unsigned ResourceManager::shaderProgramExists(
-    const unsigned computerShaderId, const unsigned vertexShaderId,
+    const unsigned computeShaderId, const unsigned vertexShaderId,
     const unsigned geometryShaderId, const unsigned hullShaderId,
     const unsigned domainShaderId, const unsigned pixelShaderId)
 {
-  std::string key =
-      getShaderProgramKey(computerShaderId, vertexShaderId, geometryShaderId,
-                          hullShaderId, domainShaderId, pixelShaderId);
+  if (computeShaderId IS_NOT 0 and vertexShaderId IS_NOT 0 and
+      geometryShaderId IS_NOT 0 and hullShaderId IS_NOT 0 and
+      domainShaderId IS_NOT 0 and pixelShaderId IS_NOT 0)
+  {
+    std::string key =
+        getShaderProgramKey(computeShaderId, vertexShaderId, geometryShaderId,
+                            hullShaderId, domainShaderId, pixelShaderId);
 
-  std::unordered_map<std::string, unsigned>::iterator i =
-      this->existingShaderPrograms.find(key);
-  if (i IS_NOT this->existingShaderPrograms.end())
-  {
-    return i->second;
+    std::unordered_map<std::string, unsigned>::iterator i =
+        this->existingShaderPrograms.find(key);
+    if (i IS_NOT this->existingShaderPrograms.end())
+    {
+      return i->second;
+    }
   }
-  else
-  {
-    return 0;
-  }
+  return 0;
 }
 
-void ResourceManager::addShaderProgram(const unsigned computerShaderId,
+void ResourceManager::addShaderProgram(const unsigned computeShaderId,
                                        const unsigned vertexShaderId,
                                        const unsigned geometryShaderId,
                                        const unsigned hullShaderId,
@@ -87,11 +103,17 @@ void ResourceManager::addShaderProgram(const unsigned computerShaderId,
                                        const unsigned pixelShaderId,
                                        const unsigned programId)
 {
-  std::string key =
-      getShaderProgramKey(computerShaderId, vertexShaderId, geometryShaderId,
-                          hullShaderId, domainShaderId, pixelShaderId);
+  if (programId IS_NOT 0 and computeShaderId IS_NOT 0 and
+      vertexShaderId IS_NOT 0 and geometryShaderId IS_NOT 0 and
+      hullShaderId IS_NOT 0 and domainShaderId IS_NOT 0 and
+      pixelShaderId IS_NOT 0)
+  {
+    std::string key =
+        getShaderProgramKey(computeShaderId, vertexShaderId, geometryShaderId,
+                            hullShaderId, domainShaderId, pixelShaderId);
 
-  this->existingShaderPrograms[key] = programId;
+    this->existingShaderPrograms[key] = programId;
+  }
 }
 
 const std::string ResourceManager::getShaderKey(
@@ -134,27 +156,53 @@ ResourceManager::getExistingShaderPrograms() const
   return this->existingShaderPrograms;
 }
 
-std::vector<unsigned> ResourceManager::getExistingTextures() const
+// std::vector<unsigned> ResourceManager::getExistingTextures() const {
+//  return this->existingTextures;
+//}
+//
+// std::vector<unsigned> ResourceManager::getExistingOutputs() const {
+//  return this->existingOutputs;
+//}
+
+// const unsigned ResourceManager::addMeshIndexCount(
+//    const std::pair<unsigned, unsigned> meshIndexCount)
+//{
+//  this->meshIndexCounts.push_back(meshIndexCount);
+//  return this->meshIndexCounts.size() - 1;
+//}
+//
+// std::pair<unsigned, unsigned> ResourceManager::getIndexCount(
+//    const unsigned meshId)
+//{
+//  return this->meshIndexCounts[meshId];
+//}
+
+const unsigned ResourceManager::getInstanceBuffer()
 {
-  return this->existingTextures;
+  return this->instanceBufferId;
 }
 
-std::vector<unsigned> ResourceManager::getExistingOutputs() const
+void ResourceManager::setInstanceBuffer(const unsigned instanceBufferId)
 {
-  return this->existingOutputs;
+  this->instanceBufferId = instanceBufferId;
 }
 
-const unsigned ResourceManager::addMeshIndexCount(
-    const std::pair<unsigned, unsigned> meshIndexCount)
-{
-  this->meshIndexCounts.push_back(meshIndexCount);
-  return this->meshIndexCounts.size() - 1;
-}
+// std::vector<unsigned>* ResourceManager::getUniformBuffers(
+//     const unsigned programId)
+// {
+//   return &this->uniformBuffers[programId];
+// }
 
-std::pair<unsigned, unsigned> ResourceManager::getIndexCount(
-    const unsigned meshId)
-{
-  return this->meshIndexCounts[meshId];
-}
+// std::vector<unsigned>* ResourceManager::getUniformBuffers(
+//     const unsigned programId, const unsigned shaderType)
+// {
+//   return &this->constantBuffers[{ programId, shaderType }];
+// }
+
+//void ResourceManager::setUniformBuffers(const unsigned programId,
+//                                        std::vector<unsigned> uniformBuffers)
+//{
+//  this->uniformBuffers[programId] = uniformBuffers;
+//}
 
 } // namespace zge

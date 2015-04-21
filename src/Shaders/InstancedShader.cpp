@@ -42,6 +42,8 @@ void InstancedShader<I, D, F, S>::addInstance(IGameObject* iInstance)
   if (instanceIterator IS instanceEnd) // not already there
   {
     this->instances.push_back(this->getInstanceUnit(instance, data));
+    instanceBegin = this->instances.begin();
+    instanceEnd = this->instances.end();
     std::sort(instanceBegin, instanceEnd, S());
   }
   else

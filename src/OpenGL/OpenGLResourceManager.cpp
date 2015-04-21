@@ -31,7 +31,7 @@ OpenGLResourceManager* OpenGLResourceManager::getInstance()
   return &instance;
 }
 
-OpenGLResourceManager::OpenGLResourceManager() : samplers{ 0, 0, 0, 0, 0 }
+OpenGLResourceManager::OpenGLResourceManager() : samplers{ 0, 0, 0, 0 }
 {
   // constructor
 }
@@ -66,11 +66,11 @@ OpenGLResourceManager::~OpenGLResourceManager() noexcept
     glDeleteProgram(i->second);
   }
 
-  std::vector<unsigned> existingOutputs = this->getExistingOutputs();
-  glDeleteFramebuffers(existingOutputs.size(), existingOutputs.data());
+  glDeleteFramebuffers(this->existingOutputs.size(),
+                       this->existingOutputs.data());
 
-  std::vector<unsigned> existingTextures = this->getExistingTextures();
-  glDeleteTextures(existingTextures.size(), existingTextures.data());
+  glDeleteTextures(this->existingTextures.size(),
+                   this->existingTextures.data());
 }
 
 OpenGLResourceManager::OpenGLResourceManager(const OpenGLResourceManager& other)
@@ -108,6 +108,13 @@ const unsigned OpenGLResourceManager::createMesh(
     const std::vector<glm::vec3>& normals,
     const std::vector<glm::uvec3>& indices)
 {
+  if (vertices.size() IS_NOT normals.size())
+  {
+    std::cerr
+        << "Error creating mesh, not the same amount of vertices and normals"
+        << std::endl;
+    return 0;
+  }
   unsigned IDs[4];
   // vertexBuffer
   glGenBuffers(3, IDs);
@@ -148,6 +155,7 @@ const unsigned OpenGLResourceManager::createMesh(
     glVertexAttribPointer(2 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
                           (const GLvoid*)(sizeof(float) * i * 4));
     glVertexAttribDivisor(2 + i, 1);
+    // TODO: figure out a way to make instance modifiable platform agnostically
   }
 
   glBindVertexArray(GL_NONE);
@@ -156,76 +164,91 @@ const unsigned OpenGLResourceManager::createMesh(
   return this->addMeshIndexCount({ IDs[3], indices.size() * 3 });
 }
 
-const unsigned OpenGLResourceManager::createDepthBuffer(
-    const unsigned textureId)
+const unsigned OpenGLResourceManager::createMesh(
+    const std::vector<glm::vec3>& vertices,
+    const std::vector<glm::vec3>& normals,
+    const std::vector<glm::uvec3>& indices,
+    const std::vector<glm::vec2>& textureCoordinates,
+    const std::vector<glm::vec3>& tangents,
+    const std::vector<glm::vec3>& bitangents)
 {
-  unsigned result;
-  glGenFramebuffers(1, &result);
-
-  glBindTexture(GL_TEXTURE_2D, textureId);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SCREEN_WIDTH(),
-               SCREEN_HEIGHT(), 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                  GL_NEAREST_MIPMAP_NEAREST);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-                  GL_NEAREST_MIPMAP_NEAREST);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-
-  glBindFramebuffer(GL_FRAMEBUFFER, result);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-                         textureId, 0);
-
-  // Disable writes to the color buffer
-  glDrawBuffer(GL_NONE);
-  glReadBuffer(GL_NONE);
-
-  GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-
-  if (status != GL_FRAMEBUFFER_COMPLETE)
-  {
-    std::cerr << "OpenGL FrameBuffer error, status: 0x" << status << std::endl;
-    return 0;
-  }
-
-  return result;
+  return 0;
 }
+
+// const unsigned OpenGLResourceManager::createDepthBuffer(
+//    const unsigned textureId)
+//{
+//  unsigned result;
+//  glGenFramebuffers(1, &result);
+//
+//  glBindTexture(GL_TEXTURE_2D, textureId);
+//  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SCREEN_WIDTH(),
+//               SCREEN_HEIGHT(), 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+//  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+//                  GL_NEAREST_MIPMAP_NEAREST);
+//  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+//                  GL_NEAREST_MIPMAP_NEAREST);
+//  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+//  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+//
+//  glBindFramebuffer(GL_FRAMEBUFFER, result);
+//  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+//                         textureId, 0);
+//
+//  // Disable writes to the color buffer
+//  glDrawBuffer(GL_NONE);
+//  glReadBuffer(GL_NONE);
+//
+//  GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+//
+//  if (status != GL_FRAMEBUFFER_COMPLETE)
+//  {
+//    std::cerr << "OpenGL FrameBuffer error, status: 0x" << status <<
+//    std::endl;
+//    return 0;
+//  }
+//
+//  return result;
+//}
 
 const unsigned OpenGLResourceManager::getInstanceBuffer()
 {
-  if (not this->instanceBufferId)
+  unsigned instanceBufferId = ResourceManager::getInstanceBuffer();
+  if (not instanceBufferId)
   {
-    glGenBuffers(1, &this->instanceBufferId);
-    glBindBuffer(GL_ARRAY_BUFFER, this->instanceBufferId);
+    glGenBuffers(1, &instanceBufferId);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceBufferId);
     glm::mat4 dummyData[1];
     glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4), dummyData,
                  GL_DYNAMIC_DRAW);
+    ResourceManager::setInstanceBuffer(instanceBufferId);
   }
 
-  return this->instanceBufferId;
+  return instanceBufferId;
 }
 
-const unsigned OpenGLResourceManager::updateInstanceBuffer(
-    const std::vector<glm::mat4>& instanceData)
-{
-  if (not this->instanceBufferId) // make sure it exists
-  {
-    getInstanceBuffer();
-  }
-  glBindBuffer(GL_ARRAY_BUFFER, this->instanceBufferId);
-  glBufferData(GL_ARRAY_BUFFER, instanceData.size() * sizeof(glm::mat4),
-               instanceData.data(), GL_DYNAMIC_DRAW);
-
-  return this->instanceBufferId;
-}
+// const unsigned OpenGLResourceManager::updateInstanceBuffer(
+//    const std::vector<glm::mat4>& instanceData)
+//{
+//  if (not this->instanceBufferId) // make sure it exists
+//  {
+//    getInstanceBuffer();
+//  }
+//  glBindBuffer(GL_ARRAY_BUFFER, this->instanceBufferId);
+//  glBufferData(GL_ARRAY_BUFFER, instanceData.size() * sizeof(glm::mat4),
+//               instanceData.data(), GL_DYNAMIC_DRAW);
+//
+//  return this->instanceBufferId;
+//}
 
 const unsigned OpenGLResourceManager::compileShaderCode(
     const void* shaderCode, const size_t shaderCodeSize,
     const unsigned shaderType)
 {
   // returns 0 if not exists
-  unsigned shaderId = shaderExists(shaderCode, shaderCodeSize, shaderType);
-  if (shaderCode IS_NOT nullptr and not shaderId)
+  unsigned shaderId =
+      this->shaderExists(shaderCode, shaderCodeSize, shaderType);
+  if (shaderCode IS_NOT nullptr and shaderId IS 0)
   {
     switch (shaderType)
     {
@@ -269,42 +292,44 @@ const unsigned OpenGLResourceManager::compileShaderCode(
     glCompileShader(shaderId);
 
     // check for errors
-    int infoLogLength, result = GL_FALSE;
-    glGetShaderiv(shaderId, GL_COMPILE_STATUS, &result);
-    if (not result)
+    int infoLogLength, compilationSuccess = GL_FALSE;
+    glGetShaderiv(shaderId, GL_COMPILE_STATUS, &compilationSuccess);
+    if (not compilationSuccess)
     {
       glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &infoLogLength);
       if (infoLogLength > 0)
       {
-        std::vector<char> vertexShaderErrorMessage(infoLogLength + 1);
+        std::vector<char> shaderErrorMessage(infoLogLength + 1);
         glGetShaderInfoLog(shaderId, infoLogLength, NULL,
-                           &vertexShaderErrorMessage[0]);
-        std::cerr << &vertexShaderErrorMessage[0] << std::endl;
-        return 0;
+                           &shaderErrorMessage[0]);
+        std::cerr << &shaderErrorMessage[0] << std::endl;
       }
+      return 0;
     }
 
-    addShader(shaderCode, shaderCodeSize, shaderType, shaderId);
+    this->addShader(shaderCode, shaderCodeSize, shaderType, shaderId);
   }
 
   return shaderId;
 }
 
 const unsigned OpenGLResourceManager::createShaderProgram(
-    const unsigned computerShaderId, const unsigned vertexShaderId,
+    const unsigned computeShaderId, const unsigned vertexShaderId,
     const unsigned geometryShaderId, const unsigned hullShaderId,
     const unsigned domainShaderId, const unsigned pixelShaderId)
 {
   // returns 0 if not exists
-  unsigned programId =
-      shaderProgramExists(computerShaderId, vertexShaderId, geometryShaderId,
-                          hullShaderId, domainShaderId, pixelShaderId);
-  if (not programId)
+  unsigned programId = this->shaderProgramExists(
+      computeShaderId, vertexShaderId, geometryShaderId, hullShaderId,
+      domainShaderId, pixelShaderId);
+  if (programId IS 0 and (computeShaderId IS_NOT 0 or vertexShaderId IS_NOT 0 or
+                          geometryShaderId IS_NOT 0 or hullShaderId IS_NOT 0 or
+                          domainShaderId IS_NOT 0 or pixelShaderId IS_NOT 0))
   {
     programId = glCreateProgram();
-    if (computerShaderId IS_NOT 0)
+    if (computeShaderId IS_NOT 0)
     {
-      glAttachShader(programId, computerShaderId);
+      glAttachShader(programId, computeShaderId);
     }
     if (vertexShaderId IS_NOT 0)
     {
@@ -345,8 +370,9 @@ const unsigned OpenGLResourceManager::createShaderProgram(
         return 0;
       }
     }
-    addShaderProgram(computerShaderId, vertexShaderId, geometryShaderId,
-                     hullShaderId, domainShaderId, pixelShaderId, programId);
+    this->addShaderProgram(computeShaderId, vertexShaderId, geometryShaderId,
+                           hullShaderId, domainShaderId, pixelShaderId,
+                           programId);
   }
 
   return programId;
@@ -379,13 +405,13 @@ const unsigned OpenGLResourceManager::createRawTexture2D(
     }
   }
 
-  this->getExistingTextures().push_back(result);
+  this->existingTextures.push_back(result);
 
   return result;
 }
 
 const unsigned OpenGLResourceManager::createOutputBuffer(
-    const unsigned depthTexture, const std::vector<unsigned> outputTextures)
+    const unsigned depthTexture, const std::vector<unsigned>& outputTextures)
 {
   unsigned result;
   glGenFramebuffers(1, &result);
@@ -412,7 +438,7 @@ const unsigned OpenGLResourceManager::createOutputBuffer(
     return 0;
   }
 
-  this->getExistingOutputs().push_back(result);
+  this->existingOutputs.push_back(result);
 
   return result;
 }
@@ -466,16 +492,17 @@ const bool OpenGLResourceManager::createSamplers()
   return true;
 }
 
-const std::vector<unsigned> OpenGLResourceManager::getUniformBuffers(
+std::vector<unsigned>* OpenGLResourceManager::getUniformBuffers(
     const unsigned programId)
 {
-  return this->uniformBuffers[programId];
+  return &this->uniformBuffers[programId];
 }
 
-const std::vector<unsigned> OpenGLResourceManager::getUniformBuffers(
+std::vector<unsigned>* OpenGLResourceManager::getUniformBuffers(
     const unsigned programId, const unsigned numberOfBuffers)
 {
-  std::vector<unsigned>* uniformBuffersArray = &this->uniformBuffers[programId];
+  std::vector<unsigned>* uniformBuffersArray =
+      this->getUniformBuffers(programId);
 
   unsigned numberOfBuffersToCreate =
       numberOfBuffers - uniformBuffersArray->size();
@@ -485,7 +512,25 @@ const std::vector<unsigned> OpenGLResourceManager::getUniformBuffers(
   uniformBuffersArray->insert(uniformBuffersArray->end(), newBuffers,
                               newBuffers + numberOfBuffersToCreate);
 
-  return *uniformBuffersArray;
+  return uniformBuffersArray;
+}
+
+const unsigned OpenGLResourceManager::addMeshIndexCount(
+    const std::pair<unsigned, unsigned> meshIndexCount)
+{
+  this->meshIndexCounts.push_back(meshIndexCount);
+  return this->meshIndexCounts.size() - 1;
+}
+
+std::pair<unsigned, unsigned> OpenGLResourceManager::getIndexCount(
+    const unsigned meshId)
+{
+  return this->meshIndexCounts[meshId];
+}
+
+const glm::mat4 OpenGLResourceManager::getIdentityMatrix() const
+{
+  return glm::mat4();
 }
 
 } // namespace gl

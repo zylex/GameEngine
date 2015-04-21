@@ -32,6 +32,7 @@ public:
 
   const bool initialise();
   void prepare();
+  void finish();
 
   void switchShowDepth();
 };

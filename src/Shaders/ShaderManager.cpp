@@ -37,7 +37,6 @@ ShaderManager::~ShaderManager() NOEXCEPT
 
 const bool ShaderManager::initialise()
 {
-
   for (int i = SHADER_NULL + 1; i < SHADER_TOTAL; ++i)
   {
     this->shaders[i] = this->createShader(i);
@@ -54,6 +53,7 @@ const bool ShaderManager::initialise()
 void ShaderManager::addInstance(unsigned shaderId, IGameObject* gameObject)
 {
   this->shaders[shaderId]->addInstance(gameObject);
+  this->shaders[SHADER_DEPTH]->addInstance(gameObject);
 }
 
 void ShaderManager::executeShaders()
@@ -89,7 +89,7 @@ IShaderProgram* ShaderManager::createShader(const unsigned shaderType)
     case SHADER_PSYCHEDAELIC:
     {
       return new PsychedaelicShader(
-          (dynamic_cast<DepthShader*>(IShaderManager::getInstance()->getShader(
+          (dynamic_cast<DepthShader*>(this->getShader(
                SHADER_DEPTH)))->getDepthTexture());
     }
     default:

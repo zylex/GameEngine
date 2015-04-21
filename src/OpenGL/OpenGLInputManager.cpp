@@ -167,7 +167,7 @@ void OpenGLInputManager::keyCallback(GLFWwindow* window, const int key,
     return;
   }
 #endif
-  if (keyboardIsEnabled())
+  if (this->keyboardIsEnabled())
   {
     Event event;
 
@@ -564,7 +564,7 @@ void OpenGLInputManager::mouseButtonCallback(GLFWwindow* window,
     return;
   }
 #endif
-  if (mouseIsEnabled())
+  if (this->mouseIsEnabled())
   {
     Event event;
 
@@ -644,7 +644,7 @@ void OpenGLInputManager::mousePositionCallback(GLFWwindow* window,
     return;
   }
 #endif
-  if (mouseIsEnabled())
+  if (this->mouseIsEnabled())
   {
     Event event;
 
@@ -667,7 +667,7 @@ void OpenGLInputManager::mouseScrollCallback(GLFWwindow* window,
     return;
   }
 #endif
-  if (mouseIsEnabled())
+  if (this->mouseIsEnabled())
   {
 
     Event event;

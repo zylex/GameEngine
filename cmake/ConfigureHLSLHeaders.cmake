@@ -11,7 +11,7 @@ IF(DIRECT_X)
                 "$ENV{PROGRAMFILES}/Windows Kits/8.0/bin/x64"
                 "$ENV{PROGRAMFILES}/Windows Kits/8.1/bin/x86"
                 "$ENV{PROGRAMFILES}/Windows Kits/8.1/bin/x64"
-            DOC 
+            DOC
                 "The directory where the fxc.exe HLSL compiler resides"
         )
 
@@ -20,6 +20,9 @@ IF(DIRECT_X)
         ELSE()
             message(STATUS "Found fxc.exe with path: ${FXC}")
         ENDIF()
+
+        SET(DEBUG_DX11_SHADER FALSE CACHE BOOL "Add Debug Symbols to the compiler")
+
         message(STATUS "Creating HLSL shader header targets.")
         file(GLOB_RECURSE shader_list src/*.hlsl)
         FOREACH(file_path ${shader_list})
@@ -40,21 +43,40 @@ IF(DIRECT_X)
                 ENDIF()
             ENDIF()
             string(TOLOWER "${shader_type}" shader_type)
-            SET(size_line_of_code const SIZE_T ${file_name}_size "=" "sizeof(${file_name})$<SEMICOLON>")
+            SET(size_line_of_code const std::size_t ${file_name}_size "=" "sizeof(${file_name})$<SEMICOLON>")
 
             IF(CMAKE_DEBUG_OUTPUT)
                 message(STATUS "Filepath: ${file_path}")
                 message(STATUS "out: ${CMAKE_BINARY_DIR}/${file_name}.h}")
             ENDIF()
 
-            add_custom_command(
-                OUTPUT ${CMAKE_BINARY_DIR}/shaders/${file_name}.h
-                COMMAND ${FXC} /O3 /Qstrip_debug /Qstrip_priv /E main /Vn ${file_name} /Fh ${CMAKE_BINARY_DIR}/${file_name}.h /T ${shader_type}_5_0 /nologo ${file_path}# /Zpc
-                COMMAND echo ${size_line_of_code} >> ${CMAKE_BINARY_DIR}/${file_name}.h
-                MAIN_DEPENDENCY ${file_path}
-                DEPENDS ${file_path}
-                COMMENT "Compiling ${file_name}"
-            )
+            STRING(REPLACE "/" "\\" WIN_BIN_DIR ${CMAKE_BINARY_DIR})
+
+            IF(DEBUG_DX11_SHADER)
+                add_custom_command(
+                    OUTPUT ${CMAKE_BINARY_DIR}/shaders/${file_name}.h
+                    COMMAND ${FXC} /O0 /E main /Vn ${file_name} /T ${shader_type}_5_0 /nologo /Zi /Fc ${WIN_BIN_DIR}\\shaders\\${file_name}.cod /Fh ${WIN_BIN_DIR}\\shaders\\${file_name}.h.tmp ${file_path}# /Zpc
+                    COMMAND echo ${size_line_of_code} >> ${WIN_BIN_DIR}\\shaders\\${file_name}.h.tmp
+                    COMMAND echo \#include ^<windows.h^> > ${WIN_BIN_DIR}\\shaders\\${file_name}.h
+                    COMMAND type ${WIN_BIN_DIR}\\shaders\\${file_name}.h.tmp >> ${WIN_BIN_DIR}\\shaders\\${file_name}.h
+                    COMMAND del ${WIN_BIN_DIR}\\shaders\\${file_name}.h.tmp
+                    MAIN_DEPENDENCY ${file_path}
+                    DEPENDS ${file_path}
+                    COMMENT "Compiling ${file_name}"
+                )
+            ELSE()
+                add_custom_command(
+                    OUTPUT ${CMAKE_BINARY_DIR}/shaders/${file_name}.h
+                    COMMAND ${FXC} /O3 /Qstrip_debug /Qstrip_priv /E main /Vn ${file_name} /Fh ${CMAKE_BINARY_DIR}/shaders/${file_name}.h /T ${shader_type}_5_0 /nologo ${file_path}# /Zpc
+                    COMMAND echo ${size_line_of_code} >> ${WIN_BIN_DIR}\\shaders\\${file_name}.h.tmp
+                    COMMAND echo \#include ^<windows.h^> > ${WIN_BIN_DIR}\\shaders\\${file_name}.h
+                    COMMAND type ${WIN_BIN_DIR}\\shaders\\${file_name}.h.tmp >> ${WIN_BIN_DIR}\\shaders\\${file_name}.h
+                    COMMAND del ${WIN_BIN_DIR}\\shaders\\${file_name}.h.tmp
+                    MAIN_DEPENDENCY ${file_path}
+                    DEPENDS ${file_path}
+                    COMMENT "Compiling ${file_name}"
+                )
+            ENDIF()
             set_source_files_properties(${file_name}.h PROPERTIES GENERATED TRUE)
             set_property(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${file_name}.h)
         ENDFOREACH()

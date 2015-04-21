@@ -1,5 +1,10 @@
 #ifdef DIRECT_X
+
+#include "IGame.h"
 #include "IInputManager.h"
+
+#include "Event.h"
+
 #include "DirectXInputManager.h"
 
 namespace zge
@@ -66,15 +71,17 @@ LRESULT CALLBACK DirectXInputManager::MessageHandler(HWND hWnd, UINT message,
                                                      WPARAM wParam,
                                                      LPARAM lParam)
 {
+  return DirectXInputManager::getInstance()->messageHandler(hWnd, message,
+                                                            wParam, lParam);
+}
+
+LRESULT CALLBACK DirectXInputManager::messageHandler(HWND hWnd, UINT message,
+                                                     WPARAM wParam,
+                                                     LPARAM lParam)
+{
   switch (message)
   {
-    // Check if the window is being destroyed.
     case WM_DESTROY:
-    {
-      PostQuitMessage(0);
-      return 0;
-    }
-    // Check if the window is being closed.
     case WM_CLOSE:
     {
       PostQuitMessage(0);
@@ -82,92 +89,110 @@ LRESULT CALLBACK DirectXInputManager::MessageHandler(HWND hWnd, UINT message,
     }
   }
 
-  if (keyboardIsEnabled())
+  if (this->keyboardIsEnabled())
   {
     switch (message)
     {
       case WM_KEYDOWN:
       {
-        processKey(zge::KEY_DOWN, wParam);
+        this->processKey(zge::KEY_DOWN, wParam, lParam);
+        return 0;
       }
       case WM_KEYUP:
       {
-        processKey(zge::KEY_UP, wParam);
+        this->processKey(zge::KEY_UP, wParam, lParam);
         return 0;
       }
     }
   }
 
-  if (mouseIsEnabled())
+  if (this->mouseIsEnabled())
   {
     switch (message)
     {
-      case WM_MOUSE_MOVE:
+      Event event;
+      case WM_MOUSEMOVE:
       {
-        processMouseEvent({ zge::MOUSE_MOVE }, lParam);
+        event.eventType = zge::MOUSE_MOVE;
         return 0;
       }
       case WM_LBUTTONDOWN:
       {
-        processMouseEvent({ zge::MOUSE_BUTTON_DOWN, zge::MOUSE_LEFT }, lParam);
+        event.eventType = zge::MOUSE_BUTTON_DOWN;
+        event.key = zge::ZGE_MOUSE_LEFT;
         return 0;
       }
       case WM_LBUTTONUP:
       {
-        processMouseEvent({ zge::MOUSE_BUTTON_UP, zge::MOUSE_LEFT }, lParam);
+        event.eventType = zge::MOUSE_BUTTON_UP;
+        event.key = zge::ZGE_MOUSE_LEFT;
         return 0;
       }
       case WM_MBUTTONDOWN:
       {
-        processMouseEvent({ zge::MOUSE_BUTTON_DOWN, zge::MOUSE_MIDDLE },
-                          lParam);
+        event.eventType = zge::MOUSE_BUTTON_DOWN;
+        event.key = zge::ZGE_MOUSE_MIDDLE;
         return 0;
       }
       case WM_MBUTTONUP:
       {
-        processMouseEvent({ zge::MOUSE_BUTTON_UP, zge::MOUSE_MIDDLE }, lParam);
+        event.eventType = zge::MOUSE_BUTTON_UP;
+        event.key = zge::ZGE_MOUSE_MIDDLE;
         return 0;
       }
       case WM_RBUTTONDOWN:
       {
-        processMouseEvent({ zge::MOUSE_BUTTON_DOWN, zge::MOUSE_RIGHT }, lParam);
+        event.eventType = zge::MOUSE_BUTTON_DOWN;
+        event.key = zge::ZGE_MOUSE_RIGHT;
         return 0;
       }
       case WM_RBUTTONUP:
       {
-        processMouseEvent({ zge::MOUSE_BUTTON_UP, zge::MOUSE_RIGHT }, lParam);
+        event.eventType = zge::MOUSE_BUTTON_UP;
+        event.key = zge::ZGE_MOUSE_RIGHT;
         return 0;
       }
       case WM_MOUSEHWHEEL:
       {
+        Event event;
         event.eventType = zge::MOUSE_SCROLL;
         event.x = GET_WHEEL_DELTA_WPARAM(wParam);
+        IGame::getInstance()->getCurrentGameState()->processEvent(event);
         return 0;
       }
       case WM_MOUSEWHEEL:
       {
+        Event event;
         event.eventType = zge::MOUSE_SCROLL;
         event.y = GET_WHEEL_DELTA_WPARAM(wParam);
+        IGame::getInstance()->getCurrentGameState()->processEvent(event);
         return 0;
       }
       case WM_XBUTTONDOWN:
       {
-        processXMouseButtonEvent(zge::MOUSE_BUTTON_DOWN, lParam, wParam);
+        this->processXMouseButtonEvent(zge::MOUSE_BUTTON_DOWN, lParam, wParam);
+        // must return true to say that it has been handled
         return true;
       }
       case WM_XBUTTONUP:
       {
-        processXMouseButtonEvent(zge::MOUSE_BUTTON_UP, lParam, wParam);
+        this->processXMouseButtonEvent(zge::MOUSE_BUTTON_UP, lParam, wParam);
+        // must return true to say that it has been handled
         return true;
       }
+
+        this->processMouseEvent(event, lParam);
+        return 0;
     }
   }
-  // forward the message to handler
+
+  // not handled by our engine, so forward the message to handler
   return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
 void DirectXInputManager::processKey(const EventType eventType,
-                                     const WPARAM wParam) const
+                                     const WPARAM wParam,
+                                     const LPARAM lParam) const
 {
   Event event;
 
@@ -177,70 +202,71 @@ void DirectXInputManager::processKey(const EventType eventType,
     {
       if (eventType IS zge::KEY_DOWN)
       {
-        event.eventType = zge : MOUSE_BUTTON_DOWN;
+        event.eventType = zge::MOUSE_BUTTON_DOWN;
       }
       else
       {
-        event.eventType = zge : MOUSE_BUTTON_UP;
+        event.eventType = zge::MOUSE_BUTTON_UP;
       }
-      event.key = zge::MOUSE_LEFT;
-      processMouseEvent(event, lParam);
+      event.key = zge::ZGE_MOUSE_LEFT;
+      this->processMouseEvent(event, lParam);
       return;
     }
     case VK_RBUTTON:
     {
       if (eventType IS zge::KEY_DOWN)
       {
-        event.eventType = zge : MOUSE_BUTTON_DOWN;
+        event.eventType = zge::MOUSE_BUTTON_DOWN;
       }
       else
       {
-        event.eventType = zge : MOUSE_BUTTON_UP;
+        event.eventType = zge::MOUSE_BUTTON_UP;
       }
-      event.key = zge::MOUSE_RIGHT;
-      break;
+      event.key = zge::ZGE_MOUSE_RIGHT;
+      this->processMouseEvent(event, lParam);
+      return;
     }
     case VK_MBUTTON:
     {
       if (eventType IS zge::KEY_DOWN)
       {
-        event.eventType = zge : MOUSE_BUTTON_DOWN;
+        event.eventType = zge::MOUSE_BUTTON_DOWN;
       }
       else
       {
-        event.eventType = zge : MOUSE_BUTTON_UP;
+        event.eventType = zge::MOUSE_BUTTON_UP;
       }
-      event.eventType = zge : MOUSE_BUTTON_DOWN;
-      event.key = zge::MOUSE_MIDDLE;
-      break;
+      event.key = zge::ZGE_MOUSE_MIDDLE;
+      this->processMouseEvent(event, lParam);
+      return;
     }
     case VK_XBUTTON1:
     {
       if (eventType IS zge::KEY_DOWN)
       {
-        event.eventType = zge : MOUSE_BUTTON_DOWN;
+        event.eventType = zge::MOUSE_BUTTON_DOWN;
       }
       else
       {
-        event.eventType = zge : MOUSE_BUTTON_UP;
+        event.eventType = zge::MOUSE_BUTTON_UP;
       }
-      event.eventType = zge : MOUSE_BUTTON_DOWN;
-      event.key = zge::MOUSE_BACK;
-      break;
+      event.key = zge::ZGE_MOUSE_BACK;
+      this->processMouseEvent(event, lParam);
+      return;
     }
     case VK_XBUTTON2:
     {
       if (eventType IS zge::KEY_DOWN)
       {
-        event.eventType = zge : MOUSE_BUTTON_DOWN;
+        event.eventType = zge::MOUSE_BUTTON_DOWN;
       }
       else
       {
-        event.eventType = zge : MOUSE_BUTTON_UP;
+        event.eventType = zge::MOUSE_BUTTON_UP;
       }
-      event.eventType = zge : MOUSE_BUTTON_DOWN;
-      event.key = zge::MOUSE_FORWARD;
-      break;
+      event.key = zge::ZGE_MOUSE_FORWARD;
+      this->processMouseEvent(event, lParam);
+      return;
     }
     case VK_BACK:
     {
@@ -254,19 +280,22 @@ void DirectXInputManager::processKey(const EventType eventType,
     }
     case VK_RETURN:
     {
-      event.key = zge::ZGE_ENTER break;
+      event.key = zge::ZGE_ENTER;
+      break;
     }
     case VK_SHIFT:
     {
+      // not sure if it's left or right SHIFT?
       break;
     }
     case VK_CONTROL:
     {
+      // not sure if it's left or right CTRL?
       break;
     }
-
     case VK_MENU:
     {
+      // not sure if it's left or right ALT?
       break;
     }
     case VK_PAUSE:
@@ -814,11 +843,6 @@ void DirectXInputManager::processKey(const EventType eventType,
       event.key = zge::ZGE_COMMA;
       break;
     }
-    case VK_OEM_PERIOD:
-    {
-      event.key = zge::ZGE_PERIOD;
-      break;
-    }
     default:
     {
       event.key = zge::ZGE_UNKNOWN;
@@ -827,14 +851,15 @@ void DirectXInputManager::processKey(const EventType eventType,
   }
 
   event.eventType = eventType;
+
   IGame::getInstance()->getCurrentGameState()->processEvent(event);
 }
 
-void DirectXInputManager::processMouseEvent(const Event& event,
+void DirectXInputManager::processMouseEvent(Event& event,
                                             const LPARAM lParam) const
 {
-  event.x = GET_X_LPARAM(lParam);
-  event.y = GET_Y_LPARAM(lParam);
+  event.x = LOWORD(lParam);
+  event.y = HIWORD(lParam);
   IGame::getInstance()->getCurrentGameState()->processEvent(event);
 }
 
@@ -858,11 +883,11 @@ void DirectXInputManager::processXMouseButtonEvent(const EventType eventType,
     }
     default:
     {
-      event.key = zge::ZGE_UNKOWN;
+      event.key = zge::ZGE_UNKNOWN;
     }
   }
 
-  processMouseEvent(event, lParam);
+  this->processMouseEvent(event, lParam);
 }
 
 } // namespace dx

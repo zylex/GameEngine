@@ -1,3 +1,6 @@
+#include <iostream>
+#include <glm/gtx/string_cast.hpp>
+
 #include "DepthShader.h"
 
 #include "IGame.h"
@@ -85,8 +88,7 @@ void DepthShader::prepare()
 {
   MeshShader::prepare();
   // set constants
-  IRenderer::getInstance()->setConstant(0, new glm::mat4, sizeof(glm::mat4),
-                                        VERTEX_SHADER);
+  IRenderer::getInstance()->setConstant(0, &IResourceManager::getInstance()->getIdentityMatrix(), sizeof(glm::mat4), VERTEX_SHADER);
 }
 
 const unsigned DepthShader::getDepthTexture() { return this->depthTexture; }

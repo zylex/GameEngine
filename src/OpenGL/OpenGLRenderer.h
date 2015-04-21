@@ -11,9 +11,6 @@ namespace gl
 
 class OpenGLRenderer : public Renderer
 {
-private:
-  unsigned currentShaderProgramId;
-
 public:
   static OpenGLRenderer* getInstance();
   // destructor

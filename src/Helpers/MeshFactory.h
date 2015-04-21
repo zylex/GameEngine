@@ -1,7 +1,9 @@
 #ifndef MESHFACTORY_H
 #define MESHFACTORY_H
+
 #include <vector>
-#include <glm/glm.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 #include "Preprocessors.h"
 
@@ -12,8 +14,11 @@ class MeshFactory
 {
 private:
   std::vector<glm::vec3> vertices;
+  std::vector<glm::vec2> textureCoordinates;
   std::vector<glm::vec3> normals;
   std::vector<glm::uvec3> indices;
+  std::vector<glm::vec3> tangents;
+  std::vector<glm::vec3> bitangents;
   // MAYBE: Tangents/Bi-tangents?
 
 public:
@@ -42,6 +47,7 @@ private:
   void clear();
   const unsigned addVertex(glm::vec3);
   void generateNormals();
+  void generateTangents();
 };
 
 } // namespace zge

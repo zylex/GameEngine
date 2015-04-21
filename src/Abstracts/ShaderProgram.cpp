@@ -40,7 +40,8 @@ void ShaderProgram::prepare()
 
 void ShaderProgram::finish()
 {
-  // TODO: implement finish or remove it
+  // unbind the shaders
+  IRenderer::getInstance()->setShaderProgram(0);
 }
 
 void ShaderProgram::setOutputId(const unsigned outputId)

@@ -22,10 +22,6 @@ public:
 
   static IRenderer* getInstance();
   virtual const bool initialise() = 0;
-  virtual void render() = 0;
-
-  virtual void addInstance(const unsigned shaderId,
-                           IGameObject* gameObject) = 0;
 
   virtual void setShaderProgram(const unsigned programId) = 0;
 
@@ -60,8 +56,13 @@ public:
   virtual void disableDepth() = 0;
   // virtual void enableAlphaBlending() = 0;
   // virtual void disableAlphaBlending() = 0;
-  // virtual void enableCulling() = 0;
-  // virtual void disableCulling() = 0;
+   virtual void enableClockwiseCulling() = 0;
+   virtual void disableCulling() = 0;
+
+  // implemented by abstract class:
+  virtual void addInstance(const unsigned shaderId,
+                           IGameObject* gameObject) = 0;
+  virtual void render() = 0;
 };
 
 } // namespace zge

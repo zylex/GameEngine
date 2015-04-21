@@ -27,4 +27,24 @@ void Renderer::setDepthState(const unsigned depthState)
   this->depthState = depthState;
 }
 
+void Renderer::setShaderProgram(const unsigned programId)
+{
+  this->currentShaderProgramId = programId;
+}
+
+const unsigned Renderer::getShaderProgramId() const
+{
+  return this->currentShaderProgramId;
+}
+
+void Renderer::setRasterState(const unsigned rasterState)
+{
+  this->rasterState = rasterState;
+}
+
+const unsigned Renderer::getRasterState() const
+{
+  return this->rasterState;
+}
+
 } // namespace zge

@@ -1,3 +1,6 @@
+#include <iostream>
+#include <glm/gtx/string_cast.hpp>
+
 #include "ShaderType.h"
 #include "SamplerType.h"
 
@@ -90,6 +93,8 @@ const bool PsychedaelicShader::initialise()
     return false;
   }
 
+  // MAYBE: might be better to fetch the depthTextureId here instead of using
+  // constuctor
   // this->depthTextureId =
   //     (dynamic_cast<DepthShader*>(
   //          IShaderManager::getInstance()->getShader(DEPTH)))->getDepthTexture();
@@ -110,9 +115,18 @@ void PsychedaelicShader::prepare()
   IRenderer* renderer = IRenderer::getInstance();
 
   renderer->setTexture(0, this->depthTextureId, POINT_CLAMP, PIXEL_SHADER);
-  renderer->setConstant(0, new glm::mat4, sizeof(glm::mat4), VERTEX_SHADER);
+  renderer->setConstant(0, &IResourceManager::getInstance()->getIdentityMatrix(), sizeof(glm::mat4), VERTEX_SHADER);
   // set depth bool in pixel shader
   renderer->setConstant(1, &(this->showDepth), sizeof(bool), PIXEL_SHADER);
+}
+
+void PsychedaelicShader::finish()
+{
+  // unbind the texture
+  IRenderer* renderer = IRenderer::getInstance();
+  renderer->setTexture(0, 0, 0, PIXEL_SHADER);
+
+  ShaderProgram::finish();
 }
 
 void PsychedaelicShader::switchShowDepth()

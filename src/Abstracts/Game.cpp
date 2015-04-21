@@ -5,6 +5,7 @@
 #include "IGameState.h"
 #include "IInputManager.h"
 #include "IRenderer.h"
+#include "IResourceManager.h"
 
 #include "Game.h"
 
@@ -43,6 +44,14 @@ const bool Game::initialise()
   {
     return false;
   }
+
+  if (not IResourceManager::getInstance()->initialise())
+  {
+    return false;
+  }
+
+  IRenderer::getInstance()->enableDepth();
+  IRenderer::getInstance()->enableClockwiseCulling();
 
   std::unordered_map<int, IGameState*>::iterator stateIterator;
   for (stateIterator = this->states.begin();
@@ -95,7 +104,6 @@ void Game::frame()
 
 void Game::setWindowTitle(std::string windowTitle)
 {
-
   this->windowTitle = windowTitle;
 }
 

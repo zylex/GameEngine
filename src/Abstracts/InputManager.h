@@ -13,19 +13,22 @@ class InputManager : public IInputManager
 private:
   bool keyboardEnabled;
   bool mouseEnabled;
-  IGameState* currentState;
 
 public:
   InputManager();
   virtual ~InputManager() NOEXCEPT = default;
 
+  const bool clear();
   const bool enableKeyboard();
   const bool enableMouse();
+  const bool disableMouse();
+  const bool disableKeyboard();
+
   void setKeyboardEnabled(const bool);
   const bool keyboardIsEnabled();
   void setMouseEnabled(const bool);
   const bool mouseIsEnabled();
-  void setCurrentGameState(IGameState*);
+  // void setCurrentGameState(IGameState*);
 };
 
 } // namespace zge

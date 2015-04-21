@@ -18,24 +18,22 @@ public:
   static IResourceManager* getInstance();
   virtual ~IResourceManager() NOEXCEPT = default;
 
+  virtual const bool initialise() = 0;
+
   virtual const unsigned createMeshFromFile(const std::string filePath) = 0;
   virtual const unsigned createMesh(const std::vector<glm::vec3>& vertices,
                                     const std::vector<glm::vec3>& normals,
                                     const std::vector<glm::uvec3>& indices) = 0;
-  // virtual const unsigned createMesh(
-  //     const std::vector<glm::vec3>&,       // vertices
-  //     const std::vector<glm::uvec3>&) = 0; // indices
-  // virtual const unsigned createInstanceBuffer(
-  //     const std::vector<glm::mat4>&) = 0;
-  virtual const unsigned createDepthBuffer(const unsigned textureId) = 0;
+  // TODO: implement createMesh with tangents for opengl and directx
+  virtual const unsigned createMesh(
+      const std::vector<glm::vec3>& /*vertices*/,
+      const std::vector<glm::vec3>& /*normals*/,
+      const std::vector<glm::uvec3>& /*indices*/,
+      const std::vector<glm::vec2>& /*textureCoordinates*/,
+      const std::vector<glm::vec3>& /*tangents*/,
+      const std::vector<glm::vec3>& /*bitangents*/) = 0;
 
   virtual const unsigned getInstanceBuffer() = 0;
-  virtual const unsigned updateInstanceBuffer(
-      const std::vector<glm::mat4>& instanceData) = 0;
-
-  virtual const unsigned getSquareMesh() = 0;
-  // virtual void generateCylinderMesh() = 0;
-  // virtual void generateIcosphereMesh(const unsigned) = 0;
 
   virtual const unsigned compileShaderCode(const void* shaderCode,
                                            const std::size_t shaderCodeSize,
@@ -52,12 +50,14 @@ public:
                                             const unsigned textureType) = 0;
   virtual const unsigned createOutputBuffer(
       const unsigned depthTexture,
-      const std::vector<unsigned> outputTextures) = 0;
+      const std::vector<unsigned>& outputTextures) = 0;
 
-  virtual const unsigned addMeshIndexCount(
-      const std::pair<unsigned, unsigned> meshIndexCount) = 0;
-  virtual std::pair<unsigned, unsigned> getIndexCount(
-      const unsigned meshId) = 0;
+  virtual std::vector<unsigned>* getUniformBuffers(
+      const unsigned programId) = 0;
+
+  virtual const glm::mat4 getIdentityMatrix() const = 0;
+
+  virtual const unsigned getSquareMesh() = 0;
 };
 
 } // namespace zge

@@ -20,6 +20,8 @@ public:
   virtual void prepare() = 0;
   virtual void render() = 0;
   virtual void finish() = 0;
+
+  virtual const unsigned getProgramId() const = 0;
 };
 
 } // namespace zge

@@ -34,7 +34,6 @@ OpenGLGame* OpenGLGame::getInstance()
 
 OpenGLGame::OpenGLGame() : Game()
 {
-
   // constructor
 }
 
@@ -47,7 +46,6 @@ OpenGLGame::~OpenGLGame() noexcept
 
 OpenGLGame::OpenGLGame(const OpenGLGame& other)
 {
-
   // copy constructor
 }
 
@@ -64,7 +62,6 @@ OpenGLGame& OpenGLGame::operator=(const OpenGLGame& rhs)
 
 OpenGLGame::OpenGLGame(OpenGLGame&& other) noexcept
 {
-
   // move constructor (C++11)
 }
 
@@ -114,13 +111,14 @@ const bool OpenGLGame::initialiseOpenGLWindow()
   if (FULL_SCREEN)
   {
     this->window = glfwCreateWindow(SCREEN_WIDTH(), SCREEN_HEIGHT(),
-                                    getWindowTitle().c_str(),
+                                    this->getWindowTitle().c_str(),
                                     glfwGetPrimaryMonitor(), nullptr);
   }
   else
   {
-    this->window = glfwCreateWindow(SCREEN_WIDTH(), SCREEN_HEIGHT(),
-                                    getWindowTitle().c_str(), nullptr, nullptr);
+    this->window =
+        glfwCreateWindow(SCREEN_WIDTH(), SCREEN_HEIGHT(),
+                         this->getWindowTitle().c_str(), nullptr, nullptr);
   }
 
   // make sure window was created

@@ -74,7 +74,7 @@ const bool OpenGLRenderer::initialise()
 void OpenGLRenderer::setShaderProgram(const unsigned programId)
 {
   glUseProgram(programId);
-  this->currentShaderProgramId = programId;
+  Renderer::setShaderProgram(programId);
 }
 
 void OpenGLRenderer::setConstants(
@@ -84,16 +84,16 @@ void OpenGLRenderer::setConstants(
 {
   unsigned numberOfBuffers = bufferDataByteSizes.size();
   OpenGLResourceManager* resourceManager = OpenGLResourceManager::getInstance();
-  std::vector<unsigned> buffers = resourceManager->getUniformBuffers(
-      this->currentShaderProgramId, numberOfBuffers);
+  std::vector<unsigned>* buffers = resourceManager->getUniformBuffers(
+      this->getShaderProgramId(), numberOfBuffers);
   for (int i = 0; i < numberOfBuffers; ++i)
   {
     // update the buffer
-    glBindBuffer(GL_UNIFORM_BUFFER, buffers[i]);
+    glBindBuffer(GL_UNIFORM_BUFFER, (*buffers)[i]);
     glBufferData(GL_UNIFORM_BUFFER, bufferDataByteSizes[i], bufferDataArray[i],
                  GL_DYNAMIC_DRAW);
     // bind the buffer
-    glBindBufferBase(GL_UNIFORM_BUFFER, i, buffers[i]);
+    glBindBufferBase(GL_UNIFORM_BUFFER, i, (*buffers)[i]);
   }
 }
 
@@ -103,19 +103,19 @@ void OpenGLRenderer::setConstant(const unsigned indexPosition,
                                  const unsigned shaderType)
 {
   OpenGLResourceManager* resourceManager = OpenGLResourceManager::getInstance();
-  std::vector<unsigned> buffers =
-      resourceManager->getUniformBuffers(this->currentShaderProgramId);
+  const unsigned programId = this->getShaderProgramId();
+  std::vector<unsigned>* buffers =
+      resourceManager->getUniformBuffers(programId);
   // update the buffer
-  if (buffers.size() < indexPosition + 1)
+  if (buffers->size() < indexPosition + 1)
   {
-    buffers = resourceManager->getUniformBuffers(this->currentShaderProgramId,
-                                                 indexPosition + 1);
+    buffers = resourceManager->getUniformBuffers(programId, indexPosition + 1);
   }
-  glBindBuffer(GL_UNIFORM_BUFFER, buffers[indexPosition]);
+  glBindBuffer(GL_UNIFORM_BUFFER, (*buffers)[indexPosition]);
   glBufferData(GL_UNIFORM_BUFFER, bufferDataByteSize, bufferData,
                GL_DYNAMIC_DRAW);
   // bind the buffer
-  glBindBufferBase(GL_UNIFORM_BUFFER, indexPosition, buffers[indexPosition]);
+  glBindBufferBase(GL_UNIFORM_BUFFER, indexPosition, (*buffers)[indexPosition]);
 }
 
 void OpenGLRenderer::executeInstancedShader(
@@ -123,7 +123,7 @@ void OpenGLRenderer::executeInstancedShader(
     const unsigned long instanceDataUnitByteSize,
     const unsigned numberOfInstances)
 {
-  IResourceManager* resourceManager = IResourceManager::getInstance();
+  OpenGLResourceManager* resourceManager = OpenGLResourceManager::getInstance();
   std::pair<unsigned, unsigned> meshIndexCount =
       resourceManager->getIndexCount(meshId);
 

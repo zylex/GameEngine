@@ -12,15 +12,15 @@ public:
   // constructor
   Camera();
   // destructor
-  virtual ~Camera() noexcept;
+  virtual ~Camera() NOEXCEPT;
   // copy constructor
   Camera(const Camera&);
   // assignment operator
   Camera& operator=(const Camera&);
   // move constructor (C++11)
-  Camera(Camera&&) noexcept;
+  Camera(Camera&&) NOEXCEPT;
   // move assignment operator (C++11)
-  Camera& operator=(Camera&&) noexcept;
+  Camera& operator=(Camera&&) NOEXCEPT;
 
   void update();
   void draw();

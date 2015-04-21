@@ -12,8 +12,10 @@
 
 namespace zge
 {
+
 namespace dx
 {
+
 const void* CompileShader(const std::string filepath, size_t& size)
 {
   // check file extension
@@ -77,7 +79,9 @@ const void* CompileShader(const std::string filepath, size_t& size)
 
   return shaderBlob->GetBufferPointer();
 }
-}
-}
+
+} // namespace dx
+
+} // namespace zge
 
 #endif

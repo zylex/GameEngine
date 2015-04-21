@@ -11,7 +11,10 @@ namespace zge
 class Renderer : public IRenderer
 {
 private:
+  unsigned currentShaderProgramId;
+
   unsigned depthState;
+  unsigned rasterState;
 
 public:
   Renderer() = default;
@@ -21,8 +24,12 @@ public:
   void render();
   void addInstance(unsigned, IGameObject*);
 
+  virtual void setShaderProgram(const unsigned);
+  const unsigned getShaderProgramId() const;
+  virtual void setDepthState(const unsigned);
   const unsigned getDepthState() const;
-  void setDepthState(const unsigned);
+  virtual void setRasterState(const unsigned);
+  const unsigned getRasterState() const;
 };
 
 } // namespace zge
