@@ -88,23 +88,23 @@ void DirectXRenderer::setShaderProgram(const unsigned programId)
   if (this->getShaderProgramId() IS_NOT programId)
   {
     DirectXResourceManager* resourceManager =
-      DirectXResourceManager::getInstance();
+        DirectXResourceManager::getInstance();
     Program program = resourceManager->getProgram(programId);
 
     this->deviceContext->IASetInputLayout(
-      resourceManager->getInputLayout(program.inputLayout));
+        resourceManager->getInputLayout(program.inputLayout));
     this->deviceContext->CSSetShader(
-      resourceManager->getComputeShader(program.computeShader), nullptr, 0);
+        resourceManager->getComputeShader(program.computeShader), nullptr, 0);
     this->deviceContext->VSSetShader(
-      resourceManager->getVertexShader(program.vertexShader), nullptr, 0);
+        resourceManager->getVertexShader(program.vertexShader), nullptr, 0);
     this->deviceContext->GSSetShader(
-      resourceManager->getGeometryShader(program.geometryShader), nullptr, 0);
+        resourceManager->getGeometryShader(program.geometryShader), nullptr, 0);
     this->deviceContext->HSSetShader(
-      resourceManager->getHullShader(program.hullShader), nullptr, 0);
+        resourceManager->getHullShader(program.hullShader), nullptr, 0);
     this->deviceContext->DSSetShader(
-      resourceManager->getDomainShader(program.domainShader), nullptr, 0);
+        resourceManager->getDomainShader(program.domainShader), nullptr, 0);
     this->deviceContext->PSSetShader(
-      resourceManager->getPixelShader(program.pixelShader), nullptr, 0);
+        resourceManager->getPixelShader(program.pixelShader), nullptr, 0);
 
     Renderer::setShaderProgram(programId);
   }
@@ -253,7 +253,7 @@ void DirectXRenderer::executeInstancedShader(
   }
   else
   {
-    /*const unsigned */instanceBufferId = resourceManager->getInstanceBuffer();
+    /*const unsigned */ instanceBufferId = resourceManager->getInstanceBuffer();
   }
 
   ID3D11Buffer* instanceBuffer = resourceManager->getBuffer(instanceBufferId);
@@ -262,12 +262,14 @@ void DirectXRenderer::executeInstancedShader(
 
   deviceContext->Map(instanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0,
                      &mappedResource);
-  memcpy(mappedResource.pData, instanceDataArray, instanceDataUnitByteSize * numberOfInstances);
+  memcpy(mappedResource.pData, instanceDataArray,
+         instanceDataUnitByteSize * numberOfInstances);
   deviceContext->Unmap(instanceBuffer, 0);
 
   Program program = resourceManager->getProgram(this->getShaderProgramId());
 
-  this->deviceContext->IASetInputLayout(resourceManager->getInputLayout(program.inputLayout));
+  this->deviceContext->IASetInputLayout(
+      resourceManager->getInputLayout(program.inputLayout));
 
   const Mesh mesh = resourceManager->getMesh(meshId);
 
@@ -336,7 +338,7 @@ void DirectXRenderer::setTexture(const unsigned textureLocation,
 
 void DirectXRenderer::setOutput(const unsigned outputId)
 {
-  unsigned Id;// = outputId;
+  unsigned Id; // = outputId;
   if (outputId IS 0)
   {
     // use back buffer (outputId = 1)
@@ -365,21 +367,16 @@ void DirectXRenderer::setOutput(const unsigned outputId)
       numberOfOutputTargets, output.outputTargets.data(), output.depthTarget);
 }
 
-void DirectXRenderer::enableDepth() { 
-  
-  this->setDepthState(ENABLED); }
+void DirectXRenderer::enableDepth() { this->setDepthState(ENABLED); }
 
 void DirectXRenderer::disableDepth() { this->setDepthState(DISABLED); }
 
-void DirectXRenderer::enableClockwiseCulling()
+void DirectXRenderer::enableAntiClockwiseCulling()
 {
   this->setRasterState(CULL_BACK);
 }
 
-void DirectXRenderer::disableCulling()
-{
-  this->setRasterState(CULL_OFF);
-}
+void DirectXRenderer::disableCulling() { this->setRasterState(CULL_OFF); }
 
 void DirectXRenderer::setDeviceContext(ID3D11DeviceContext* deviceContext)
 {
@@ -391,7 +388,7 @@ void DirectXRenderer::setDepthState(const unsigned depthState)
   if (this->getDepthState() IS_NOT depthState)
   {
     this->deviceContext->OMSetDepthStencilState(
-      DirectXResourceManager::getInstance()->getDepthState(depthState), 1);
+        DirectXResourceManager::getInstance()->getDepthState(depthState), 1);
     Renderer::setDepthState(depthState);
   }
 }
@@ -400,7 +397,8 @@ void DirectXRenderer::setRasterState(const unsigned rasterState)
 {
   if (this->getRasterState() IS_NOT rasterState)
   {
-    this->deviceContext->RSSetState(DirectXResourceManager::getInstance()->getRasterState(rasterState));
+    this->deviceContext->RSSetState(
+        DirectXResourceManager::getInstance()->getRasterState(rasterState));
     Renderer::setRasterState(rasterState);
   }
 }

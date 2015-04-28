@@ -9,13 +9,25 @@ namespace zge
 class Dirty
 {
 private:
-  bool isDirtyData;
+  bool flag;
 
 public:
-  virtual ~Dirty() NOEXCEPT = default;
-  bool isDirty();
-  void dirty();
+  // constructor
+  Dirty();
+  // destructor
+  virtual ~Dirty() NOEXCEPT;
+  // copy constructor
+  Dirty(const Dirty&);
+  // assignment operator
+  Dirty& operator=(const Dirty&);
+  // move constructor (C++11)
+  Dirty(Dirty&&) NOEXCEPT;
+  // move assignment operator (C++11)
+  Dirty& operator=(Dirty&&) NOEXCEPT;
+
   void clean();
+  void dirty();
+  const bool isDirty() const;
 };
 
 } // namespace zge

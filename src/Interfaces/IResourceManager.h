@@ -55,7 +55,7 @@ public:
   virtual std::vector<unsigned>* getUniformBuffers(
       const unsigned programId) = 0;
 
-  virtual const glm::mat4 getIdentityMatrix() const = 0;
+  virtual const glm::mat4* getIdentityMatrix() const = 0;
 
   virtual const unsigned getSquareMesh() = 0;
 };

@@ -199,10 +199,21 @@ void ResourceManager::setInstanceBuffer(const unsigned instanceBufferId)
 //   return &this->constantBuffers[{ programId, shaderType }];
 // }
 
-//void ResourceManager::setUniformBuffers(const unsigned programId,
+// void ResourceManager::setUniformBuffers(const unsigned programId,
 //                                        std::vector<unsigned> uniformBuffers)
 //{
 //  this->uniformBuffers[programId] = uniformBuffers;
 //}
+
+void ResourceManager::setIdentityMatrix(glm::mat4 identityMatrix)
+{
+  this->identityMatrix = identityMatrix;
+}
+
+const glm::mat4* ResourceManager::getIdentityMatrix() const
+{
+  // TODO
+  return &this->identityMatrix;
+}
 
 } // namespace zge

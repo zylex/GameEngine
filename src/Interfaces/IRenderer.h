@@ -56,8 +56,8 @@ public:
   virtual void disableDepth() = 0;
   // virtual void enableAlphaBlending() = 0;
   // virtual void disableAlphaBlending() = 0;
-   virtual void enableClockwiseCulling() = 0;
-   virtual void disableCulling() = 0;
+  virtual void enableAntiClockwiseCulling() = 0;
+  virtual void disableCulling() = 0;
 
   // implemented by abstract class:
   virtual void addInstance(const unsigned shaderId,

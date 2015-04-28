@@ -1,16 +1,16 @@
-#ifndef RASTERSTATE_H
-#define RASTERSTATE_H
+#ifndef CULLSTATE_H
+#define CULLSTATE_H
 
 namespace zge
 {
 
-enum RasterState
+enum CullState
 {
   CULL_OFF,
   CULL_FRONT,
   CULL_BACK,
   WIREFRAME,
-  TOTAL_RASTER_STATES
+  TOTAL_CULL_STATES
 };
 
 } // namespace zge

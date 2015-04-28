@@ -37,6 +37,8 @@ public:
   IMaterial* getMaterial() const;
   void setMaterialId(const unsigned);
   const unsigned getMaterialId() const;
+
+  void addInstance(IShaderProgram*);
 };
 
 } // namespace zge

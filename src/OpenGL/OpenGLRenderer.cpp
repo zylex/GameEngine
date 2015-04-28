@@ -208,6 +208,14 @@ void OpenGLRenderer::disableDepth()
   }
 }
 
+void OpenGLRenderer::enableAntiClockwiseCulling()
+{
+  glFrontFace(GL_CW);
+  glCullFace(GL_BACK);
+}
+
+void OpenGLRenderer::disableCulling() { glFrontFace(GL_NONE); }
+
 } // namespace gl
 
 } // namespace zge

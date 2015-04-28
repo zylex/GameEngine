@@ -1,5 +1,7 @@
 #include "MeshObject.h"
 
+#include "IShaderProgram.h"
+
 namespace zge
 {
 
@@ -51,5 +53,10 @@ unsigned MeshObject::getMeshId() const { return m_meshId; }
 void MeshObject::setMaterial(IMaterial* material) { m_material = material; }
 
 IMaterial* MeshObject::getMaterial() const { return m_material; }
+
+void MeshObject::addInstance(IShaderProgram* shader)
+{
+  shader->addInstance(this);
+}
 
 } // namespace zge

@@ -16,18 +16,19 @@ private:
 
   unsigned currentInstanceDataSize;
 
-  //unsigned currentProgramId;
+  // unsigned currentProgramId;
 
-  //unsigned currentComputeShaderId;
-  //unsigned currentVertexShaderId;
-  //unsigned currentGeometryShaderId;
-  //unsigned currentDomainShaderId;
-  //unsigned currentHullShaderId;
-  //unsigned currentPixelShaderId;
-  //unsigned currentInputLayoutId;
+  // unsigned currentComputeShaderId;
+  // unsigned currentVertexShaderId;
+  // unsigned currentGeometryShaderId;
+  // unsigned currentDomainShaderId;
+  // unsigned currentHullShaderId;
+  // unsigned currentPixelShaderId;
+  // unsigned currentInputLayoutId;
 
   unsigned currentDepthStateId;
   unsigned currentRasterStateId;
+
 public:
   static DirectXRenderer* getInstance();
   // destructor
@@ -69,8 +70,8 @@ public:
   void disableDepth();
   //  void enableAlphaBlending();
   //  void disableAlphaBlending();
-    void enableClockwiseCulling();
-    void disableCulling();
+  void enableAntiClockwiseCulling();
+  void disableCulling();
 
   void setDeviceContext(ID3D11DeviceContext*);
 

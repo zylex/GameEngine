@@ -75,7 +75,8 @@ public:
   // const unsigned updateInstanceBuffer(const std::vector<glm::mat4>&);
   // const unsigned createDepthBuffer(const unsigned);
 
-  const glm::mat4 getIdentityMatrix() const;
+  const bool initialise();
+
 private:
   // constructor
   OpenGLResourceManager();

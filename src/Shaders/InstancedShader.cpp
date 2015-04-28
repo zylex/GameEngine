@@ -81,8 +81,7 @@ void InstancedShader<I, D, F, S>::prepare()
 template <typename I, typename D, typename F, typename S>
 void InstancedShader<I, D, F, S>::render()
 {
-  typename std::vector<I>::iterator instanceEnd, instanceBegin,
-      instanceIterator;
+  typename std::vector<I>::iterator instanceEnd, instanceIterator;
   instanceEnd = this->instances.end();
   for (instanceIterator = this->instances.begin();
        instanceIterator IS_NOT instanceEnd; ++instanceIterator)

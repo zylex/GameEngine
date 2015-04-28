@@ -32,6 +32,8 @@ private:
   // std::unordered_map<std::pair<unsigned, unsigned>, std::vector<unsigned> >
   //     constantBuffers;
 
+  glm::mat4 identityMatrix;
+
 public:
   virtual ~ResourceManager() NOEXCEPT = default;
 
@@ -62,7 +64,10 @@ public:
 
   // std::vector<unsigned>* getUniformBuffers(const unsigned);
   // std::vector<unsigned>* getUniformBuffers(const unsigned, const unsigned);
-  //void setUniformBuffers(const unsigned, std::vector<unsigned>);
+  // void setUniformBuffers(const unsigned, std::vector<unsigned>);
+
+  void setIdentityMatrix(glm::mat4);
+  const glm::mat4* getIdentityMatrix() const;
 
 private:
   const std::string getShaderKey(const void*, const std::size_t,

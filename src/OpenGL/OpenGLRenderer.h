@@ -47,6 +47,8 @@ public:
 
   void enableDepth();
   void disableDepth();
+  void enableAntiClockwiseCulling();
+  void disableCulling();
 
 private:
   // constructor

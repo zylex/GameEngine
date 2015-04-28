@@ -4,14 +4,14 @@
 
 namespace zge
 {
-GameState::GameState() : _currentCamera(nullptr) {}
+GameState::GameState() : currentCamera(nullptr) {}
 
 GameState::~GameState() NOEXCEPT
 {
-  SAFE_DELETE(_currentCamera);
-  for (unsigned i = 0; i < _gameObjects.size(); ++i)
+  SAFE_DELETE(this->currentCamera);
+  for (unsigned i = 0; i < this->gameObjects.size(); ++i)
   {
-    SAFE_DELETE(_gameObjects[i]);
+    SAFE_DELETE(this->gameObjects[i]);
   }
 }
 
@@ -19,22 +19,34 @@ GameState::~GameState() NOEXCEPT
 void GameState::update()
 {
 
-  for (std::vector<IGameObject*>::iterator it = _gameObjects.begin();
-       it != _gameObjects.end(); ++it)
+  for (std::vector<IGameObject*>::iterator it = this->gameObjects.begin();
+       it != this->gameObjects.end(); ++it)
   {
     (*it)->update();
   }
 }
 
-void GameState::setCurrentCamera(Camera* camera) { _currentCamera = camera; }
+void GameState::setCurrentCamera(Camera* camera)
+{
+  this->currentCamera = camera;
+}
 
-Camera* GameState::getCurrentCamera() const { return _currentCamera; }
+Camera* GameState::getCurrentCamera() const { return this->currentCamera; }
 
 void GameState::addGameObject(unsigned shaderId, IGameObject* gameObject)
 {
-  _gameObjects.push_back(gameObject);
+  this->gameObjects.push_back(gameObject);
 
   IRenderer::getInstance()->addInstance(shaderId, gameObject);
+}
+
+void GameState::cleanAll()
+{
+  std::vector<IGameObject*>::iterator it, end = this->gameObjects.end();
+  for (it = this->gameObjects.begin(); it IS_NOT end; ++it)
+  {
+    (*it)->clean();
+  }
 }
 
 } // namespace zge

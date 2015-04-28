@@ -43,7 +43,7 @@ private:
   std::unordered_map<unsigned, std::vector<unsigned> > uniformBuffers;
 
   // MAYBE: these should maybe be vectors instead of arrays?
-  ID3D11RasterizerState* rasterStates[TOTAL_RASTER_STATES];         // culling on/off
+  ID3D11RasterizerState* rasterStates[TOTAL_RASTER_STATES]; // culling on/off
   ID3D11DepthStencilState* depthStencilStates[3]; // default, read, off
   ID3D11BlendState* blendStates[2];               // alpha blending on/off
   ID3D11SamplerState* samplers[TOTAL_SAMPLERS];
@@ -125,8 +125,6 @@ public:
 
   ID3D11RenderTargetView* createBackBufferOutput(ID3D11Texture2D*);
 
-  const glm::mat4 getIdentityMatrix() const;
-
 private:
   // constructor
   DirectXResourceManager();
@@ -165,7 +163,8 @@ private:
   ID3D11DepthStencilState* createDepthDisabled() const;
   ID3D11DepthStencilState* createDepthEnabled() const;
 
-  ID3D11RasterizerState* createRasterState(D3D11_CULL_MODE, D3D11_FILL_MODE) const;
+  ID3D11RasterizerState* createRasterState(D3D11_CULL_MODE,
+                                           D3D11_FILL_MODE) const;
 
   ID3D11SamplerState* createSampler(D3D11_FILTER,
                                     D3D11_TEXTURE_ADDRESS_MODE) const;

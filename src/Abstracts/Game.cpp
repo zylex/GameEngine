@@ -51,7 +51,7 @@ const bool Game::initialise()
   }
 
   IRenderer::getInstance()->enableDepth();
-  IRenderer::getInstance()->enableClockwiseCulling();
+  IRenderer::getInstance()->enableAntiClockwiseCulling();
 
   std::unordered_map<int, IGameState*>::iterator stateIterator;
   for (stateIterator = this->states.begin();
@@ -98,6 +98,8 @@ void Game::frame()
   this->currentState->update();
 
   IRenderer::getInstance()->render();
+
+  this->currentState->cleanAll();
 
   this->changeState();
 }

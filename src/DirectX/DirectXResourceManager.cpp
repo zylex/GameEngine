@@ -185,6 +185,8 @@ DirectXResourceManager& DirectXResourceManager::operator=(
 
 const bool DirectXResourceManager::initialise()
 {
+  this->setIdentityMatrix(
+      glm::scale(glm::mat4(), glm::vec3{ 1.0f, 1.0f, -1.0f }));
   // create depth states
   this->depthStencilStates[ENABLED] = this->createDepthEnabled();
   if (this->depthStencilStates[ENABLED] IS nullptr)
@@ -212,25 +214,29 @@ const bool DirectXResourceManager::initialise()
   // this->device->GetImmediateContext(&context);
   // context->RSSetState(pResult);
 
-  this->rasterStates[CULL_OFF] = this->createRasterState(D3D11_CULL_NONE, D3D11_FILL_SOLID);
+  this->rasterStates[CULL_OFF] =
+      this->createRasterState(D3D11_CULL_NONE, D3D11_FILL_SOLID);
   if (this->rasterStates[CULL_OFF] IS nullptr)
   {
     return false;
   }
 
-  this->rasterStates[CULL_FRONT] = this->createRasterState(D3D11_CULL_BACK, D3D11_FILL_SOLID);
+  this->rasterStates[CULL_FRONT] =
+      this->createRasterState(D3D11_CULL_BACK, D3D11_FILL_SOLID);
   if (this->rasterStates[CULL_FRONT] IS nullptr)
   {
     return false;
   }
 
-  this->rasterStates[CULL_BACK] = this->createRasterState(D3D11_CULL_FRONT, D3D11_FILL_SOLID);
+  this->rasterStates[CULL_BACK] =
+      this->createRasterState(D3D11_CULL_FRONT, D3D11_FILL_SOLID);
   if (this->rasterStates[CULL_BACK] IS nullptr)
   {
     return false;
   }
 
-  this->rasterStates[WIREFRAME] = this->createRasterState(D3D11_CULL_FRONT, D3D11_FILL_WIREFRAME);
+  this->rasterStates[WIREFRAME] =
+      this->createRasterState(D3D11_CULL_FRONT, D3D11_FILL_WIREFRAME);
   if (this->rasterStates[WIREFRAME] IS nullptr)
   {
     return false;
@@ -917,7 +923,8 @@ ID3D11DepthStencilState* DirectXResourceManager::getDepthState(
   return this->depthStencilStates[depthState];
 }
 
-ID3D11RasterizerState* DirectXResourceManager::getRasterState(const unsigned rasterState) const
+ID3D11RasterizerState* DirectXResourceManager::getRasterState(
+    const unsigned rasterState) const
 {
   return this->rasterStates[rasterState];
 }
@@ -1093,7 +1100,7 @@ bool DirectXResourceManager::setBackBufferTexture(
   }
 }
 
-const glm::mat4 DirectXResourceManager::getIdentityMatrix() const
+const glm::mat4* DirectXResourceManager::getIdentityMatrix() const
 {
   return glm::scale(glm::mat4(), glm::vec3{ 1.0f, 1.0f, -1.0f });
 }

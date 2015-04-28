@@ -88,7 +88,9 @@ void DepthShader::prepare()
 {
   MeshShader::prepare();
   // set constants
-  IRenderer::getInstance()->setConstant(0, &IResourceManager::getInstance()->getIdentityMatrix(), sizeof(glm::mat4), VERTEX_SHADER);
+  IRenderer::getInstance()->setConstant(
+      0, IResourceManager::getInstance()->getIdentityMatrix(),
+      sizeof(glm::mat4), VERTEX_SHADER);
 }
 
 const unsigned DepthShader::getDepthTexture() { return this->depthTexture; }

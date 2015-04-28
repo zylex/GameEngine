@@ -5,13 +5,16 @@
 
 #include "Preprocessors.h"
 
+#include "Dirty.h"
+
 namespace zge
 {
 // forward declarations
 class IMesh;
 class IMaterial;
+class IShaderProgram;
 
-class IGameObject
+class IGameObject : public Dirty
 {
 public:
   virtual ~IGameObject() NOEXCEPT = default;
@@ -27,6 +30,8 @@ public:
   virtual glm::vec3 getScale() const = 0;
   virtual void setOrigin(const glm::vec3 origin) = 0;
   virtual glm::vec3 getOrigin() const = 0;
+
+  virtual void addInstance(IShaderProgram*) = 0;
 };
 
 } // namespace zge

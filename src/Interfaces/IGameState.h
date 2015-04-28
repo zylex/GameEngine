@@ -23,6 +23,7 @@ public:
   virtual Camera* getCurrentCamera() const = 0;
   virtual void addGameObject(const unsigned shaderId,
                              IGameObject* gameObject) = 0;
+  virtual void cleanAll() = 0;
 };
 
 } // namespace zge

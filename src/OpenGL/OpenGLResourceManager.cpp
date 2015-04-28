@@ -528,9 +528,11 @@ std::pair<unsigned, unsigned> OpenGLResourceManager::getIndexCount(
   return this->meshIndexCounts[meshId];
 }
 
-const glm::mat4 OpenGLResourceManager::getIdentityMatrix() const
+const bool OpenGLResourceManager::initialise()
 {
-  return glm::mat4();
+  // TODO: implement initialise?
+  this->setIdentityMatrix(glm::mat4());
+  return true;
 }
 
 } // namespace gl

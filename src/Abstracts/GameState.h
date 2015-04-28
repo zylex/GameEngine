@@ -12,9 +12,9 @@ namespace zge
 class GameState : public IGameState
 {
 private:
-  Camera* _currentCamera;
+  Camera* currentCamera;
 
-  std::vector<IGameObject*> _gameObjects;
+  std::vector<IGameObject*> gameObjects;
 
 public:
   GameState();
@@ -26,6 +26,8 @@ public:
   void setCurrentCamera(Camera* camera);
   Camera* getCurrentCamera() const;
   void addGameObject(unsigned, IGameObject*);
+
+  void cleanAll();
 };
 
 } // namespace zge
