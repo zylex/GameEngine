@@ -4,12 +4,14 @@
 #include "DepthShader.h"
 
 #include "IGame.h"
+#include "IGameState.h"
 #include "IRenderer.h"
 #include "IResourceManager.h"
 
 #include "DepthState.h"
 #include "ShaderType.h"
 #include "TextureType.h"
+#include "Camera.h"
 
 #include "InterpolatedVS.h"
 
@@ -89,7 +91,10 @@ void DepthShader::prepare()
   MeshShader::prepare();
   // set constants
   IRenderer::getInstance()->setConstant(
-      0, IResourceManager::getInstance()->getIdentityMatrix(),
+      0, new glm::mat4(IGame::getInstance()
+                           ->getCurrentGameState()
+                           ->getCurrentCamera()
+                           ->getViewMatrix()),
       sizeof(glm::mat4), VERTEX_SHADER);
 }
 

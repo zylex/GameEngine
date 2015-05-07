@@ -16,6 +16,11 @@ private:
   unsigned depthState;
   unsigned rasterState;
 
+#ifdef USE_ANT
+  bool showAntTweakBar = false;
+  bool twNotTerminated = true;
+#endif
+
 public:
   Renderer() = default;
   virtual ~Renderer() NOEXCEPT;
@@ -30,6 +35,10 @@ public:
   const unsigned getDepthState() const;
   virtual void setRasterState(const unsigned);
   const unsigned getRasterState() const;
+
+#ifdef USE_ANT
+  void toggleAntTweakBar();
+#endif
 };
 
 } // namespace zge

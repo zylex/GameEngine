@@ -8,6 +8,12 @@ namespace zge
 
 class Camera : public GameObject
 {
+private:
+  glm::vec3 cameraFront;
+  glm::vec3 cameraUp;
+  float cameraSpeed;
+  float sensitivity;
+
 public:
   // constructor
   Camera();
@@ -26,6 +32,24 @@ public:
   void draw();
 
   void addInstance(IShaderProgram*);
+
+  void setCameraSpeed(float);
+  const float getCameraSpeed() const;
+
+  void strafeLeft();
+  void strafeRight();
+  void strafeUp();
+  void strafeDown();
+
+  void turnLeft();
+  void turnRight();
+  void turnUp();
+  void turnDown();
+
+  void moveForward();
+  void moveBackward();
+
+  glm::mat4 getViewMatrix();
 };
 
 } // namespace zge

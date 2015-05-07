@@ -4,6 +4,10 @@
 
 #include <glm/gtx/transform.hpp>
 
+#ifdef USE_ANT
+#include <AntTweakBar.h>
+#endif
+
 #include "DirectXGame.h"
 
 #include "DirectXInputManager.h"
@@ -94,7 +98,7 @@ const bool DirectXGame::initialiseWindow()
 {
   // adapted from rastertek.com
 
-  //this->hinstance = GetModuleHandle(NULL);
+  // this->hinstance = GetModuleHandle(NULL);
   this->hinstance = GetModuleHandle(nullptr);
 
   // docs say return value is NULL for failure, hopefully this will equal
@@ -106,7 +110,7 @@ const bool DirectXGame::initialiseWindow()
   }
   std::string windowTitle = this->getWindowTitle();
   std::wstring applicationName(windowTitle.begin(), windowTitle.end());
-  //LPCSTR applicationName = this->getWindowTitle().c_str();
+  // LPCSTR applicationName = this->getWindowTitle().c_str();
 
   WNDCLASSEX windowClass;
   // Setup the windows class with default settings.
@@ -120,14 +124,13 @@ const bool DirectXGame::initialiseWindow()
   windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
   windowClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
   windowClass.lpszMenuName = NULL;
-  //windowClass.lpszClassName = this->getWindowTitle();
+  // windowClass.lpszClassName = this->getWindowTitle();
   windowClass.lpszClassName = applicationName.c_str();
-  //windowClass.lpszClassName = "snowglobe";
+  // windowClass.lpszClassName = "snowglobe";
   windowClass.hIconSm = windowClass.hIcon;
 
-
   // Register the window class.
-  //RegisterClassEx(&windowClass);
+  // RegisterClassEx(&windowClass);
   if (not RegisterClassEx(&windowClass))
   {
     return false;
@@ -184,16 +187,16 @@ const bool DirectXGame::initialiseWindow()
   //                   width, height, NULL, NULL, this->hinstance, NULL);
 
   this->hwnd = CreateWindow(
-    applicationName.c_str(), applicationName.c_str(),
+      applicationName.c_str(), applicationName.c_str(),
       WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP | WS_CAPTION, posX, posY,
       width, height, nullptr, nullptr, this->hinstance, nullptr);
   // docs say return value is NULL for failure, hopefully this will equal
   // nullptr
-  //if (this->hwnd IS NULL)
-    if (this->hwnd IS nullptr)
-    {
-      return false;
-    }
+  // if (this->hwnd IS NULL)
+  if (this->hwnd IS nullptr)
+  {
+    return false;
+  }
 
   // Bring the window up on the screen and set it as main focus.
   ShowWindow(this->hwnd, SW_SHOW);
@@ -367,20 +370,27 @@ const bool DirectXGame::initialiseDirectX()
     return false;
   }
 
-  //if (not DirectXRenderer::getInstance()->initialise())
+  // if (not DirectXRenderer::getInstance()->initialise())
   //{
   //  return false;
   //}
 
-  //if (not DirectXResourceManager::getInstance()->initialise())
+  // if (not DirectXResourceManager::getInstance()->initialise())
   //{
   //  return false;
   //}
-
 
   SAFE_RELEASE(texture2d);
 
-  // DirectXRenderer::getInstance()->enableDepth();
+// DirectXRenderer::getInstance()->enableDepth();
+
+#ifdef USE_ANT
+  if (not TwInit(TW_DIRECT3D11, device))
+  {
+    std::cerr << "Failed to initialise AntTweakBar." << std::endl;
+    return false;
+  }
+#endif
 
   return true;
 }
@@ -691,6 +701,7 @@ void DirectXGame::shutdown()
   {
     this->swapChain->SetFullscreenState(false, NULL);
   }
+  Game::shutdown();
 
   SAFE_RELEASE(this->swapChain);
   this->shutdownWindow();

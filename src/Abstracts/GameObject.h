@@ -16,14 +16,14 @@ private:
 public:
   virtual ~GameObject() NOEXCEPT = default;
 
-  void setPosition(const glm::vec3);
-  glm::vec3 getPosition() const;
-  void setRotation(const glm::vec3);
-  glm::vec3 getRotation() const;
-  void setScale(const glm::vec3);
-  glm::vec3 getScale() const;
-  void setOrigin(const glm::vec3);
-  glm::vec3 getOrigin() const;
+  virtual void setPosition(const glm::vec3);
+  virtual glm::vec3 getPosition() const;
+  virtual void setRotation(const glm::vec3);
+  virtual glm::vec3 getRotation() const;
+  virtual void setScale(const glm::vec3);
+  virtual glm::vec3 getScale() const;
+  virtual void setOrigin(const glm::vec3);
+  virtual glm::vec3 getOrigin() const;
 };
 
 } // namespace zge

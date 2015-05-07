@@ -1,11 +1,16 @@
 #include <iostream>
 
+#ifdef USE_ANT
+#include "Stats.h"
+#endif
+
 #include "Preprocessors.h"
 
 #include "IGameState.h"
 #include "IInputManager.h"
 #include "IRenderer.h"
 #include "IResourceManager.h"
+#include "IGlobalTimer.h"
 
 #include "Game.h"
 
@@ -15,9 +20,12 @@ namespace zge
 Game::Game()
     : running(true), nextState(0), currentState(nullptr), windowTitle("")
 {
+  // TODO: constructor: set thread affinity to 0
 }
 
-Game::~Game() NOEXCEPT
+Game::~Game() NOEXCEPT { this->shutdown(); }
+
+void Game::shutdown()
 {
   if (this->states.size() > 0)
   {
@@ -35,6 +43,12 @@ Game::~Game() NOEXCEPT
 
 const bool Game::initialise()
 {
+  // start the clock
+  if (not IGlobalTimer::getInstance())
+  {
+    return false;
+  }
+
   if (not IInputManager::getInstance()->clear())
   {
     return false;
@@ -73,10 +87,13 @@ const int Game::run()
     if (this->initialise())
     {
       this->changeState();
+      // TODO: Game::run: Start the other threads
+
       while (this->isRunning())
       {
         this->frame();
       }
+      // TODO: Game::run: join other threads
       return EXIT_SUCCESS;
     }
     else
@@ -99,9 +116,13 @@ void Game::frame()
 
   IRenderer::getInstance()->render();
 
-  this->currentState->cleanAll();
+  // this->currentState->cleanAll();
 
   this->changeState();
+
+#ifdef USE_ANT
+  Stats::getInstance()->mainThreadTick();
+#endif
 }
 
 void Game::setWindowTitle(std::string windowTitle)
@@ -109,7 +130,7 @@ void Game::setWindowTitle(std::string windowTitle)
   this->windowTitle = windowTitle;
 }
 
-const std::string Game::getWindowTitle() const { return this->windowTitle; }
+const std::string& Game::getWindowTitle() const { return this->windowTitle; }
 
 void Game::addGameState(const int key, IGameState* state)
 {

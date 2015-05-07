@@ -2,6 +2,10 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 
+#ifdef USE_ANT
+#include "Stats.h"
+#endif
+
 #include "IGame.h"
 #include "IShaderProgram.h"
 
@@ -303,6 +307,11 @@ const unsigned DirectXResourceManager::createMesh(
     return 0;
   }
 
+#ifdef USE_ANT
+  Stats::numberOfVertices += vertices.size();
+  Stats::numberOfTriangles += indices.size();
+#endif
+
   const D3D11_BUFFER_DESC vertexBufferDescription =
       this->getVertexBufferDescription(sizeof(glm::vec3) * vertices.size());
 
@@ -358,7 +367,12 @@ const unsigned DirectXResourceManager::createMesh(
     const std::vector<glm::vec3>& tangents,
     const std::vector<glm::vec3>& bitangents)
 {
-  // TODO: implement createMesh with tangents
+// TODO: implement createMesh with tangents
+#ifdef USE_ANT
+  Stats::numberOfVertices += vertices.size();
+  Stats::numberOfTriangles += indices.size();
+#endif
+
   return 0;
 }
 

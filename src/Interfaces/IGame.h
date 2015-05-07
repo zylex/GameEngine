@@ -34,10 +34,13 @@ public:
   virtual const bool initialise() = 0;
 
   virtual void setWindowTitle(const std::string windowTitle) = 0;
+  virtual const std::string& getWindowTitle() const = 0;
+  // virtual const float getFPS() const = 0;
 
   virtual const int run() = 0;
 
   virtual void quit() = 0;
+  virtual const bool isRunning() const = 0;
   virtual void addGameState(const int gameStateId, IGameState* gameState) = 0;
   virtual void setNextState(const int gameStateId) = 0;
   virtual IGameState* getCurrentGameState() const = 0;

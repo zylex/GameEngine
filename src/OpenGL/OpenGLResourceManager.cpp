@@ -5,6 +5,10 @@
 
 #include <GL/glew.h>
 
+#ifdef USE_ANT
+#include "Stats.h"
+#endif
+
 #include "Preprocessors.h"
 
 #include "IGame.h"
@@ -115,6 +119,11 @@ const unsigned OpenGLResourceManager::createMesh(
         << std::endl;
     return 0;
   }
+#ifdef USE_ANT
+  Stats::numberOfVertices += vertices.size();
+  Stats::numberOfTriangles += indices.size();
+#endif
+
   unsigned IDs[4];
   // vertexBuffer
   glGenBuffers(3, IDs);

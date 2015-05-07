@@ -68,6 +68,8 @@ const bool OpenGLRenderer::initialise()
 {
   glClearColor(zge::CLEAR_COLOR.x, zge::CLEAR_COLOR.y, zge::CLEAR_COLOR.z,
                zge::CLEAR_COLOR.w);
+
+  this->window = glfwGetCurrentContext();
   return Renderer::initialise();
 }
 
@@ -215,6 +217,10 @@ void OpenGLRenderer::enableAntiClockwiseCulling()
 }
 
 void OpenGLRenderer::disableCulling() { glFrontFace(GL_NONE); }
+
+void OpenGLRenderer::setWindow(GLFWwindow* win) { this->window = win; }
+
+void OpenGLRenderer::swapBuffers() { glfwSwapBuffers(this->window); }
 
 } // namespace gl
 

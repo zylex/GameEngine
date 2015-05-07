@@ -63,6 +63,11 @@ public:
   virtual void addInstance(const unsigned shaderId,
                            IGameObject* gameObject) = 0;
   virtual void render() = 0;
+  virtual void swapBuffers() = 0;
+
+#ifdef USE_ANT
+  virtual void toggleAntTweakBar() = 0;
+#endif
 };
 
 } // namespace zge

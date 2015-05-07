@@ -1,15 +1,34 @@
+#include <AntTweakBar.h>
+
+#include "IGame.h"
+#include "IGameState.h"
 #include "IShaderProgram.h"
 #include "IShaderManager.h"
 
 #include "Renderer.h"
 
+#include "Stats.h"
+
 namespace zge
 {
 
-Renderer::~Renderer() NOEXCEPT {}
+Renderer::~Renderer() NOEXCEPT
+{
+#ifdef USE_ANT
+  if (this->twNotTerminated)
+  {
+    TwTerminate();
+    this->twNotTerminated = false;
+  }
+#endif
+}
 
 const bool Renderer::initialise()
 {
+#ifdef USE_ANT
+  this->showAntTweakBar = false;
+  this->twNotTerminated = true;
+#endif
   return IShaderManager::getInstance()->initialise();
 }
 
@@ -18,7 +37,19 @@ void Renderer::addInstance(unsigned shaderId, IGameObject* gameObject)
   IShaderManager::getInstance()->addInstance(shaderId, gameObject);
 }
 
-void Renderer::render() { IShaderManager::getInstance()->executeShaders(); }
+void Renderer::render()
+{
+  IShaderManager::getInstance()->executeShaders();
+  IGame::getInstance()->getCurrentGameState()->cleanAll();
+#ifdef USE_ANT
+  if (this->showAntTweakBar)
+  {
+    TwDraw();
+  }
+  Stats::getInstance()->visualizationThreadTick();
+#endif
+  this->swapBuffers();
+}
 
 const unsigned Renderer::getDepthState() const { return this->depthState; }
 
@@ -42,9 +73,14 @@ void Renderer::setRasterState(const unsigned rasterState)
   this->rasterState = rasterState;
 }
 
-const unsigned Renderer::getRasterState() const
+const unsigned Renderer::getRasterState() const { return this->rasterState; }
+
+#ifdef USE_ANT
+void Renderer::toggleAntTweakBar()
 {
-  return this->rasterState;
+  this->showAntTweakBar = not this->showAntTweakBar;
 }
+
+#endif
 
 } // namespace zge

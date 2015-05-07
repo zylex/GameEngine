@@ -18,6 +18,11 @@ private:
   IGameState* currentState;
   std::string windowTitle;
 
+#ifdef USE_ANT
+  bool showAntTweakBar = false;
+  bool twNotTerminated = true;
+#endif
+
 public:
   Game();
   virtual ~Game() NOEXCEPT;
@@ -25,9 +30,10 @@ public:
   virtual const bool initialise();
   virtual const int run();
   virtual void frame();
+  virtual void shutdown();
 
   void setWindowTitle(const std::string);
-  const std::string getWindowTitle() const;
+  const std::string& getWindowTitle() const;
 
   void quit();
   void addGameState(const int, IGameState*);
@@ -38,6 +44,8 @@ public:
   const bool isRunning() const;
 
   const std::unordered_map<int, IGameState*> getStates();
+
+  static const unsigned MAIN_THREAD_AFFINITY = 0;
 };
 
 } // namespace zge

@@ -1,9 +1,11 @@
 #ifndef MODELFACTORY_H
 #define MODELFACTORY_H
+
 #include "Preprocessors.h"
 
 namespace zge
 {
+class IGameObject;
 // TODO: Implement ModelFactory header
 class ModelFactory
 {
@@ -20,6 +22,8 @@ public:
   ModelFactory(ModelFactory&&) NOEXCEPT;
   // move assignment operator (C++11)
   ModelFactory& operator=(ModelFactory&&) NOEXCEPT;
+
+  IGameObject* createBoxObject(float size);
 };
 
 } // namespace zge

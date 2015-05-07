@@ -1,6 +1,8 @@
 #ifndef OPENGLRENDERER_H
 #define OPENGLRENDERER_H
 
+#include <GLFW/glfw3.h>
+
 #include "Renderer.h"
 
 namespace zge
@@ -11,6 +13,9 @@ namespace gl
 
 class OpenGLRenderer : public Renderer
 {
+private:
+  GLFWwindow* window;
+
 public:
   static OpenGLRenderer* getInstance();
   // destructor
@@ -49,6 +54,9 @@ public:
   void disableDepth();
   void enableAntiClockwiseCulling();
   void disableCulling();
+
+  void setWindow(GLFWwindow*);
+  void swapBuffers();
 
 private:
   // constructor

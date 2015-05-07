@@ -7,12 +7,14 @@
 #include "IGame.h"
 #include "IRenderer.h"
 #include "IResourceManager.h"
+#include "IGameState.h"
 #include "IGameObject.h"
 #include "IShaderManager.h"
 
 #include "DepthState.h"
 #include "TextureType.h"
 #include "Shader.h"
+#include "Camera.h"
 
 #include "PsychedaelicShader.h"
 
@@ -115,8 +117,14 @@ void PsychedaelicShader::prepare()
   IRenderer* renderer = IRenderer::getInstance();
 
   renderer->setTexture(0, this->depthTextureId, POINT_CLAMP, PIXEL_SHADER);
-  renderer->setConstant(0, IResourceManager::getInstance()->getIdentityMatrix(),
-                        sizeof(glm::mat4), VERTEX_SHADER);
+  glm::mat4 viewMatrix = IGame::getInstance()
+                             ->getCurrentGameState()
+                             ->getCurrentCamera()
+                             ->getViewMatrix();
+  // std::cout << "viewMatrix: " << glm::to_string(viewMatrix) << std::endl;
+  glm::mat4* view = new glm::mat4(viewMatrix);
+  renderer->setConstant(0, view, sizeof(glm::mat4), VERTEX_SHADER);
+  delete view;
   // set depth bool in pixel shader
   renderer->setConstant(1, &(this->showDepth), sizeof(bool), PIXEL_SHADER);
 }

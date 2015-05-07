@@ -5,6 +5,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 
+#ifdef USE_ANT
+#include <AntTweakBar.h>
+#endif
+
 #include "Preprocessors.h"
 
 #include "OpenGLGame.h"
@@ -39,6 +43,7 @@ OpenGLGame::OpenGLGame() : Game()
 
 OpenGLGame::~OpenGLGame() noexcept
 {
+  this->shutdown();
   // destructor
   glfwDestroyWindow(this->window);
   glfwTerminate();
@@ -79,6 +84,14 @@ const bool OpenGLGame::initialise()
     return false;
   }
 
+#ifdef USE_ANT
+  if (not TwInit(TW_OPENGL_CORE, nullptr))
+  {
+    std::cerr << "Failed to initialise AntTweakBar." << std::endl;
+    return false;
+  }
+#endif
+
   return Game::initialise();
 }
 
@@ -101,6 +114,7 @@ const bool OpenGLGame::initialiseOpenGLWindow()
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
   // MAYBE: monitor chooser?
   // MAYBE: use primary or biggest monitor size for fullscreen
@@ -141,8 +155,7 @@ const bool OpenGLGame::initialiseOpenGLWindow()
     return false;
   }
 
-  // this avoids errors maybe?
-  // TODO: find out why this is here and correct this comment XD
+  // http://www.glfw.org/docs/latest/quick.html#quick_swap_buffers
   glfwSwapInterval(1);
 
   return true;
@@ -161,14 +174,12 @@ void OpenGLGame::frame()
     Game::frame();
   }
 
-  glfwSwapBuffers(this->window);
   glfwPollEvents();
 }
 
 void OpenGLGame::error_callback(int error, const char* description)
 {
   std::cerr << description << std::endl;
-  std::cout << description << std::endl;
 }
 
 } // namespace gl
