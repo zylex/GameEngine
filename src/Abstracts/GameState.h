@@ -5,6 +5,7 @@
 #include "IGameState.h"
 #include "IGameObject.h"
 #include "Camera.h"
+#include "Light.h"
 
 namespace zge
 {
@@ -15,6 +16,7 @@ private:
   Camera* currentCamera;
 
   std::vector<IGameObject*> gameObjects;
+  std::vector<Light*> lights;
 
 public:
   GameState();
@@ -28,6 +30,9 @@ public:
   void addGameObject(unsigned, IGameObject*);
 
   void cleanAll();
+
+  void addLight(Light*);
+  std::vector<Light*> getLights() const;
 };
 
 } // namespace zge

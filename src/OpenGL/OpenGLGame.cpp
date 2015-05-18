@@ -91,8 +91,13 @@ const bool OpenGLGame::initialise()
     return false;
   }
 #endif
+  OpenGLRenderer::getInstance()->setWindow(this->window);
 
-  return Game::initialise();
+  if (not Game::initialise())
+  {
+    return false;
+  }
+  return true;
 }
 
 const bool OpenGLGame::initialiseOpenGLWindow()

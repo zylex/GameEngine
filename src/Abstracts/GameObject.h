@@ -12,8 +12,10 @@ private:
   glm::vec3 rotation;
   glm::vec3 scale;
   glm::vec3 origin;
+  float mass;
 
 public:
+  GameObject();
   virtual ~GameObject() NOEXCEPT = default;
 
   virtual void setPosition(const glm::vec3);
@@ -24,6 +26,8 @@ public:
   virtual glm::vec3 getScale() const;
   virtual void setOrigin(const glm::vec3);
   virtual glm::vec3 getOrigin() const;
+  virtual void setMass(const float);
+  virtual float getMass() const;
 };
 
 } // namespace zge

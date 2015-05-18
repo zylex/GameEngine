@@ -1,20 +1,30 @@
 #ifdef OPEN_GL
 #include <iostream>
+#include <sstream>
 #include <iterator>
 #include <string>
 
+// #include <glm/gtx/transform.hpp>
 #include <GL/glew.h>
+#include <SOIL/SOIL.h>
+#include <GLFW/glfw3.h>
 
 #ifdef USE_ANT
 #include "Stats.h"
+#endif
+
+#ifdef DEBUG
+#include <sys/param.h>
+#include <unistd.h>
 #endif
 
 #include "Preprocessors.h"
 
 #include "IGame.h"
 #include "ShaderType.h"
-#include "SamplerType.h"
+// #include "SamplerType.h"
 #include "TextureType.h"
+// #include "ShaderInputElement.h"
 
 #include "OpenGLResourceManager.h"
 
@@ -70,6 +80,8 @@ OpenGLResourceManager::~OpenGLResourceManager() noexcept
     glDeleteProgram(i->second);
   }
 
+  glDeleteBuffers(this->existingBuffers.size(), this->existingBuffers.data());
+
   glDeleteFramebuffers(this->existingOutputs.size(),
                        this->existingOutputs.data());
 
@@ -109,10 +121,12 @@ OpenGLResourceManager& OpenGLResourceManager::operator=(
 
 const unsigned OpenGLResourceManager::createMesh(
     const std::vector<glm::vec3>& vertices,
+    const std::vector<glm::vec2>& textureCoordinates,
     const std::vector<glm::vec3>& normals,
     const std::vector<glm::uvec3>& indices)
 {
-  if (vertices.size() IS_NOT normals.size())
+  if (vertices.size() IS_NOT normals.size() and
+      vertices.size() IS_NOT textureCoordinates.size())
   {
     std::cerr
         << "Error creating mesh, not the same amount of vertices and normals"
@@ -124,53 +138,95 @@ const unsigned OpenGLResourceManager::createMesh(
   Stats::numberOfTriangles += indices.size();
 #endif
 
-  unsigned IDs[4];
+#ifdef DEBUG
+  std::cout << "number of vertices: " << vertices.size() << std::endl;
+  for (int i = 0; i < vertices.size(); ++i)
+  {
+    std::cout << "Vertex position: {" << vertices[i].x << ", " << vertices[i].y
+              << ", " << vertices[i].z << "}" << std::endl;
+    std::cout << "Texture coordinates: {" << textureCoordinates[i].x << ", "
+              << textureCoordinates[i].y << "}" << std::endl;
+    std::cout << "Vertex normals: {" << normals[i].x << ", " << normals[i].y
+              << ", " << normals[i].z << "}" << std::endl;
+  }
+  std::cout << "number of indices: " << indices.size() << std::endl;
+  for (int i = 0; i < indices.size(); ++i)
+  {
+    std::cout << "Triangle " << i << ": {" << indices[i].x << ", "
+              << indices[i].y << ", " << indices[i].z << "}" << std::endl;
+  }
+
+#endif
+
+  unsigned IDs[5];
+  glGenBuffers(4, IDs);
   // vertexBuffer
-  glGenBuffers(3, IDs);
   glBindBuffer(GL_ARRAY_BUFFER, IDs[0]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertices.size(),
                vertices.data(), GL_STATIC_DRAW);
-  // normalBuffer
+  // texCoordBuffer
   glBindBuffer(GL_ARRAY_BUFFER, IDs[1]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * textureCoordinates.size(),
+               textureCoordinates.data(), GL_STATIC_DRAW);
+  // normalBuffer
+  glBindBuffer(GL_ARRAY_BUFFER, IDs[2]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * normals.size(),
                normals.data(), GL_STATIC_DRAW);
 
   // indexBuffer
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IDs[2]);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IDs[3]);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(glm::uvec3) * indices.size(),
                indices.data(), GL_STATIC_DRAW);
 
   // vertexArray
-  glGenVertexArrays(1, &IDs[3]);
-  glBindVertexArray(IDs[3]);
+  glGenVertexArrays(1, &IDs[4]);
+  glBindVertexArray(IDs[4]);
   // vertexBuffer
   glBindBuffer(GL_ARRAY_BUFFER, IDs[0]);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
   glVertexAttribDivisor(0, 0);
-  // normalBuffer
+  // texCoordBuffer
   glBindBuffer(GL_ARRAY_BUFFER, IDs[1]);
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 0, 0);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
   glVertexAttribDivisor(1, 0);
+  // normalBuffer
+  glBindBuffer(GL_ARRAY_BUFFER, IDs[2]);
+  glEnableVertexAttribArray(2);
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE, 0, 0);
+  glVertexAttribDivisor(2, 0);
   // indexBuffer
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IDs[2]);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IDs[3]);
 
-  glBindBuffer(GL_ARRAY_BUFFER, getInstanceBuffer());
   // instanceBuffer
+  glBindBuffer(GL_ARRAY_BUFFER, this->getInstanceBuffer());
   for (unsigned i = 0; i < 4; ++i)
   {
-    glEnableVertexAttribArray(2 + i);
-    glVertexAttribPointer(2 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
+    glEnableVertexAttribArray(3 + i);
+    glVertexAttribPointer(3 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
                           (const GLvoid*)(sizeof(float) * i * 4));
-    glVertexAttribDivisor(2 + i, 1);
-    // TODO: figure out a way to make instance modifiable platform agnostically
+    glVertexAttribDivisor(3 + i, 1);
   }
 
   glBindVertexArray(GL_NONE);
-  glDeleteBuffers(3, IDs);
 
-  return this->addMeshIndexCount({ IDs[3], indices.size() * 3 });
+#ifdef DEBUG
+  for (int i = 0; i < 5; ++i)
+  {
+    std::cout << "id[" << i << "]: " << IDs[i] << std::endl;
+    // id[0] : 6 id[1] : 7 id[2] : 8 id[3] : 9 id[4] : 4
+  }
+  std::cout << "instnace buffer: " << this->getInstanceBuffer() << std::endl;
+#endif
+
+  for (int i = 0; i < 4; ++i)
+  {
+    this->existingBuffers.push_back(IDs[i]);
+  }
+  // glDeleteBuffers(4, IDs);
+
+  return this->addMeshIndexCount({ IDs[4], indices.size() * 3 });
 }
 
 const unsigned OpenGLResourceManager::createMesh(
@@ -541,7 +597,51 @@ const bool OpenGLResourceManager::initialise()
 {
   // TODO: implement initialise?
   this->setIdentityMatrix(glm::mat4());
-  return true;
+  // this->setIdentityMatrix(
+  //     glm::scale(glm::mat4(), glm::vec3{ 1.0f, 1.0f, -1.0f }));
+  return ResourceManager::initialise();
+}
+
+// void OpenGLResourceManager::addShaderInputElement(const unsigned,
+//                                                   const ShaderInputElement)
+// {
+//   // TODO
+// }
+
+const unsigned OpenGLResourceManager::loadTextureFromFile(
+    const std::string filepath)
+{
+  unsigned result = this->textureExists(filepath);
+  if (result IS 0)
+  {
+    // http://learnopengl.com/#!Getting-started/Textures
+    // glGenTextures(1, &result);
+
+    // glBindTexture(GL_TEXTURE_2D, result);
+
+    char* cwd = new char[MAXPATHLEN];
+    getcwd(cwd, MAXPATHLEN);
+    std::stringstream temp;
+    temp << cwd << "/" << filepath;
+    delete[] cwd;
+#ifdef DEBUG
+    std::cout << temp.str() << std::endl;
+#endif
+
+    result = SOIL_load_OGL_texture(
+        filepath.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB |
+            SOIL_FLAG_COMPRESS_TO_DXT);
+    if (result IS 0)
+    {
+      std::cerr << "Error loading file: " << temp.str() << std::endl;
+    }
+    else
+    {
+      this->addTexture(filepath, result);
+    }
+  }
+  return result;
 }
 
 } // namespace gl

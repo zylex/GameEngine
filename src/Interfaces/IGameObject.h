@@ -30,6 +30,8 @@ public:
   virtual glm::vec3 getScale() const = 0;
   virtual void setOrigin(const glm::vec3 origin) = 0;
   virtual glm::vec3 getOrigin() const = 0;
+  virtual void setMass(const float mass) = 0;
+  virtual float getMass() const = 0;
 
   virtual void addInstance(IShaderProgram*) = 0;
 };

@@ -23,6 +23,7 @@ private:
   std::unordered_map<std::string, unsigned> existingMeshes;
   std::unordered_map<std::string, unsigned> existingShaders;
   std::unordered_map<std::string, unsigned> existingShaderPrograms;
+  std::unordered_map<std::string, unsigned> existingTextures;
   // std::vector<unsigned> existingOutputs;
   // std::vector<unsigned> existingTextures;
   // std::vector<std::pair<unsigned, unsigned> > meshIndexCounts;
@@ -33,9 +34,14 @@ private:
   //     constantBuffers;
 
   glm::mat4 identityMatrix;
+  glm::mat4 perspectiveMatrix;
+  glm::mat4 orthographicMatrix;
 
 public:
+  ResourceManager();
   virtual ~ResourceManager() NOEXCEPT = default;
+
+  virtual const bool initialise();
 
   const unsigned createMeshFromFile(std::string);
 
@@ -53,9 +59,13 @@ public:
                         const unsigned, const unsigned, const unsigned,
                         const unsigned);
 
+  const unsigned textureExists(const std::string);
+  void addTexture(const std::string, const unsigned);
+
   std::unordered_map<std::string, unsigned> getExistingMeshes() const;
   std::unordered_map<std::string, unsigned> getExistingShaders() const;
   std::unordered_map<std::string, unsigned> getExistingShaderPrograms() const;
+  std::unordered_map<std::string, unsigned> getExistingTextures() const;
   // std::vector<unsigned> getExistingOutputs() const;
   // std::vector<unsigned> getExistingTextures() const;
 
@@ -67,7 +77,9 @@ public:
   // void setUniformBuffers(const unsigned, std::vector<unsigned>);
 
   void setIdentityMatrix(glm::mat4);
-  const glm::mat4* getIdentityMatrix() const;
+  const glm::mat4& getIdentityMatrix() const;
+  const glm::mat4& getPerspectiveMatrix() const;
+  const glm::mat4& getOrthographicMatrix() const;
 
 private:
   const std::string getShaderKey(const void*, const std::size_t,

@@ -291,7 +291,7 @@ const bool DirectXResourceManager::initialise()
     this->createInputLayout(programId, this->getBasicLayoutDescription());
   }
 
-  return true;
+  return ResourceManager::initialise();
 }
 
 const unsigned DirectXResourceManager::createMesh(
@@ -1112,11 +1112,6 @@ bool DirectXResourceManager::setBackBufferTexture(
     std::cerr << "ERROR: cannot set the back buffer to nullptr..." << std::endl;
     return false;
   }
-}
-
-const glm::mat4* DirectXResourceManager::getIdentityMatrix() const
-{
-  return glm::scale(glm::mat4(), glm::vec3{ 1.0f, 1.0f, -1.0f });
 }
 
 } // namespace dx

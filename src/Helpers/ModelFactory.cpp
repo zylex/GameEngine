@@ -51,12 +51,7 @@ IGameObject* ModelFactory::createBoxObject(float size)
 
   CompositeObject* result = new CompositeObject;
 
-  MeshFactory meshFactory;
-  meshFactory.generateSquareMesh();
-
-  unsigned meshId = IResourceManager::getInstance()->createMesh(
-      meshFactory.getVertices(), meshFactory.getNormals(),
-      meshFactory.getIndices());
+  unsigned meshId = IResourceManager::getInstance()->getSquareMesh();
 
   std::vector<IGameObject*> children;
 
@@ -70,26 +65,28 @@ IGameObject* ModelFactory::createBoxObject(float size)
   // front
   children[0]->setPosition({ 0.0f, 0.0f, 0.5f });
   children[0]->setRotation({ 0.0f, 0.0f, 0.0f });
+  // children[0]->setPosition({ 0.0f, 0.0f, 0.0f });
+  // children[0]->setRotation({ 0.0f, 0.0f, 0.0f });
 
   // back
   children[1]->setPosition({ 0.0f, 0.0f, -0.5f });
   children[1]->setRotation({ 0.0f, 180.0f, 0.0f });
 
   // left side
-  children[2]->setPosition({ 0.0f, 0.5f, 0.0f });
+  children[2]->setPosition({ -0.5f, 0.0f, 0.0f });
   children[2]->setRotation({ 0.0f, -90.0f, 0.0f });
 
   // right side
-  children[3]->setPosition({ 0.0f, -0.5f, 0.0f });
+  children[3]->setPosition({ 0.5f, 0.0f, 0.0f });
   children[3]->setRotation({ 0.0f, 90.0f, 0.0f });
 
   // top side
-  children[4]->setPosition({ -0.5f, 0.0f, 0.0f });
-  children[4]->setRotation({ 90.0f, 0.0f, 0.0f });
+  children[4]->setPosition({ 0.0f, 0.5f, 0.0f });
+  children[4]->setRotation({ -90.0f, 0.0f, 0.0f });
 
   // bottom side
-  children[5]->setPosition({ 0.5f, 0.0f, 0.0f });
-  children[5]->setRotation({ -90.0f, 0.0f, 0.0f });
+  children[5]->setPosition({ 0.0f, -0.5f, 0.0f });
+  children[5]->setRotation({ 90.0f, 0.0f, 0.0f });
 
   result->setChildren(children);
 

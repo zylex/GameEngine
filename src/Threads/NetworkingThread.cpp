@@ -10,3 +10,9 @@ NetworkingThread::NetworkingThread()
 NetworkingThread::~NetworkingThread() NOEXCEPT { this->join(); }
 
 } // namespace zge
+
+/*
+udp thread, initial broadcast
+listener thread
+sender thread
+*/

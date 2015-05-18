@@ -1,6 +1,8 @@
 #ifndef IGAMESTATE_H
 #define IGAMESTATE_H
 
+#include <vector>
+
 #include "Preprocessors.h"
 
 namespace zge
@@ -9,6 +11,7 @@ namespace zge
 struct Event;
 class IGameObject;
 class Camera;
+class Light;
 
 class IGameState
 {
@@ -24,6 +27,9 @@ public:
   virtual void addGameObject(const unsigned shaderId,
                              IGameObject* gameObject) = 0;
   virtual void cleanAll() = 0;
+
+  virtual void addLight(Light*) = 0;
+  virtual std::vector<Light*> getLights() const = 0;
 };
 
 } // namespace zge

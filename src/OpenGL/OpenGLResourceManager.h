@@ -11,7 +11,6 @@ namespace zge
 {
 namespace gl
 {
-
 class OpenGLResourceManager : public ResourceManager
 {
 private:
@@ -21,6 +20,7 @@ private:
 
   std::vector<unsigned> existingOutputs;
   std::vector<unsigned> existingTextures;
+  std::vector<unsigned> existingBuffers;
 
 public:
   static OpenGLResourceManager* getInstance();
@@ -36,6 +36,7 @@ public:
   OpenGLResourceManager& operator=(OpenGLResourceManager&& other) noexcept;
 
   const unsigned createMesh(const std::vector<glm::vec3>& /*vertices*/,
+                            const std::vector<glm::vec2>& /*texCoords*/,
                             const std::vector<glm::vec3>& /*normals*/,
                             const std::vector<glm::uvec3>& /*indices*/);
   const unsigned createMesh(
@@ -76,6 +77,10 @@ public:
   // const unsigned createDepthBuffer(const unsigned);
 
   const bool initialise();
+
+  // void addShaderInputElement(const unsigned, const ShaderInputElement);
+
+  const unsigned loadTextureFromFile(const std::string);
 
 private:
   // constructor

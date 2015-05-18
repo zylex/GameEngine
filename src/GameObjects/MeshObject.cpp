@@ -46,13 +46,13 @@ void MeshObject::update() {}
 
 void MeshObject::draw() {}
 
-void MeshObject::setMeshId(const unsigned meshId) { m_meshId = meshId; }
+void MeshObject::setMeshId(const unsigned meshId) { this->meshId = meshId; }
 
-unsigned MeshObject::getMeshId() const { return m_meshId; }
+unsigned MeshObject::getMeshId() const { return this->meshId; }
 
-void MeshObject::setMaterial(IMaterial* material) { m_material = material; }
+void MeshObject::setMaterial(IMaterial* material) { this->material = material; }
 
-IMaterial* MeshObject::getMaterial() const { return m_material; }
+IMaterial* MeshObject::getMaterial() const { return this->material; }
 
 void MeshObject::addInstance(IShaderProgram* shader)
 {

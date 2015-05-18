@@ -1,6 +1,7 @@
 // #include <iostream>
 // #include <glm/gtx/string_cast.hpp>
 
+#include <glm/gtx/euler_angles.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "IGame.h"
@@ -11,14 +12,26 @@
 namespace zge
 {
 
-Camera::Camera()
-    : cameraFront(0.0f, 0.0f, -1.0f),
-      cameraUp(0.0f, 1.0f, 0.0f),
-      cameraSpeed(5.0f),
-      sensitivity(0.05f)
-{
+const glm::vec4 Camera::UP = { 0.0f, 1.0f, 0.0f, 1.0f };
+const glm::vec4 Camera::FORWARD = { 0.0f, 0.0f, -1.0f, 1.0f };
 
+Camera::Camera()
+    : cameraFront(Camera::FORWARD),
+      cameraUp(Camera::UP),
+      cameraSpeed(1.0f),
+      // sensitivity(0.05f)
+      sensitivity(5.0f)
+{
   // constructor
+  // glm::vec3 rotation = this->getRotation();
+  // rotation.y = 90.0f;
+  // this->cameraFront.x =
+  //     cos(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
+  // this->cameraFront.y = sin(glm::radians(rotation.x));
+  // this->cameraFront.z =
+  //     sin(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
+  // this->cameraFront = glm::normalize(this->cameraFront);
+  // this->setRotation({ 0.0f, 0.0f, 0.0f });
 }
 
 Camera::~Camera() NOEXCEPT
@@ -100,44 +113,28 @@ void Camera::turnLeft()
 {
   glm::vec3 rotation = this->getRotation();
   rotation.y -= this->sensitivity;
-  glm::vec3 front;
-  front.x = cos(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
-  front.y = sin(glm::radians(rotation.x));
-  front.z = sin(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
-  this->cameraFront = glm::normalize(front);
+  this->setRotation(rotation);
 }
 
 void Camera::turnRight()
 {
   glm::vec3 rotation = this->getRotation();
   rotation.y += this->sensitivity;
-  glm::vec3 front;
-  front.x = cos(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
-  front.y = sin(glm::radians(rotation.x));
-  front.z = sin(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
-  this->cameraFront = glm::normalize(front);
+  this->setRotation(rotation);
 }
 
 void Camera::turnUp()
 {
   glm::vec3 rotation = this->getRotation();
-  rotation.x += this->sensitivity;
-  glm::vec3 front;
-  front.x = cos(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
-  front.y = sin(glm::radians(rotation.x));
-  front.z = sin(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
-  this->cameraFront = glm::normalize(front);
+  rotation.x -= this->sensitivity;
+  this->setRotation(rotation);
 }
 
 void Camera::turnDown()
 {
   glm::vec3 rotation = this->getRotation();
-  rotation.x -= this->sensitivity;
-  glm::vec3 front;
-  front.x = cos(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
-  front.y = sin(glm::radians(rotation.x));
-  front.z = sin(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
-  this->cameraFront = glm::normalize(front);
+  rotation.x += this->sensitivity;
+  this->setRotation(rotation);
 }
 
 void Camera::moveForward()
@@ -156,15 +153,16 @@ void Camera::moveBackward()
 
 glm::mat4 Camera::getViewMatrix()
 {
+  glm::vec3 rotation = this->getRotation();
+  glm::mat4 rotationMatrix =
+      glm::eulerAngleYXZ(glm::radians(rotation.y), glm::radians(rotation.x),
+                         glm::radians(rotation.z));
+  this->cameraFront =
+      glm::normalize(glm::vec3(Camera::FORWARD * rotationMatrix));
+  this->cameraUp = glm::normalize(glm::vec3(Camera::UP * rotationMatrix));
   glm::vec3 cameraPos = this->getPosition();
 
-  glm::mat4 indentityMatrix =
-      *IResourceManager::getInstance()->getIdentityMatrix();
-  glm::mat4 viewMatrix =
-      glm::lookAt(cameraPos, cameraPos + this->cameraFront, this->cameraUp);
-  glm::mat4 proj = glm::perspective(
-      45.0f, (float)SCREEN_WIDTH() / (float)SCREEN_HEIGHT(), 0.1f, 1000.0f);
-  return viewMatrix;
+  return glm::lookAt(cameraPos, cameraPos + this->cameraFront, this->cameraUp);
 }
 
 void Camera::addInstance(IShaderProgram* shaderProgram) {}

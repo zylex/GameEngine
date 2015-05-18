@@ -54,8 +54,8 @@ public:
   // virtual void enableReadDepth() = 0;
   // virtual void enableWriteDepth() = 0;
   virtual void disableDepth() = 0;
-  // virtual void enableAlphaBlending() = 0;
-  // virtual void disableAlphaBlending() = 0;
+  virtual void enableAlphaBlending() = 0;
+  virtual void disableAlphaBlending() = 0;
   virtual void enableAntiClockwiseCulling() = 0;
   virtual void disableCulling() = 0;
 

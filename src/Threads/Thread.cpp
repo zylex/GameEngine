@@ -1,9 +1,14 @@
 #include "Thread.h"
+#include "ThreadManager.h"
 
 namespace zge
 {
 
-void Thread::run() { this->theThread = std::thread(&Thread::cb, this); }
+void Thread::run()
+{
+  this->theThread = std::thread(&Thread::cb, this);
+  ThreadManager::getInstance().addThread(this);
+}
 
 void Thread::join() { this->theThread.join(); }
 

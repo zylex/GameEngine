@@ -64,13 +64,6 @@ void TweakBar::init()
   stringStream << this->barName << "/Main opened=false";
   TwDefine(stringStream.str().c_str());
 
-  TwAddVarRO(this->antTweakBar, "visualization_fps", TW_TYPE_FLOAT,
-             &Stats::getInstance()->getVisualizationFPS(),
-             "precision=2 group=Visualization label='FPS'");
-  stringStream.str(std::string());
-  stringStream << this->barName << "/Visualization opened=false";
-  TwDefine(stringStream.str().c_str());
-
   TwAddVarRO(this->antTweakBar, "network_fps", TW_TYPE_FLOAT,
              &Stats::getInstance()->getNetworkFPS(),
              "precision=2 group=Network label='FPS'");
@@ -89,9 +82,6 @@ void TweakBar::init()
   stringStream << this->barName << "/Main group='Threads'";
   TwDefine(stringStream.str().c_str());
   TwAddSeparator(this->antTweakBar, nullptr, "group='Threads'");
-  stringStream.str(std::string());
-  stringStream << this->barName << "/Visualization group='Threads'";
-  TwDefine(stringStream.str().c_str());
   TwAddSeparator(this->antTweakBar, nullptr, "group='Threads'");
   stringStream.str(std::string());
   stringStream << this->barName << "/Network group='Threads'";

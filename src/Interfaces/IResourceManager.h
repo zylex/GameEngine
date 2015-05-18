@@ -11,6 +11,7 @@
 
 namespace zge
 {
+struct ShaderInputElement;
 
 class IResourceManager
 {
@@ -22,6 +23,7 @@ public:
 
   virtual const unsigned createMeshFromFile(const std::string filePath) = 0;
   virtual const unsigned createMesh(const std::vector<glm::vec3>& vertices,
+                                    const std::vector<glm::vec2>& texCoords,
                                     const std::vector<glm::vec3>& normals,
                                     const std::vector<glm::uvec3>& indices) = 0;
   // TODO: implement createMesh with tangents for opengl and directx
@@ -38,7 +40,7 @@ public:
   virtual const unsigned compileShaderCode(const void* shaderCode,
                                            const std::size_t shaderCodeSize,
                                            const unsigned shaderType) = 0;
-  virtual const unsigned createShaderProgram(const unsigned computerShaderId,
+  virtual const unsigned createShaderProgram(const unsigned computeShaderId,
                                              const unsigned vertexShaderId,
                                              const unsigned geometryShaderId,
                                              const unsigned hullShaderId,
@@ -55,9 +57,13 @@ public:
   virtual std::vector<unsigned>* getUniformBuffers(
       const unsigned programId) = 0;
 
-  virtual const glm::mat4* getIdentityMatrix() const = 0;
+  virtual const glm::mat4& getIdentityMatrix() const = 0;
+  virtual const glm::mat4& getPerspectiveMatrix() const = 0;
+  virtual const glm::mat4& getOrthographicMatrix() const = 0;
 
   virtual const unsigned getSquareMesh() = 0;
+
+  virtual const unsigned loadTextureFromFile(const std::string filepath) = 0;
 };
 
 } // namespace zge

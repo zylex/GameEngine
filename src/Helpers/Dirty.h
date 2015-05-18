@@ -25,7 +25,7 @@ public:
   // move assignment operator (C++11)
   Dirty& operator=(Dirty&&) NOEXCEPT;
 
-  void clean();
+  virtual void clean();
   void dirty();
   const bool isDirty() const;
 };

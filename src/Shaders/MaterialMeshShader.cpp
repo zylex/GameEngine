@@ -50,7 +50,7 @@ const Instance MaterialMeshShader::getInstanceUnit(
     MeshObject* gameObject, const InstanceData& instanceData) const
 {
   Instance result;
-  result.materialId = gameObject->getMaterialId();
+  result.materialId = gameObject->getMaterial()->getTextureId();
   result.meshId = gameObject->getMeshId();
   result.instanceObjects.push_back(gameObject);
   result.instanceData.push_back(instanceData);
@@ -66,7 +66,8 @@ MaterialMeshShaderStructs::InstanceFinder::InstanceFinder(
 bool MaterialMeshShaderStructs::InstanceFinder::operator()(
     const Instance& gameObject) const
 {
-  return gameObject.materialId IS this->instance->getMaterialId() and
+  return gameObject.materialId IS this->instance->getMaterial()
+             ->getTextureId() and
          gameObject.meshId IS this->instance->getMeshId();
 }
 

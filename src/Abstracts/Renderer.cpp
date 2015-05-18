@@ -46,7 +46,6 @@ void Renderer::render()
   {
     TwDraw();
   }
-  Stats::getInstance()->visualizationThreadTick();
 #endif
   this->swapBuffers();
 }
@@ -74,6 +73,13 @@ void Renderer::setRasterState(const unsigned rasterState)
 }
 
 const unsigned Renderer::getRasterState() const { return this->rasterState; }
+
+void Renderer::setAlphaState(const unsigned alphaState)
+{
+  this->alphaState = alphaState;
+}
+
+const unsigned Renderer::getAlphaState() const { return this->alphaState; }
 
 #ifdef USE_ANT
 void Renderer::toggleAntTweakBar()

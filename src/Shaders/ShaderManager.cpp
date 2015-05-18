@@ -1,11 +1,13 @@
 #include "IShaderProgram.h"
 
+#include "ShaderManager.h"
+
 #include "DepthShader.h"
 #include "PsychedaelicShader.h"
+#include "TextureShader.h"
+#include "TransparentTextureShader.h"
 
 #include "Shader.h"
-
-#include "ShaderManager.h"
 
 namespace zge
 {
@@ -52,8 +54,11 @@ const bool ShaderManager::initialise()
 
 void ShaderManager::addInstance(unsigned shaderId, IGameObject* gameObject)
 {
-  gameObject->addInstance(this->shaders[shaderId]);
-  gameObject->addInstance(this->shaders[SHADER_DEPTH]);
+  if (shaderId)
+  {
+    gameObject->addInstance(this->shaders[shaderId]);
+  }
+  // gameObject->addInstance(this->shaders[SHADER_DEPTH]);
   // this->shaders[shaderId]->addInstance(gameObject);
   // this->shaders[SHADER_DEPTH]->addInstance(gameObject);
 }
@@ -86,12 +91,20 @@ IShaderProgram* ShaderManager::createShader(const unsigned shaderType)
   {
     case SHADER_DEPTH:
     {
-      return new DepthShader();
+      return new DepthShader;
     }
     case SHADER_PSYCHEDAELIC:
     {
       return new PsychedaelicShader((dynamic_cast<DepthShader*>(this->getShader(
                                          SHADER_DEPTH)))->getDepthTexture());
+    }
+    case SHADER_TEXTURED:
+    {
+      return new TextureShader;
+    }
+    case SHADER_TRANPARENT_TEXTURED:
+    {
+      return new TransparentTextureShader;
     }
     default:
     {

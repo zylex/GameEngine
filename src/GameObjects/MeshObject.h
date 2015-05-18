@@ -11,8 +11,8 @@ namespace zge
 class MeshObject : public GameObject
 {
 private:
-  unsigned m_meshId;
-  IMaterial* m_material;
+  unsigned meshId;
+  IMaterial* material;
 
 public:
   // constructor
@@ -35,8 +35,6 @@ public:
   unsigned getMeshId() const;
   void setMaterial(IMaterial*);
   IMaterial* getMaterial() const;
-  void setMaterialId(const unsigned);
-  const unsigned getMaterialId() const;
 
   void addInstance(IShaderProgram*);
 };

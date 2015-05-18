@@ -14,6 +14,9 @@ private:
   float cameraSpeed;
   float sensitivity;
 
+  static const glm::vec4 UP;
+  static const glm::vec4 FORWARD;
+
 public:
   // constructor
   Camera();

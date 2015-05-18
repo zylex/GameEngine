@@ -1,12 +1,34 @@
 #include <sstream>
 #include <iostream>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "Preprocessors.h"
+
+#include "IGame.h"
 
 #include "ResourceManager.h"
 
 namespace zge
 {
+
+ResourceManager::ResourceManager()
+{
+  // constructor
+}
+
+const bool ResourceManager::initialise()
+{
+  this->perspectiveMatrix =
+      this->getIdentityMatrix() *
+      glm::perspective(45.0f, (float)SCREEN_WIDTH() / (float)SCREEN_HEIGHT(),
+                       SCREEN_NEAR, SCREEN_DEPTH);
+  this->orthographicMatrix =
+      this->getIdentityMatrix() * glm::ortho(0.0f, (float)SCREEN_WIDTH(),
+                                             (float)SCREEN_HEIGHT(), 0.0f,
+                                             SCREEN_NEAR, SCREEN_DEPTH);
+  // glm::ortho(T left, T right, T bottom, T top, T zNear, T zFar)
+  return true;
+}
 
 const unsigned ResourceManager::getSquareMesh()
 {
@@ -19,9 +41,15 @@ const unsigned ResourceManager::getSquareMesh()
   }
 
   this->meshFactory.generateSquareMesh();
-  return createMesh(this->meshFactory.getVertices(),
-                    this->meshFactory.getNormals(),
-                    this->meshFactory.getIndices());
+  unsigned result = this->createMesh(this->meshFactory.getVertices(),
+                                     this->meshFactory.getTextureCoordinates(),
+                                     this->meshFactory.getNormals(),
+                                     this->meshFactory.getIndices());
+  if (result)
+  {
+    this->existingMeshes[key] = result;
+  }
+  return result;
 }
 
 const unsigned ResourceManager::createMeshFromFile(std::string filepath)
@@ -156,27 +184,6 @@ ResourceManager::getExistingShaderPrograms() const
   return this->existingShaderPrograms;
 }
 
-// std::vector<unsigned> ResourceManager::getExistingTextures() const {
-//  return this->existingTextures;
-//}
-//
-// std::vector<unsigned> ResourceManager::getExistingOutputs() const {
-//  return this->existingOutputs;
-//}
-
-// const unsigned ResourceManager::addMeshIndexCount(
-//    const std::pair<unsigned, unsigned> meshIndexCount)
-//{
-//  this->meshIndexCounts.push_back(meshIndexCount);
-//  return this->meshIndexCounts.size() - 1;
-//}
-//
-// std::pair<unsigned, unsigned> ResourceManager::getIndexCount(
-//    const unsigned meshId)
-//{
-//  return this->meshIndexCounts[meshId];
-//}
-
 const unsigned ResourceManager::getInstanceBuffer()
 {
   return this->instanceBufferId;
@@ -187,33 +194,41 @@ void ResourceManager::setInstanceBuffer(const unsigned instanceBufferId)
   this->instanceBufferId = instanceBufferId;
 }
 
-// std::vector<unsigned>* ResourceManager::getUniformBuffers(
-//     const unsigned programId)
-// {
-//   return &this->uniformBuffers[programId];
-// }
+const unsigned ResourceManager::textureExists(const std::string key)
+{
+  return this->existingTextures[key];
+}
 
-// std::vector<unsigned>* ResourceManager::getUniformBuffers(
-//     const unsigned programId, const unsigned shaderType)
-// {
-//   return &this->constantBuffers[{ programId, shaderType }];
-// }
+void ResourceManager::addTexture(const std::string key,
+                                 const unsigned textureId)
+{
+  this->existingTextures[key] = textureId;
+}
 
-// void ResourceManager::setUniformBuffers(const unsigned programId,
-//                                        std::vector<unsigned> uniformBuffers)
-//{
-//  this->uniformBuffers[programId] = uniformBuffers;
-//}
+std::unordered_map<std::string, unsigned> ResourceManager::getExistingTextures()
+    const
+{
+  return this->getExistingTextures();
+}
 
 void ResourceManager::setIdentityMatrix(glm::mat4 identityMatrix)
 {
   this->identityMatrix = identityMatrix;
 }
 
-const glm::mat4* ResourceManager::getIdentityMatrix() const
+const glm::mat4& ResourceManager::getIdentityMatrix() const
 {
-  // TODO
-  return &this->identityMatrix;
+  return this->identityMatrix;
+}
+
+const glm::mat4& ResourceManager::getPerspectiveMatrix() const
+{
+  return this->perspectiveMatrix;
+}
+
+const glm::mat4& ResourceManager::getOrthographicMatrix() const
+{
+  return this->orthographicMatrix;
 }
 
 } // namespace zge

@@ -1,3 +1,7 @@
+#include <glm/gtx/euler_angles.hpp>
+#include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "CompositeObject.h"
 
 namespace zge
@@ -79,13 +83,28 @@ void CompositeObject::setPosition(const glm::vec3 position)
 
 void CompositeObject::setRotation(const glm::vec3 rotation)
 {
-  GameObject::setRotation(rotation);
   std::vector<IGameObject*>::iterator end = this->children.end();
   for (std::vector<IGameObject*>::iterator it = this->children.begin();
        it IS_NOT end; ++it)
   {
-    (*it)->setRotation(rotation);
+    // TODO: rotate properly around the current world position
+    glm::vec3 diff = rotation - this->getRotation();
+    // (*it)->setRotation(rotation);
+
+    glm::mat4 rotationMatrix = glm::translate(-(*it)->getPosition());
+    rotationMatrix *= glm::eulerAngleYXZ(
+        glm::radians(diff.y), glm::radians(diff.x), glm::radians(diff.z));
+    rotationMatrix = glm::translate(rotationMatrix, (*it)->getPosition());
+    glm::vec4 position = glm::vec4((*it)->getPosition(), 1.0f) * rotationMatrix;
+    (*it)->setPosition(glm::vec3(position.x, position.y, position.z));
+    // (*it)->setRotation((*it)->getRotation() - diff);
+
+    glm::vec3 itRotation = (*it)->getRotation();
+
+    (*it)->setRotation(
+        glm::vec3(glm::vec4(glm::radians(itRotation), 1.0f) * rotationMatrix));
   }
+  GameObject::setRotation(rotation);
 }
 
 void CompositeObject::setScale(const glm::vec3 scale)
@@ -96,6 +115,9 @@ void CompositeObject::setScale(const glm::vec3 scale)
        it IS_NOT end; ++it)
   {
     (*it)->setScale(scale);
+    glm::vec3 position = (*it)->getPosition();
+    position *= scale;
+    (*it)->setPosition(position);
   }
 }
 
@@ -128,6 +150,17 @@ void CompositeObject::draw()
   // {
   //   (*it)->draw();
   // }
+}
+
+void CompositeObject::clean()
+{
+  Dirty::clean();
+  std::vector<IGameObject*>::iterator end = this->children.end();
+  for (std::vector<IGameObject*>::iterator it = this->children.begin();
+       it IS_NOT end; ++it)
+  {
+    (*it)->clean();
+  }
 }
 
 } // namespace zge

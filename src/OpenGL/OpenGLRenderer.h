@@ -16,6 +16,8 @@ class OpenGLRenderer : public Renderer
 private:
   GLFWwindow* window;
 
+  unsigned currentOutputId;
+
 public:
   static OpenGLRenderer* getInstance();
   // destructor
@@ -52,6 +54,8 @@ public:
 
   void enableDepth();
   void disableDepth();
+  void enableAlphaBlending();
+  void disableAlphaBlending();
   void enableAntiClockwiseCulling();
   void disableCulling();
 

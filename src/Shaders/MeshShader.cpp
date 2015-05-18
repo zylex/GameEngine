@@ -9,6 +9,10 @@
 
 #include "MeshShader.h"
 
+#ifdef USE_ANT
+#include "Stats.h"
+#endif
+
 namespace zge
 {
 
@@ -104,19 +108,25 @@ void MeshShader::addInstance(MeshObject* instance)
     instanceBegin = this->instances.begin();
     instanceEnd = this->instances.end();
     std::sort(instanceBegin, instanceEnd, InstanceSorter());
+#ifdef USE_ANT
+    ++Stats::numberOfInstances;
+#endif
   }
   else
   {
     std::vector<MeshObject*> instanceObjects =
         instanceIterator->instanceObjects;
     std::vector<MeshObject*>::iterator instanceObjectsFound, instanceObjectsEnd;
-    instanceObjectsEnd = instanceObjects.end();
-    instanceObjectsFound =
-        std::find(instanceObjects.begin(), instanceObjectsEnd, instance);
+    instanceObjectsEnd = instanceIterator->instanceObjects.end();
+    instanceObjectsFound = std::find(instanceIterator->instanceObjects.begin(),
+                                     instanceObjectsEnd, instance);
     if (instanceObjectsFound IS instanceObjectsEnd) // not already there
     {
       instanceIterator->instanceObjects.push_back(instance);
       instanceIterator->instanceData.push_back(this->getInstanceData(instance));
+#ifdef USE_ANT
+      ++Stats::numberOfInstances;
+#endif
     }
     // else
     // {
@@ -127,7 +137,6 @@ void MeshShader::addInstance(MeshObject* instance)
 
 void MeshShader::render()
 {
-  // TODO: implement
   std::vector<Instance>::iterator instanceEnd = this->instances.end();
   std::vector<Instance>::iterator instanceIterator;
   for (instanceIterator = this->instances.begin();
@@ -139,12 +148,12 @@ void MeshShader::render()
   }
 }
 
-void MeshShader::updateData(std::vector<MeshObject*>& objectPairs,
+void MeshShader::updateData(std::vector<MeshObject*>& gameObjects,
                             std::vector<glm::mat4>& instanceData)
 {
   std::vector<MeshObject*>::iterator objectBegin, objectEnd, objectIterator;
-  objectBegin = objectPairs.begin();
-  objectEnd = objectPairs.end();
+  objectBegin = gameObjects.begin();
+  objectEnd = gameObjects.end();
   for (objectIterator = objectBegin; objectIterator IS_NOT objectEnd;
        ++objectIterator)
   {

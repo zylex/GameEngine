@@ -6,13 +6,15 @@
 
 #include "Preprocessors.h"
 
+#include "Game.h"
+
 #include "IGameState.h"
 #include "IInputManager.h"
 #include "IRenderer.h"
 #include "IResourceManager.h"
 #include "IGlobalTimer.h"
 
-#include "Game.h"
+#include "ThreadManager.h"
 
 namespace zge
 {
@@ -43,6 +45,27 @@ void Game::shutdown()
 
 const bool Game::initialise()
 {
+  int coreNumber = 1;
+#if !defined(_WIN32) && (defined(__unix__) || defined(__unix) ||               \
+                         (defined(__APPLE__) && defined(__MACH__)))
+  cpu_set_t cpuset;
+  CPU_ZERO(&cpuset);
+  CPU_SET(coreNumber, &cpuset);
+  int result =
+      pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpuset);
+  if (result)
+  {
+    std::cerr << "ERROR: error set visualization thread affinity, error code: "
+              << result << std::endl;
+  }
+#elif defined(_WIN32) || defined(_WIN64)
+  DWORD result = SetAffinityMask(GetCurrentThread(), (1 << this->CORE_NUMBER));
+  if (FAILED(result))
+  {
+    std::cerr << "ERROR: error set visualization thread affinity, error code: "
+              << result << std::endl;
+  }
+#endif
   // start the clock
   if (not IGlobalTimer::getInstance())
   {
@@ -88,12 +111,14 @@ const int Game::run()
     {
       this->changeState();
       // TODO: Game::run: Start the other threads
+      ThreadManager::getInstance().startAll();
 
       while (this->isRunning())
       {
         this->frame();
       }
       // TODO: Game::run: join other threads
+      ThreadManager::getInstance().joinAll();
       return EXIT_SUCCESS;
     }
     else

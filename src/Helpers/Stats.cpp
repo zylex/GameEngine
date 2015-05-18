@@ -14,10 +14,7 @@ Stats* Stats::getInstance()
 }
 
 Stats::Stats()
-    : mainThreadFPS(0.0f),
-      visualizationThreadFPS(0.0f),
-      networkThreadFPS(0.0f),
-      simulationThreadFPS(0.0f)
+    : mainThreadFPS(0.0f), networkThreadFPS(0.0f), simulationThreadFPS(0.0f)
 {
 
   // constructor
@@ -58,7 +55,6 @@ Stats& Stats::operator=(Stats&& other) NOEXCEPT
 void Stats::clear()
 {
   this->mainThreadFPS = 0.0f;
-  this->visualizationThreadFPS = 0.0f;
   this->networkThreadFPS = 0.0f;
   this->simulationThreadFPS = 0.0f;
 
@@ -72,15 +68,6 @@ void Stats::mainThreadTick()
   this->mainThreadFPS = 1e+9 / this->mainThreadTimer.reset();
   // this->visualizationThreadFPS =
   //     1e+9 / this->visualizationThreadTimer.getElapsedTime();
-  // this->networkThreadFPS = 1e+9 / this->networkThreadTimer.getElapsedTime();
-  // this->simulationThreadFPS =
-  //     1e+9 / this->simulationThreadTimer.getElapsedTime();
-}
-
-void Stats::visualizationThreadTick()
-{
-  this->visualizationThreadFPS = 1e+9 / this->visualizationThreadTimer.reset();
-  // this->mainThreadFPS = 1e+9 / this->mainThreadTimer.getElapsedTime();
   // this->networkThreadFPS = 1e+9 / this->networkThreadTimer.getElapsedTime();
   // this->simulationThreadFPS =
   //     1e+9 / this->simulationThreadTimer.getElapsedTime();
@@ -106,11 +93,6 @@ void Stats::simulationThreadTick()
 }
 
 const float& Stats::getMainFPS() { return this->mainThreadFPS; }
-
-const float& Stats::getVisualizationFPS()
-{
-  return this->visualizationThreadFPS;
-}
 
 const float& Stats::getNetworkFPS() { return this->networkThreadFPS; }
 

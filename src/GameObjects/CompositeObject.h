@@ -44,6 +44,8 @@ public:
   void setRotation(const glm::vec3);
   void setScale(const glm::vec3);
   void setOrigin(const glm::vec3);
+
+  void clean();
 };
 
 } // namespace zge

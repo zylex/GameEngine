@@ -50,6 +50,11 @@ MeshFactory& MeshFactory::operator=(MeshFactory&& other) NOEXCEPT
 
 std::vector<glm::vec3> MeshFactory::getVertices() { return this->vertices; }
 
+std::vector<glm::vec2> MeshFactory::getTextureCoordinates()
+{
+  return this->textureCoordinates;
+}
+
 std::vector<glm::vec3> MeshFactory::getNormals() { return this->normals; }
 
 std::vector<glm::uvec3> MeshFactory::getIndices() { return this->indices; }
@@ -57,13 +62,13 @@ std::vector<glm::uvec3> MeshFactory::getIndices() { return this->indices; }
 void MeshFactory::generateSquareMesh()
 {
   this->clear();
-  this->vertices.push_back(glm::vec3{ -0.5f, -0.5f, 0.0f });
-  this->vertices.push_back(glm::vec3{ 0.5f, -0.5f, 0.0f });
-  this->vertices.push_back(glm::vec3{ 0.5f, 0.5f, 0.0f });
-  this->vertices.push_back(glm::vec3{ -0.5f, 0.5f, 0.0f });
+  this->vertices = { { -0.5f, -0.5f, 0.0f },
+                     { 0.5f, -0.5f, 0.0f },
+                     { 0.5f, 0.5f, 0.0f },
+                     { -0.5f, 0.5f, 0.0f } };
   this->indices = { { 0, 1, 2 }, { 2, 3, 0 } };
   this->textureCoordinates = {
-    { 0.0f, 1.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }
+    { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f }
   };
   this->generateNormals();
   this->generateTangents();

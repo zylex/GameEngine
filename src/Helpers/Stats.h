@@ -14,12 +14,10 @@ class Stats
 {
 private:
   Timer mainThreadTimer;
-  Timer visualizationThreadTimer;
   Timer networkThreadTimer;
   Timer simulationThreadTimer;
 
   float mainThreadFPS;
-  float visualizationThreadFPS;
   float networkThreadFPS;
   float simulationThreadFPS;
 
@@ -39,12 +37,10 @@ public:
   void clear();
 
   void mainThreadTick();
-  void visualizationThreadTick();
   void networkThreadTick();
   void simulationThreadTick();
 
   const float& getMainFPS();
-  const float& getVisualizationFPS();
   const float& getNetworkFPS();
   const float& getSimulationFPS();
 

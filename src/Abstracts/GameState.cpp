@@ -8,7 +8,7 @@
 
 namespace zge
 {
-GameState::GameState() : currentCamera(nullptr)
+GameState::GameState() : currentCamera(nullptr), gameObjects(0), lights(0)
 {
 #ifdef USE_ANT
   Stats::getInstance()->clear();
@@ -45,9 +45,6 @@ Camera* GameState::getCurrentCamera() const { return this->currentCamera; }
 void GameState::addGameObject(unsigned shaderId, IGameObject* gameObject)
 {
   this->gameObjects.push_back(gameObject);
-#ifdef USE_ANT
-  ++Stats::numberOfInstances;
-#endif
 
   IRenderer::getInstance()->addInstance(shaderId, gameObject);
 }
@@ -60,5 +57,9 @@ void GameState::cleanAll()
     (*it)->clean();
   }
 }
+
+void GameState::addLight(Light* light) { this->lights.push_back(light); }
+
+std::vector<Light*> GameState::getLights() const { return this->lights; }
 
 } // namespace zge

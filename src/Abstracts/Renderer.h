@@ -15,6 +15,7 @@ private:
 
   unsigned depthState;
   unsigned rasterState;
+  unsigned alphaState;
 
 #ifdef USE_ANT
   bool showAntTweakBar = false;
@@ -35,6 +36,8 @@ public:
   const unsigned getDepthState() const;
   virtual void setRasterState(const unsigned);
   const unsigned getRasterState() const;
+  virtual void setAlphaState(const unsigned);
+  const unsigned getAlphaState() const;
 
 #ifdef USE_ANT
   void toggleAntTweakBar();

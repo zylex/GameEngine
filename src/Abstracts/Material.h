@@ -9,8 +9,9 @@ namespace zge
 class Material : public IMaterial
 {
 private:
-  unsigned _textureId;
-  unsigned _shininess;
+  unsigned textureId;
+  unsigned shininess;
+  glm::vec4 color;
 
 public:
   virtual ~Material() NOEXCEPT = default;
@@ -19,6 +20,8 @@ public:
   const unsigned getTextureId() const;
   void setShininess(const unsigned);
   const unsigned getShininess() const;
+  void setColor(const glm::vec4);
+  const glm::vec4 getColor() const;
 };
 
 } // namespace zge

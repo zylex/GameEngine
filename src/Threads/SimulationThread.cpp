@@ -18,3 +18,8 @@ SimulationThread::SimulationThread()
 SimulationThread::~SimulationThread() NOEXCEPT { this->join(); }
 
 } // namespace zge
+
+/*
+updater thread
+correcter thread
+*/

@@ -5,6 +5,8 @@
 
 #include "IGame.h"
 #include "DepthState.h"
+#include "RasterState.h"
+#include "AlphaState.h"
 
 #include "OpenGLResourceManager.h"
 
@@ -70,13 +72,177 @@ const bool OpenGLRenderer::initialise()
                zge::CLEAR_COLOR.w);
 
   this->window = glfwGetCurrentContext();
+
+  this->enableAntiClockwiseCulling();
+
   return Renderer::initialise();
 }
 
 void OpenGLRenderer::setShaderProgram(const unsigned programId)
 {
   glUseProgram(programId);
+
+  // unsigned previousProgramId = this->getShaderProgramId();
+  // unsigned attribNumber = 6;
+
+  // OpenGLResourceManager* resourceManager =
+  // OpenGLResourceManager::getInstance();
+  // std::vector<ShaderInputElement> previousInputElements =
+  //     resourceManager->getInputElements(previousProgramId).second;
+
+  // for (int i = 0; i < previousInputElements.size(); ++i)
+  // {
+  //   glDisableVertexAttribArray(i + attribNumber);
+  // }
+
+  // std::pair<unsigned, std::vector<ShaderInputElement> > inputElements =
+  //     resourceManager->getInputElements(programId);
+  // std::vector<ShaderInputElement>::iterator end = inputElements.second.end();
+  // unsigned startPointer = sizeof(glm::mat4);
+
+  // glBindBuffer(GL_ARRAY_BUFFER, resourceManager->getInstanceBuffer());
+  // glBindVertexBuffer(0, resourceManager->getInstanceBuffer(), 0,
+  //                    inputElements.first);
+
+  // instanceBuffer
+  // glBindBuffer(GL_ARRAY_BUFFER, this->getInstanceBuffer());
+  // for (unsigned i = 0; i < 4; ++i)
+  // {
+  // glEnableVertexAttribArray(2 + i);
+  // glVertexAttribPointer(2 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4) +
+  // 16,
+  //                       (const GLvoid*)(sizeof(float) * i * 4));
+  // glVertexAttribDivisor(2 + i, 1);
+
+  //   glVertexAttribFormat(0, 4, GL_FLOAT, GL_FALSE, sizeof(float) * i * 4);
+  //   glVertexAttribBinding(2 + i, 0);
+  //   glVertexBindingDivisor(2 + i, 1);
+  // }
+
+  // for (std::vector<ShaderInputElement>::iterator it =
+  //          inputElements.second.begin();
+  //      it IS_NOT end; ++it)
+  // {
+  // glEnableVertexAttribArray(attribNumber);
+  // glVertexAttribPointer(attribNumber, it->numberOfElements,
+  //                       (it->elementIsFloat ? GL_FLOAT : GL_INT), GL_FALSE,
+  //                       inputElements.first, &startPointer);
+  // glVertexAttribDivisor(attribNumber, 1);
+
+  // glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, offsetof(position,
+  // Vertex));
+  // glVertexAttribBinding(0, 0);
+  // glVertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, offsetof(normal, Vertex));
+  // glVertexAttribBinding(1, 0);
+  // glVertexAttribFormat(2, 4, GL_UNSIGNED_BYTE, GL_TRUE,
+  //                      offsetof(color, Vertex));
+  // glVertexAttribBinding(2, 0);
+
+  //   glVertexAttribFormat(0, it->numberOfElements,
+  //                        (it->elementIsFloat ? GL_FLOAT : GL_INT), GL_FALSE,
+  //                        startPointer);
+  //   glVertexAttribBinding(attribNumber, 0);
+  //   glVertexBindingDivisor(attribNumber, 1);
+
+  //   startPointer += it->numberOfElements *
+  //                   (it->elementIsFloat ? sizeof(float) : sizeof(int));
+  //   ++attribNumber;
+  // }
+
   Renderer::setShaderProgram(programId);
+}
+
+void OpenGLRenderer::executeInstancedShader(
+    const unsigned meshId, const void* instanceDataArray,
+    const unsigned long instanceDataUnitByteSize,
+    const unsigned numberOfInstances)
+{
+  OpenGLResourceManager* resourceManager = OpenGLResourceManager::getInstance();
+  std::pair<unsigned, unsigned> meshIndexCount =
+      resourceManager->getIndexCount(meshId);
+
+  unsigned instanceBufferId = resourceManager->getInstanceBuffer();
+
+  // bind instance buffer
+  glBindBuffer(GL_ARRAY_BUFFER, instanceBufferId);
+  // update instance buffer
+  glBufferData(GL_ARRAY_BUFFER, instanceDataUnitByteSize * numberOfInstances,
+               instanceDataArray, GL_DYNAMIC_DRAW);
+
+  // glBindBuffer(GL_ARRAY_BUFFER, instanceBufferId);
+  // for (unsigned i = 0; i < 4; ++i)
+  // {
+  //   glEnableVertexAttribArray(2 + i);
+  //   glVertexAttribPointer(2 + i, 4, GL_FLOAT, GL_FALSE,
+  //                         instanceDataUnitByteSize,
+  //                         (const GLvoid*)(sizeof(float) * i * 4));
+  //   glVertexAttribDivisor(2 + i, 1);
+  // }
+
+  // glBindVertexArray(meshIndexCount.first);
+  // for (unsigned i = 0; i < 4; ++i)
+  // {
+  // glEnableVertexAttribArray(2 + i);
+  // glVertexAttribPointer(2 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4) +
+  // 16,
+  //                       (const GLvoid*)(sizeof(float) * i * 4));
+  // glVertexAttribDivisor(2 + i, 1);
+
+  //   glVertexAttribFormat(0, 4, GL_FLOAT, GL_FALSE, sizeof(float) * i * 4);
+  //   glVertexAttribBinding(2 + i, 0);
+  //   glVertexBindingDivisor(2 + i, 1);
+  // }
+
+  // unsigned attribNumber = 6;
+
+  // std::pair<unsigned, std::vector<ShaderInputElement> > inputElements =
+  //     resourceManager->getInputElements(this->getShaderProgramId());
+  // std::vector<ShaderInputElement>::iterator end = inputElements.second.end();
+  // unsigned startPointer = sizeof(glm::mat4);
+
+  // glBindVertexBuffer(0, resourceManager->getInstanceBuffer(), 0,
+  //                    inputElements.first);
+
+  // for (std::vector<ShaderInputElement>::iterator it =
+  //          inputElements.second.begin();
+  //      it IS_NOT end; ++it)
+  // {
+  // glEnableVertexAttribArray(attribNumber);
+  // glVertexAttribPointer(attribNumber, it->numberOfElements,
+  //                       (it->elementIsFloat ? GL_FLOAT : GL_INT), GL_FALSE,
+  //                       inputElements.first, &startPointer);
+  // glVertexAttribDivisor(attribNumber, 1);
+
+  // glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, offsetof(position,
+  // Vertex));
+  // glVertexAttribBinding(0, 0);
+  // glVertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, offsetof(normal, Vertex));
+  // glVertexAttribBinding(1, 0);
+  // glVertexAttribFormat(2, 4, GL_UNSIGNED_BYTE, GL_TRUE,
+  //                      offsetof(color, Vertex));
+  // glVertexAttribBinding(2, 0);
+
+  //   glVertexAttribFormat(0, it->numberOfElements,
+  //                        (it->elementIsFloat ? GL_FLOAT : GL_INT), GL_FALSE,
+  //                        startPointer);
+  //   glVertexAttribBinding(attribNumber, 0);
+  //   glVertexBindingDivisor(attribNumber, 1);
+
+  //   startPointer += it->numberOfElements *
+  //                   (it->elementIsFloat ? sizeof(float) : sizeof(int));
+  //   ++attribNumber;
+  // }
+  // glBindVertexArray(GL_NONE);
+
+  glBindVertexArray(meshIndexCount.first);
+  glDrawElementsInstanced(GL_TRIANGLES, meshIndexCount.second, GL_UNSIGNED_INT,
+                          nullptr, numberOfInstances);
+  glBindVertexArray(GL_NONE);
+}
+
+void OpenGLRenderer::executeComputeShader()
+{
+  // TODO: implement executeComputeShader
 }
 
 void OpenGLRenderer::setConstants(
@@ -120,33 +286,6 @@ void OpenGLRenderer::setConstant(const unsigned indexPosition,
   glBindBufferBase(GL_UNIFORM_BUFFER, indexPosition, (*buffers)[indexPosition]);
 }
 
-void OpenGLRenderer::executeInstancedShader(
-    const unsigned meshId, const void* instanceDataArray,
-    const unsigned long instanceDataUnitByteSize,
-    const unsigned numberOfInstances)
-{
-  OpenGLResourceManager* resourceManager = OpenGLResourceManager::getInstance();
-  std::pair<unsigned, unsigned> meshIndexCount =
-      resourceManager->getIndexCount(meshId);
-
-  unsigned instanceBufferId = resourceManager->getInstanceBuffer();
-
-  // bind instance buffer
-  glBindBuffer(GL_ARRAY_BUFFER, instanceBufferId);
-  // update instance buffer
-  glBufferData(GL_ARRAY_BUFFER, instanceDataUnitByteSize * numberOfInstances,
-               instanceDataArray, GL_DYNAMIC_DRAW);
-  glBindVertexArray(meshIndexCount.first);
-  glDrawElementsInstanced(GL_TRIANGLES, meshIndexCount.second, GL_UNSIGNED_INT,
-                          nullptr, numberOfInstances);
-  glBindVertexArray(GL_NONE);
-}
-
-void OpenGLRenderer::executeComputeShader()
-{
-  // TODO: implement executeComputeShader
-}
-
 void OpenGLRenderer::OpenGLRenderer::executeShader()
 {
   glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT, nullptr);
@@ -187,8 +326,12 @@ void OpenGLRenderer::setTexture(const unsigned textureLocation,
 
 void OpenGLRenderer::setOutput(const unsigned outputId)
 {
-  glBindFramebuffer(GL_FRAMEBUFFER, outputId);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  if (this->currentOutputId IS_NOT outputId)
+  {
+    glBindFramebuffer(GL_FRAMEBUFFER, outputId);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    this->currentOutputId = outputId;
+  }
 }
 
 void OpenGLRenderer::enableDepth()
@@ -210,15 +353,54 @@ void OpenGLRenderer::disableDepth()
   }
 }
 
-void OpenGLRenderer::enableAntiClockwiseCulling()
+void OpenGLRenderer::enableAlphaBlending()
 {
-  glFrontFace(GL_CW);
-  glCullFace(GL_BACK);
+  if (this->getAlphaState() IS_NOT ALPHA_ENABLED)
+  {
+    // https://www.opengl.org/wiki/Blending
+    glEnable(GL_BLEND);
+    glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+    this->setAlphaState(ALPHA_ENABLED);
+  }
 }
 
-void OpenGLRenderer::disableCulling() { glFrontFace(GL_NONE); }
+void OpenGLRenderer::disableAlphaBlending()
+{
+  if (this->getAlphaState() IS_NOT ALPHA_OFF)
+  {
+    // FIXME
+    glDisable(GL_BLEND);
+    this->setAlphaState(ALPHA_OFF);
+  }
+}
 
-void OpenGLRenderer::setWindow(GLFWwindow* win) { this->window = win; }
+void OpenGLRenderer::enableAntiClockwiseCulling()
+{
+  if (this->getRasterState() IS_NOT CULL_BACK)
+  {
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CW);
+    glCullFace(GL_FRONT);
+    this->setRasterState(CULL_BACK);
+  }
+}
+
+void OpenGLRenderer::disableCulling()
+{
+  if (this->getRasterState() IS_NOT CULL_OFF)
+  {
+    glDisable(GL_CULL_FACE);
+    glFrontFace(GL_NONE);
+    this->setRasterState(CULL_OFF);
+  }
+}
+
+void OpenGLRenderer::setWindow(GLFWwindow* win)
+{
+  this->window = win;
+  glfwMakeContextCurrent(this->window);
+}
 
 void OpenGLRenderer::swapBuffers() { glfwSwapBuffers(this->window); }
 

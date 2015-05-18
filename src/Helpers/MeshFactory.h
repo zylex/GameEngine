@@ -36,6 +36,7 @@ public:
   MeshFactory& operator=(MeshFactory&&) NOEXCEPT;
 
   std::vector<glm::vec3> getVertices();
+  std::vector<glm::vec2> getTextureCoordinates();
   std::vector<glm::vec3> getNormals();
   std::vector<glm::uvec3> getIndices();
 

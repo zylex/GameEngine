@@ -1,6 +1,8 @@
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include "ShaderType.h"
 #include "SamplerType.h"
 
@@ -117,16 +119,27 @@ void PsychedaelicShader::prepare()
   IRenderer* renderer = IRenderer::getInstance();
 
   renderer->setTexture(0, this->depthTextureId, POINT_CLAMP, PIXEL_SHADER);
-  glm::mat4 viewMatrix = IGame::getInstance()
-                             ->getCurrentGameState()
-                             ->getCurrentCamera()
-                             ->getViewMatrix();
+  // glm::mat4 viewMatrix = IGame::getInstance()
+  //                            ->getCurrentGameState()
+  //                            ->getCurrentCamera()
+  //                            ->getViewMatrix();
+
+  glm::mat4 viewMatrix[] = {
+    IGame::getInstance()
+        ->getCurrentGameState()
+        ->getCurrentCamera()
+        ->getViewMatrix(),
+    IResourceManager::getInstance()->getPerspectiveMatrix()
+  };
+  renderer->setConstant(0, glm::value_ptr(*viewMatrix), sizeof(glm::mat4) * 2,
+                        VERTEX_SHADER);
   // std::cout << "viewMatrix: " << glm::to_string(viewMatrix) << std::endl;
-  glm::mat4* view = new glm::mat4(viewMatrix);
-  renderer->setConstant(0, view, sizeof(glm::mat4), VERTEX_SHADER);
-  delete view;
+  // glm::mat4* view = new glm::mat4(viewMatrix);
+  // renderer->setConstant(0, glm::value_ptr(viewMatrix), sizeof(glm::mat4),
+  //                       VERTEX_SHADER);
   // set depth bool in pixel shader
   renderer->setConstant(1, &(this->showDepth), sizeof(bool), PIXEL_SHADER);
+  // delete view;
 }
 
 void PsychedaelicShader::finish()
