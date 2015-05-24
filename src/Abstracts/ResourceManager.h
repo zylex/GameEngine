@@ -46,6 +46,10 @@ public:
   const unsigned createMeshFromFile(std::string);
 
   const unsigned getSquareMesh();
+  const unsigned getSquareMeshWithHole();
+  const unsigned getIcosphereMesh(const unsigned);
+  const unsigned getBowlMesh(const float, const float);
+
   virtual const unsigned getInstanceBuffer();
   void setInstanceBuffer(const unsigned);
 

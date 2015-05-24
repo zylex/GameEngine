@@ -52,6 +52,74 @@ const unsigned ResourceManager::getSquareMesh()
   return result;
 }
 
+const unsigned ResourceManager::getSquareMeshWithHole()
+{
+  std::string key = "::square_with_hole::";
+  std::unordered_map<std::string, unsigned>::iterator i =
+      this->existingMeshes.find(key);
+  if (i IS_NOT this->existingMeshes.end())
+  {
+    return i->second;
+  }
+
+  this->meshFactory.generateSquareMeshWithHole();
+  unsigned result = this->createMesh(this->meshFactory.getVertices(),
+                                     this->meshFactory.getTextureCoordinates(),
+                                     this->meshFactory.getNormals(),
+                                     this->meshFactory.getIndices());
+  if (result)
+  {
+    this->existingMeshes[key] = result;
+  }
+  return result;
+}
+
+const unsigned ResourceManager::getIcosphereMesh(const unsigned recursionLevel)
+{
+  std::ostringstream keyStream;
+  keyStream << "::icosphere::" << recursionLevel << "::";
+  std::unordered_map<std::string, unsigned>::iterator i =
+      this->existingMeshes.find(keyStream.str());
+  if (i IS_NOT this->existingMeshes.end())
+  {
+    return i->second;
+  }
+
+  this->meshFactory.generateIcosphereMesh(recursionLevel);
+  unsigned result = this->createMesh(this->meshFactory.getVertices(),
+                                     this->meshFactory.getTextureCoordinates(),
+                                     this->meshFactory.getNormals(),
+                                     this->meshFactory.getIndices());
+  if (result)
+  {
+    this->existingMeshes[keyStream.str()] = result;
+  }
+  return result;
+}
+
+const unsigned ResourceManager::getBowlMesh(const float radius,
+                                            const float height)
+{
+  std::string key = "::bowl::";
+  std::unordered_map<std::string, unsigned>::iterator i =
+      this->existingMeshes.find(key);
+  if (i IS_NOT this->existingMeshes.end())
+  {
+    return i->second;
+  }
+
+  this->meshFactory.generateBowlMesh(radius, height);
+  unsigned result = this->createMesh(this->meshFactory.getVertices(),
+                                     this->meshFactory.getTextureCoordinates(),
+                                     this->meshFactory.getNormals(),
+                                     this->meshFactory.getIndices());
+  if (result)
+  {
+    this->existingMeshes[key] = result;
+  }
+  return result;
+}
+
 const unsigned ResourceManager::createMeshFromFile(std::string filepath)
 {
   std::unordered_map<std::string, unsigned>::iterator i =

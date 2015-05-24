@@ -19,19 +19,9 @@ Camera::Camera()
     : cameraFront(Camera::FORWARD),
       cameraUp(Camera::UP),
       cameraSpeed(1.0f),
-      // sensitivity(0.05f)
       sensitivity(5.0f)
 {
   // constructor
-  // glm::vec3 rotation = this->getRotation();
-  // rotation.y = 90.0f;
-  // this->cameraFront.x =
-  //     cos(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
-  // this->cameraFront.y = sin(glm::radians(rotation.x));
-  // this->cameraFront.z =
-  //     sin(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
-  // this->cameraFront = glm::normalize(this->cameraFront);
-  // this->setRotation({ 0.0f, 0.0f, 0.0f });
 }
 
 Camera::~Camera() NOEXCEPT

@@ -149,8 +149,8 @@ void TextureShader::prepare()
 {
   ShaderProgram::prepare();
   IRenderer* renderer = IRenderer::getInstance();
-  renderer->enableAntiClockwiseCulling();
-  // renderer->disableCulling();
+  // renderer->enableAntiClockwiseCulling();
+  renderer->disableCulling();
   renderer->disableAlphaBlending();
   // renderer->enableDepth();
   IGameState* gameState = IGame::getInstance()->getCurrentGameState();

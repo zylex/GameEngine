@@ -43,12 +43,18 @@ public:
   void generateSquareMesh();
   void generateCylinderMesh();
   void generateIcosphereMesh(const unsigned);
+  void generateSquareMeshWithHole();
+  void generateBowlMesh(const float, const float);
 
 private:
   void clear();
   const unsigned addVertex(glm::vec3);
   void generateNormals();
   void generateTangents();
+  void generateTextureCoordinates();
+
+  void generateIcosphereVerticesAndIndices(const unsigned);
+  void generateSphereVerticesAndIndices();
 };
 
 } // namespace zge

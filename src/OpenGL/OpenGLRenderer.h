@@ -54,6 +54,7 @@ public:
 
   void enableDepth();
   void disableDepth();
+  void enableReadDepth();
   void enableAlphaBlending();
   void disableAlphaBlending();
   void enableAntiClockwiseCulling();

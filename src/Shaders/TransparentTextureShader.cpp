@@ -141,7 +141,9 @@ const bool TransparentTextureShader::initialise()
 
   this->setProgramId(programId);
 
-  this->setDepthState(ZGE_DEPTH_ON);
+  this->setDepthState(ZGE_DEPTH_READ);
+
+  // TODO set raster and alpha states
 
   return true;
 }
@@ -150,9 +152,10 @@ void TransparentTextureShader::prepare()
 {
   ShaderProgram::prepare();
   IRenderer* renderer = IRenderer::getInstance();
+  // TODO: move state setting to init and super class
   renderer->enableAntiClockwiseCulling();
+  // renderer->disableCulling();
   renderer->enableAlphaBlending();
-  renderer->disableDepth();
   IGameState* gameState = IGame::getInstance()->getCurrentGameState();
 
   glm::mat4 viewMatrix[] = {

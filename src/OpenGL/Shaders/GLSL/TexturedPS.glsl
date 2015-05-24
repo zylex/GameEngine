@@ -41,5 +41,5 @@ void main()
   vec4 diffuse = max(dot(L.xyz, normal), 0.0) * Light.diffuseColor;
   vec4 specular = pow(max(dot(H.xyz, normal), 0.0), n) * Light.specularPower * Light.specularColor;
   outputColor *= diffuse + specular + Light.ambientColor;
-
+  // outputColor = vec4(1.0f,0.0f,0.0f,1.0f);
 }

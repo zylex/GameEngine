@@ -51,7 +51,7 @@ public:
 
   // TODO: implement state changing methods (depth/culling etc)
   virtual void enableDepth() = 0;
-  // virtual void enableReadDepth() = 0;
+  virtual void enableReadDepth() = 0;
   // virtual void enableWriteDepth() = 0;
   virtual void disableDepth() = 0;
   virtual void enableAlphaBlending() = 0;

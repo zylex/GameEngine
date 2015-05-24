@@ -62,6 +62,10 @@ public:
   virtual const glm::mat4& getOrthographicMatrix() const = 0;
 
   virtual const unsigned getSquareMesh() = 0;
+  virtual const unsigned getSquareMeshWithHole() = 0;
+  virtual const unsigned getIcosphereMesh(const unsigned recursionLevel) = 0;
+  virtual const unsigned getBowlMesh(const float radius,
+                                     const float height) = 0;
 
   virtual const unsigned loadTextureFromFile(const std::string filepath) = 0;
 };

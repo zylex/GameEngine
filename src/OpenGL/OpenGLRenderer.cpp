@@ -339,6 +339,7 @@ void OpenGLRenderer::enableDepth()
   if (this->getDepthState() IS_NOT ZGE_DEPTH_ON)
   {
     glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
     glDepthFunc(GL_LESS);
     this->setDepthState(ZGE_DEPTH_ON);
   }
@@ -350,6 +351,16 @@ void OpenGLRenderer::disableDepth()
   {
     glDisable(GL_DEPTH_TEST);
     this->setDepthState(ZGE_DEPTH_OFF);
+  }
+}
+
+void OpenGLRenderer::enableReadDepth()
+{
+  if (this->getDepthState() IS_NOT ZGE_DEPTH_READ)
+  {
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE);
+    this->setDepthState(ZGE_DEPTH_READ);
   }
 }
 
@@ -381,7 +392,7 @@ void OpenGLRenderer::enableAntiClockwiseCulling()
   {
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CW);
-    glCullFace(GL_FRONT);
+    glCullFace(GL_BACK);
     this->setRasterState(CULL_BACK);
   }
 }
