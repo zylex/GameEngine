@@ -15,18 +15,21 @@ class Stats
 private:
   Timer mainThreadTimer;
   float mainThreadFPS;
+  float mainThreadFrameTime;
   long long mainThreadFrameCounter;
-  long long mainThreadTimeRemainder;
+  long long mainThreadTimeCounter;
 
   Timer networkThreadTimer;
   float networkThreadFPS;
+  float networkThreadFrameTime;
   long long networkThreadFrameCounter;
-  long long networkThreadTimeRemainder;
+  long long networkThreadTimeCounter;
 
   Timer simulationThreadTimer;
   float simulationThreadFPS;
+  float simulationThreadFrameTime;
   long long simulationThreadFrameCounter;
-  long long simulationThreadTimeRemainder;
+  long long simulationThreadTimeCounter;
 
 public:
   static Stats* getInstance();
@@ -50,6 +53,10 @@ public:
   const float& getMainFPS();
   const float& getNetworkFPS();
   const float& getSimulationFPS();
+
+  const float& getMainFrameTime();
+  const float& getNetworkFrameTime();
+  const float& getSimulationFrameTime();
 
   // unsigned& getNbOfVertices();
   // unsigned& getNbOfTriangles();

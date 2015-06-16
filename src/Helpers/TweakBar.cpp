@@ -57,13 +57,23 @@ void TweakBar::init()
   stringStream << this->barName << "/Graphics opened=false";
   TwDefine(stringStream.str().c_str());
 
+  // Main thread FPS
   TwAddVarRO(this->antTweakBar, "main_fps", TW_TYPE_FLOAT,
-             &(Stats::getInstance()->getMainFPS()),
+             &Stats::getInstance()->getMainFPS(),
              "precision=2 group=Main label='FPS'");
   stringStream.str(std::string());
   stringStream << this->barName << "/Main opened=false";
   TwDefine(stringStream.str().c_str());
 
+  // Main thread Frame time
+  TwAddVarRO(this->antTweakBar, "main_frame_time", TW_TYPE_FLOAT,
+             &Stats::getInstance()->getMainFrameTime(),
+             "precision=2 group=Main label='Frame Time in ms'");
+  stringStream.str(std::string());
+  stringStream << this->barName << "/Main opened=false";
+  TwDefine(stringStream.str().c_str());
+
+  // Network thread FPS
   TwAddVarRO(this->antTweakBar, "network_fps", TW_TYPE_FLOAT,
              &Stats::getInstance()->getNetworkFPS(),
              "precision=2 group=Network label='FPS'");
@@ -71,9 +81,26 @@ void TweakBar::init()
   stringStream << this->barName << "/Network opened=false";
   TwDefine(stringStream.str().c_str());
 
+  // Main thread Frame time
+  TwAddVarRO(this->antTweakBar, "network_frame_time", TW_TYPE_FLOAT,
+             &Stats::getInstance()->getNetworkFrameTime(),
+             "precision=2 group=Network label='Frame Time in ms'");
+  stringStream.str(std::string());
+  stringStream << this->barName << "/Network opened=false";
+  TwDefine(stringStream.str().c_str());
+
+  // Simulation thread FPS
   TwAddVarRO(this->antTweakBar, "simulation_fps", TW_TYPE_FLOAT,
              &Stats::getInstance()->getSimulationFPS(),
              "precision=2 group=Simulation label='FPS'");
+  stringStream.str(std::string());
+  stringStream << this->barName << "/Simulation opened=false";
+  TwDefine(stringStream.str().c_str());
+
+  // Main thread Frame time
+  TwAddVarRO(this->antTweakBar, "simulation_frame_time", TW_TYPE_FLOAT,
+             &Stats::getInstance()->getSimulationFrameTime(),
+             "precision=2 group=Simulation label='Frame Time in ms'");
   stringStream.str(std::string());
   stringStream << this->barName << "/Simulation opened=false";
   TwDefine(stringStream.str().c_str());

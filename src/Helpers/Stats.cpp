@@ -17,16 +17,19 @@ Stats* Stats::getInstance()
 Stats::Stats()
     : mainThreadTimer(),
       mainThreadFPS(0.0f),
+      mainThreadFrameTime(0.0f),
       mainThreadFrameCounter(0),
-      mainThreadTimeRemainder(0),
+      mainThreadTimeCounter(0),
       networkThreadTimer(),
       networkThreadFPS(0.0f),
+      networkThreadFrameTime(0.0f),
       networkThreadFrameCounter(0),
-      networkThreadTimeRemainder(0),
+      networkThreadTimeCounter(0),
       simulationThreadTimer(),
       simulationThreadFPS(0.0f),
+      simulationThreadFrameTime(0.0f),
       simulationThreadFrameCounter(0),
-      simulationThreadTimeRemainder(0)
+      simulationThreadTimeCounter(0)
 {
 
   // constructor
@@ -82,15 +85,14 @@ void Stats::clear()
 void Stats::mainThreadTick()
 {
   ++this->mainThreadFrameCounter;
-  if ((this->mainThreadTimer.getElapsedTime() + this->mainThreadTimeRemainder) >
-      1e+9)
+  long long elapsed = this->mainThreadTimer.reset();
+  this->mainThreadFrameTime = static_cast<float>(elapsed / 1e+6);
+  this->mainThreadTimeCounter += elapsed;
+  if (this->mainThreadTimeCounter > 1e+9)
   {
     this->mainThreadFPS =
-        this->mainThreadFrameCounter * 1e+9 /
-        static_cast<float>(this->mainThreadTimer.getElapsedTime() +
-                           this->mainThreadTimeRemainder);
-    this->mainThreadTimeRemainder =
-        (this->mainThreadTimer.reset() + this->mainThreadTimeRemainder) - 1e+9;
+        this->mainThreadFrameCounter * 1e+9 / this->mainThreadTimeCounter;
+    this->mainThreadTimeCounter -= 1e+9;
     this->mainThreadFrameCounter = 0;
   }
 
@@ -106,15 +108,14 @@ void Stats::mainThreadTick()
 void Stats::networkThreadTick()
 {
   ++this->networkThreadFrameCounter;
-  if ((this->networkThreadTimer.getElapsedTime() +
-       this->networkThreadTimeRemainder) > 1e+9)
+  long long elapsed = this->networkThreadTimer.reset();
+  this->networkThreadFrameTime = static_cast<float>(elapsed / 1e+6);
+  this->networkThreadTimeCounter += elapsed;
+  if (this->networkThreadTimeCounter > 1e+9)
   {
-    this->networkThreadFPS = this->networkThreadFrameCounter * 1e+9 /
-                             (this->networkThreadTimer.getElapsedTime() +
-                              this->networkThreadTimeRemainder);
-    this->networkThreadTimeRemainder =
-        (this->networkThreadTimer.reset() + this->networkThreadTimeRemainder) -
-        1e+9;
+    this->networkThreadFPS =
+        this->networkThreadFrameCounter * 1e+9 / this->networkThreadTimeCounter;
+    this->networkThreadTimeCounter -= 1e+9;
     this->networkThreadFrameCounter = 0;
   }
 
@@ -129,16 +130,14 @@ void Stats::networkThreadTick()
 void Stats::simulationThreadTick()
 {
   ++this->simulationThreadFrameCounter;
-  if ((this->simulationThreadTimer.getElapsedTime() +
-       this->simulationThreadTimeRemainder) > 1e+9)
+  long long elapsed = this->simulationThreadTimer.reset();
+  this->simulationThreadFrameTime = static_cast<float>(elapsed / 1e+6);
+  this->simulationThreadTimeCounter += elapsed;
+  if (this->simulationThreadTimeCounter > 1e+9)
   {
     this->simulationThreadFPS = this->simulationThreadFrameCounter * 1e+9 /
-                                (this->simulationThreadTimer.getElapsedTime() +
-                                 this->simulationThreadTimeRemainder);
-    this->simulationThreadTimeRemainder =
-        (this->simulationThreadTimer.reset() +
-         this->simulationThreadTimeRemainder) -
-        1e+9;
+                                this->simulationThreadTimeCounter;
+    this->simulationThreadTimeCounter -= 1e+9;
     this->simulationThreadFrameCounter = 0;
   }
 
@@ -151,7 +150,19 @@ void Stats::simulationThreadTick()
 
 const float& Stats::getMainFPS() { return this->mainThreadFPS; }
 
+const float& Stats::getMainFrameTime() { return this->mainThreadFrameTime; }
+
 const float& Stats::getNetworkFPS() { return this->networkThreadFPS; }
+
+const float& Stats::getNetworkFrameTime()
+{
+  return this->networkThreadFrameTime;
+}
+
+const float& Stats::getSimulationFrameTime()
+{
+  return this->simulationThreadFrameTime;
+}
 
 const float& Stats::getSimulationFPS() { return this->simulationThreadFPS; }
 
