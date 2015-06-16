@@ -132,7 +132,7 @@ void CompositeObject::setOrigin(const glm::vec3 origin)
   }
 }
 
-void CompositeObject::update()
+void CompositeObject::update(double deltaTime)
 {
   // std::vector<IGameObject*>::iterator end = this->children.end();
   // for (std::vector<IGameObject*>::iterator it = this->children.begin();

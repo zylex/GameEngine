@@ -56,7 +56,7 @@ public:
   void setLightType(const LightType);
   const LightType getLightType() const;
 
-  void update();
+  void update(double deltaTime);
   void draw();
 
   void addInstance(IShaderProgram*);

@@ -20,7 +20,11 @@ namespace zge
 {
 
 Game::Game()
-    : running(true), nextState(0), currentState(nullptr), windowTitle("")
+    : timer(),
+      running(true),
+      nextState(0),
+      currentState(nullptr),
+      windowTitle("")
 {
   // TODO: constructor: set thread affinity to 0
 }
@@ -137,7 +141,7 @@ const int Game::run()
 void Game::frame()
 {
   // NOTE: override this method if input handling is needed
-  this->currentState->update();
+  this->currentState->update(static_cast<double>(timer.reset() / 1e+9));
 
   IRenderer::getInstance()->render();
 

@@ -19,7 +19,7 @@ class IGameObject : public Dirty
 public:
   virtual ~IGameObject() NOEXCEPT = default;
 
-  virtual void update() = 0;
+  virtual void update(double deltaTime) = 0;
   virtual void draw() = 0;
 
   virtual void setPosition(const glm::vec3 position) = 0;

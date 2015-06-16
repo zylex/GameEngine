@@ -28,7 +28,7 @@ public:
   // move assignment operator (C++11)
   MeshObject& operator=(MeshObject&&) NOEXCEPT;
 
-  void update();
+  void update(double deltaTime);
   void draw();
 
   void setMeshId(const unsigned);

@@ -44,7 +44,7 @@ public:
   void generateCylinderMesh();
   void generateIcosphereMesh(const unsigned);
   void generateSquareMeshWithHole();
-  void generateBowlMesh(const float, const float);
+  void generateSemiSphereMesh();
 
 private:
   void clear();

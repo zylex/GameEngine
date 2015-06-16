@@ -20,7 +20,7 @@ public:
   virtual void processEvent(const Event) = 0;
 
   virtual bool initialise() = 0;
-  virtual void update() = 0;
+  virtual void update(double deltaTime) = 0;
 
   virtual void setCurrentCamera(Camera* camera) = 0;
   virtual Camera* getCurrentCamera() const = 0;

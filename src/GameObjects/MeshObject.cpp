@@ -42,7 +42,7 @@ MeshObject& MeshObject::operator=(MeshObject&& other) NOEXCEPT
   return *(new MeshObject(other));
 }
 
-void MeshObject::update() {}
+void MeshObject::update(double deltaTime) {}
 
 void MeshObject::draw() {}
 

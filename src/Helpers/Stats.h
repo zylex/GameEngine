@@ -14,12 +14,19 @@ class Stats
 {
 private:
   Timer mainThreadTimer;
-  Timer networkThreadTimer;
-  Timer simulationThreadTimer;
-
   float mainThreadFPS;
+  long long mainThreadFrameCounter;
+  long long mainThreadTimeRemainder;
+
+  Timer networkThreadTimer;
   float networkThreadFPS;
+  long long networkThreadFrameCounter;
+  long long networkThreadTimeRemainder;
+
+  Timer simulationThreadTimer;
   float simulationThreadFPS;
+  long long simulationThreadFrameCounter;
+  long long simulationThreadTimeRemainder;
 
 public:
   static Stats* getInstance();

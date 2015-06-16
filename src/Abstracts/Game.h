@@ -2,6 +2,7 @@
 #define ABSTRACT_GAME_H
 #include <unordered_map>
 #include <string>
+#include "Timer.h"
 
 #include "IGame.h"
 
@@ -12,6 +13,7 @@ class IGameState;
 class Game : public IGame
 {
 private:
+  Timer timer;
   bool running;
   int nextState;
   std::unordered_map<int, IGameState*> states;

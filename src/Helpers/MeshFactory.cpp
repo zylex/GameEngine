@@ -194,7 +194,7 @@ void MeshFactory::generateSquareMeshWithHole()
   this->generateTangents();
 }
 
-void MeshFactory::generateBowlMesh(const float radius, const float height)
+void MeshFactory::generateSemiSphereMesh()
 {
   this->clear();
 
@@ -203,34 +203,11 @@ void MeshFactory::generateBowlMesh(const float radius, const float height)
   for (std::vector<glm::vec3>::iterator i = this->vertices.begin();
        i IS_NOT this->vertices.end(); ++i)
   {
-    // (*i) = (*i) * radius;
-
     if (i->z > 0.0f)
     {
       i->z = -i->z + 0.001f;
     }
-
-    // i->z = i->z + radius;
   }
-
-  // std::vector<glm::vec3> verts = this->vertices;
-  // std::vector<glm::uvec3> inds = this->indices;
-
-  // this->clear();
-
-  // for (std::vector<glm::uvec3>::iterator it = inds.begin();
-  //      it IS_NOT inds.end(); ++it)
-  // {
-  //   if (verts[it->x].z < height and verts[it->y].z < height and
-  //       verts[it->z].z < height)
-  //   {
-  //     unsigned x = this->addVertex(verts[it->x]);
-  //     unsigned y = this->addVertex(verts[it->y]);
-  //     unsigned z = this->addVertex(verts[it->z]);
-
-  //     this->indices.push_back({ x, y, z });
-  //   }
-  // }
 
   this->generateTextureCoordinates();
   this->generateNormals();

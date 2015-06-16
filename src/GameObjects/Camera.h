@@ -31,7 +31,7 @@ public:
   // move assignment operator (C++11)
   Camera& operator=(Camera&&) NOEXCEPT;
 
-  void update();
+  void update(double deltaTime);
   void draw();
 
   void addInstance(IShaderProgram*);

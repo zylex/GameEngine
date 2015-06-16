@@ -9,7 +9,7 @@ namespace zge
 class SimulationThread : public AffinityThread
 {
 private:
-  static unsigned core_number;
+  static const unsigned CORE_NUMBER;
 
 public:
   SimulationThread();

@@ -22,7 +22,7 @@ public:
   GameState();
   virtual ~GameState() NOEXCEPT;
 
-  void update();
+  void update(double deltaTime);
   void draw();
 
   void setCurrentCamera(Camera* camera);

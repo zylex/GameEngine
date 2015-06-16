@@ -1,4 +1,5 @@
 #include "Stats.h"
+#include <iostream>
 
 namespace zge
 {
@@ -14,7 +15,18 @@ Stats* Stats::getInstance()
 }
 
 Stats::Stats()
-    : mainThreadFPS(0.0f), networkThreadFPS(0.0f), simulationThreadFPS(0.0f)
+    : mainThreadTimer(),
+      mainThreadFPS(0.0f),
+      mainThreadFrameCounter(0),
+      mainThreadTimeRemainder(0),
+      networkThreadTimer(),
+      networkThreadFPS(0.0f),
+      networkThreadFrameCounter(0),
+      networkThreadTimeRemainder(0),
+      simulationThreadTimer(),
+      simulationThreadFPS(0.0f),
+      simulationThreadFrameCounter(0),
+      simulationThreadTimeRemainder(0)
 {
 
   // constructor
@@ -61,11 +73,29 @@ void Stats::clear()
   zge::Stats::numberOfVertices = 0;
   zge::Stats::numberOfTriangles = 0;
   zge::Stats::numberOfInstances = 0;
+
+  this->mainThreadFrameCounter = 0;
+  this->networkThreadFrameCounter = 0;
+  this->simulationThreadFrameCounter = 0;
 }
 
 void Stats::mainThreadTick()
 {
-  this->mainThreadFPS = 1e+9 / this->mainThreadTimer.reset();
+  ++this->mainThreadFrameCounter;
+  if ((this->mainThreadTimer.getElapsedTime() + this->mainThreadTimeRemainder) >
+      1e+9)
+  {
+    this->mainThreadFPS =
+        this->mainThreadFrameCounter * 1e+9 /
+        static_cast<float>(this->mainThreadTimer.getElapsedTime() +
+                           this->mainThreadTimeRemainder);
+    this->mainThreadTimeRemainder =
+        (this->mainThreadTimer.reset() + this->mainThreadTimeRemainder) - 1e+9;
+    this->mainThreadFrameCounter = 0;
+  }
+
+  // this->mainThreadFPS = 1e+9 / this->mainThreadTimer.reset();
+
   // this->visualizationThreadFPS =
   //     1e+9 / this->visualizationThreadTimer.getElapsedTime();
   // this->networkThreadFPS = 1e+9 / this->networkThreadTimer.getElapsedTime();
@@ -75,7 +105,20 @@ void Stats::mainThreadTick()
 
 void Stats::networkThreadTick()
 {
-  this->networkThreadFPS = 1e+9 / this->networkThreadTimer.reset();
+  ++this->networkThreadFrameCounter;
+  if ((this->networkThreadTimer.getElapsedTime() +
+       this->networkThreadTimeRemainder) > 1e+9)
+  {
+    this->networkThreadFPS = this->networkThreadFrameCounter * 1e+9 /
+                             (this->networkThreadTimer.getElapsedTime() +
+                              this->networkThreadTimeRemainder);
+    this->networkThreadTimeRemainder =
+        (this->networkThreadTimer.reset() + this->networkThreadTimeRemainder) -
+        1e+9;
+    this->networkThreadFrameCounter = 0;
+  }
+
+  // this->networkThreadFPS = 1e+9 / this->networkThreadTimer.reset();
   // this->mainThreadFPS = 1e+9 / this->mainThreadTimer.getElapsedTime();
   // this->visualizationThreadFPS =
   //     1e+9 / this->visualizationThreadTimer.getElapsedTime();
@@ -85,7 +128,21 @@ void Stats::networkThreadTick()
 
 void Stats::simulationThreadTick()
 {
-  this->simulationThreadFPS = 1e+9 / this->simulationThreadTimer.reset();
+  ++this->simulationThreadFrameCounter;
+  if ((this->simulationThreadTimer.getElapsedTime() +
+       this->simulationThreadTimeRemainder) > 1e+9)
+  {
+    this->simulationThreadFPS = this->simulationThreadFrameCounter * 1e+9 /
+                                (this->simulationThreadTimer.getElapsedTime() +
+                                 this->simulationThreadTimeRemainder);
+    this->simulationThreadTimeRemainder =
+        (this->simulationThreadTimer.reset() +
+         this->simulationThreadTimeRemainder) -
+        1e+9;
+    this->simulationThreadFrameCounter = 0;
+  }
+
+  // this->simulationThreadFPS = 1e+9 / this->simulationThreadTimer.reset();
   // this->mainThreadFPS = 1e+9 / this->mainThreadTimer.getElapsedTime();
   // this->visualizationThreadFPS =
   //     1e+9 / this->visualizationThreadTimer.getElapsedTime();

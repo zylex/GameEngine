@@ -58,7 +58,7 @@ Camera& Camera::operator=(Camera&& other) NOEXCEPT
   return *(new Camera(other));
 }
 
-void Camera::update() {}
+void Camera::update(double deltaTime) {}
 
 void Camera::draw() {}
 

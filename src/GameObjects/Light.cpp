@@ -102,7 +102,7 @@ void Light::setLightType(const LightType lightType)
 
 const LightType Light::getLightType() const { return this->lightType; }
 
-void Light::update() {}
+void Light::update(double deltaTime) {}
 
 void Light::draw() {}
 

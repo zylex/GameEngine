@@ -25,13 +25,13 @@ GameState::~GameState() NOEXCEPT
 }
 
 // MAYBE: Move this to separate simulation thread
-void GameState::update()
+void GameState::update(double deltaTime)
 {
 
   for (std::vector<IGameObject*>::iterator it = this->gameObjects.begin();
        it IS_NOT this->gameObjects.end(); ++it)
   {
-    (*it)->update();
+    (*it)->update(deltaTime);
   }
 }
 

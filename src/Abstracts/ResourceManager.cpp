@@ -97,8 +97,7 @@ const unsigned ResourceManager::getIcosphereMesh(const unsigned recursionLevel)
   return result;
 }
 
-const unsigned ResourceManager::getBowlMesh(const float radius,
-                                            const float height)
+const unsigned ResourceManager::getSemiSphereMesh()
 {
   std::string key = "::bowl::";
   std::unordered_map<std::string, unsigned>::iterator i =
@@ -108,7 +107,7 @@ const unsigned ResourceManager::getBowlMesh(const float radius,
     return i->second;
   }
 
-  this->meshFactory.generateBowlMesh(radius, height);
+  this->meshFactory.generateSemiSphereMesh();
   unsigned result = this->createMesh(this->meshFactory.getVertices(),
                                      this->meshFactory.getTextureCoordinates(),
                                      this->meshFactory.getNormals(),

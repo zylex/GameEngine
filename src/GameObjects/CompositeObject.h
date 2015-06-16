@@ -30,7 +30,7 @@ public:
   // move assignment operator (C++11)
   CompositeObject& operator=(CompositeObject&&) NOEXCEPT;
 
-  void update();
+  void update(double deltaTime);
   void draw();
 
   void addInstance(IShaderProgram*);
